@@ -8,9 +8,9 @@
 namespace nrg {
 namespace status {
 	enum status_t {
-		OK = 0,
-		TEMPERR = 1,
-		INVALID = 2,
+		OK    =  0,
+		ERROR = -1,
+		NYI   = -2
 	};
 };
 

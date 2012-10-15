@@ -1,6 +1,7 @@
 #ifndef NRG_PACKET_H
 #define NRG_PACKET_H
 #include "nrg_core.h"
+#include "nrg_netaddress.h"
 
 namespace nrg {
 
@@ -15,6 +16,7 @@ protected:
 class PacketOut {
 public:
 	PacketOut();
+	NetAddress to;
 protected:
 	uint8_t* data;
 };
