@@ -1,2 +1,5 @@
 /build
 /libnrg.so
+/libnrg.so.0
+/examples/test
+/libnrg.a

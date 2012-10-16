@@ -22,11 +22,11 @@ public:
 		}
 	}
 protected:
-	int fd, domain, type;
+	int fd, family, type;
 	bool error;
 };
 
-class UDPSocket : public Socket {
+struct UDPSocket : public Socket {
 	UDPSocket();
 };
 
