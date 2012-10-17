@@ -4,7 +4,7 @@
 
 namespace nrg {
 
-class NetAddress {
+class NRG_LIB NetAddress {
 public:
 	NetAddress(const char* name);
 	NetAddress(const struct in_addr& in);

@@ -5,7 +5,7 @@
 
 namespace nrg {
 
-class PacketIn {
+class NRG_LIB PacketIn {
 public:
 	PacketIn();
 	NetAddress from;
@@ -13,7 +13,7 @@ protected:
 	uint8_t* data;
 };
 
-class PacketOut {
+class NRG_LIB PacketOut {
 public:
 	PacketOut();
 	NetAddress to;

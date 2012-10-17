@@ -6,7 +6,7 @@
 
 namespace nrg {
 
-class Socket {
+class NRG_LIB Socket {
 public:
 	Socket(int domain, int type);
 	status_t bind(const NetAddress& addr, uint16_t port);
@@ -26,7 +26,7 @@ protected:
 	bool error;
 };
 
-struct UDPSocket : public Socket {
+struct NRG_LIB UDPSocket : public Socket {
 	UDPSocket();
 };
 

@@ -6,6 +6,19 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+// adapted from http://gcc.gnu.org/wiki/Visibility
+#if defined _WIN32 || defined __CYGWIN__
+	#ifdef BUILDING_NRG
+		#define NRG_LIB __declspec(dllexport)
+	#else
+		#define NRG_LIB __declspec(dllimport)
+	#endif
+#elif __GNUC__ >= 4 && defined BUILDING_NRG
+	#define NRG_LIB __attribute__ ((visibility ("default")))
+#else
+	#define NRG_LIB
+#endif
+
 namespace nrg {
 namespace status {
 	enum status_t {
