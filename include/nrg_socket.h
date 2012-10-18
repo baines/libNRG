@@ -9,10 +9,10 @@ namespace nrg {
 class NRG_LIB Socket {
 public:
 	Socket(int domain, int type);
-	status_t bind(const NetAddress& addr, uint16_t port);
-	status_t connect(const NetAddress& addr, uint16_t port);
-	status_t sendPacket(const PacketOut& p);
-	status_t recvPacket(PacketIn& p);
+	status_t bind(const NetAddress& addr);
+	status_t connect(const NetAddress& addr);
+	status_t sendPacket(const Packet& p);
+	status_t recvPacket(Packet& p);
 	template<typename T>
 	status_t setOption(int level, int name, const T& opt){
 		if(setsockopt(fd, level, name, &opt, sizeof(T)) == 0){

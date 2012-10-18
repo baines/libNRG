@@ -8,43 +8,36 @@ nrg::Socket::Socket(int family, int type)
 	if(fd == -1) error = true;
 }
 
-status_t nrg::Socket::bind(const NetAddress& addr, uint16_t port){
+
+status_t nrg::Socket::bind(const NetAddress& addr){
 	if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
-	status_t res;
 
-	struct sockaddr* sa = addr.toSockAddr(port, len);
+	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::bind(fd, sa, len) == 0){
-		res = status::OK;
+		return status::OK;
 	} else {
-		res = status::ERROR;
+		return status::ERROR;
 	}
-
-	delete sa;
-	return res;
 }
 
-status_t nrg::Socket::connect(const NetAddress& addr, uint16_t port){
+status_t nrg::Socket::connect(const NetAddress& addr){
 	if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
-	status_t res;
 
-	struct sockaddr* sa = addr.toSockAddr(port, len);
+	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::connect(fd, sa, len) == 0){
-		res = status::OK;
+		return status::OK;
 	} else {
-		res = status::ERROR;
+		return status::ERROR;
 	}
-
-	delete sa;
-	return res;
 }
 
-status_t nrg::Socket::sendPacket(const PacketOut& p){
+status_t nrg::Socket::sendPacket(const Packet& p){
 	return status::NYI;
 }
 
-status_t nrg::Socket::recvPacket(PacketIn& p){
+status_t nrg::Socket::recvPacket(Packet& p){
 	return status::NYI;
 }
 

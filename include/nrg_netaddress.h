@@ -6,18 +6,18 @@ namespace nrg {
 
 class NRG_LIB NetAddress {
 public:
-	NetAddress(const char* name);
-	NetAddress(const struct in_addr& in);
-	//NetAddress(const struct in6_addr& in6);
+	NetAddress(const char* name, const char* port);
+	explicit NetAddress(const struct sockaddr_in& in);
+	explicit NetAddress(const struct sockaddr_in6& in6);
 	friend bool operator==(const NetAddress& a, const NetAddress& b);
 	friend bool operator!=(const NetAddress& a, const NetAddress& b);
 	const char* name() const;
 	int family() const;
-	struct sockaddr* toSockAddr(uint16_t port, socklen_t& out_size) const;
+	const struct sockaddr* toSockAddr(socklen_t& out_size) const;
 protected:
 	char text[INET6_ADDRSTRLEN];
 	struct sockaddr_storage addr;
-	size_t addr_len;
+	socklen_t addr_len;
 };
 
 };

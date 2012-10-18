@@ -3,28 +3,31 @@
 #include <cstring>
 #include <cstdio>
 
-nrg::NetAddress::NetAddress(const char* name) : addr_len(0) {
+static off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
+static off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
+
+nrg::NetAddress::NetAddress(const char* name, const char* port) : addr_len(0) {
 	struct addrinfo* result = NULL;
-	if(getaddrinfo(name, NULL, NULL, &result) == 0){
+
+	if(getaddrinfo(name, port, NULL, &result) == 0){
 		addr_len = result->ai_addrlen;
 		memcpy(&addr, result->ai_addr, addr_len);
-		off_t o = 0;
-		if(addr.ss_family == AF_INET){
-			o = offsetof(struct sockaddr_in, sin_addr);
-		} else if(addr.ss_family == AF_INET6){
-			o = offsetof(struct sockaddr_in6, sin6_addr);
-		}
-		inet_ntop(addr.ss_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
+	
+		off_t o = result->ai_family == AF_INET ? addr_off : addr6_off;
+		inet_ntop(result->ai_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
+
 		freeaddrinfo(result);
 	}
 }
 
-nrg::NetAddress::NetAddress(const struct in_addr& in) : addr_len(0) {
-	struct sockaddr_in sai = { AF_INET, 0, in };
-	addr_len = sizeof(sai);	
-	memcpy(&addr, &sai, addr_len);
-	inet_ntop(AF_INET, (char*)&addr + offsetof(struct sockaddr_in, sin_addr)
-	                                                  , text, INET6_ADDRSTRLEN);
+nrg::NetAddress::NetAddress(const struct sockaddr_in& in) : addr_len(sizeof(in)) {
+	memcpy(&addr, &in, addr_len);
+	inet_ntop(AF_INET, (char*)&addr + addr_off, text, INET6_ADDRSTRLEN);
+}
+
+nrg::NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in6)) {
+	memcpy(&addr, &in6, addr_len);
+	inet_ntop(AF_INET6, (char*)&addr + addr6_off, text, INET6_ADDRSTRLEN);
 }
 
 const char* nrg::NetAddress::name() const {
@@ -35,20 +38,7 @@ int nrg::NetAddress::family() const {
 	return addr.ss_family;
 }
 
-struct sockaddr* nrg::NetAddress::toSockAddr(uint16_t port, socklen_t& out_size) const{
-	struct sockaddr* in;
-	if(addr.ss_family == AF_INET){
-		struct sockaddr_in* i = new struct sockaddr_in();
-		memcpy(i, &addr, addr_len);
-		i->sin_port = htons(port);
-		in = reinterpret_cast<struct sockaddr*>(i);
-	} else if(addr.ss_family == AF_INET6){
-		struct sockaddr_in6* i = new struct sockaddr_in6();
-		memcpy(i, &addr, addr_len);
-		i->sin6_port = htons(port);
-		in = reinterpret_cast<struct sockaddr*>(i);
-	}
-
+const struct sockaddr* nrg::NetAddress::toSockAddr(socklen_t& out_size) const {
 	out_size = addr_len;
-	return in;
+	return reinterpret_cast<const struct sockaddr*>(&addr);
 }

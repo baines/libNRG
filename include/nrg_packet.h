@@ -5,18 +5,10 @@
 
 namespace nrg {
 
-class NRG_LIB PacketIn {
+class NRG_LIB Packet {
 public:
-	PacketIn();
-	NetAddress from;
-protected:
-	uint8_t* data;
-};
-
-class NRG_LIB PacketOut {
-public:
-	PacketOut();
-	NetAddress to;
+	Packet();
+	NetAddress address;
 protected:
 	uint8_t* data;
 };
