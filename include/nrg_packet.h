@@ -5,12 +5,9 @@
 
 namespace nrg {
 
-class NRG_LIB Packet {
-public:
+struct NRG_LIB Packet {
 	Packet();
-	virtual const NetAddress* getAddress();
 	virtual ~Packet(){};
-protected:
 	uint8_t* data;
 	size_t data_size;
 };

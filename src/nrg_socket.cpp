@@ -35,12 +35,26 @@ status_t nrg::Socket::connect(const NetAddress& addr){
 	}
 }
 
-status_t nrg::Socket::sendPacket(const Packet& p){
-	return status::NYI;
+ssize_t nrg::Socket::sendPacket(const Packet& p){
+	return ::send(fd, p.data, p.data_size, 0);
 }
 
-status_t nrg::Socket::recvPacket(Packet& p){
-	return status::NYI;
+ssize_t nrg::Socket::sendPacket(const Packet& p, const NetAddress& addr){
+	socklen_t len = 0;
+	const struct sockaddr* sa = addr.toSockAddr(len);
+	return ::sendto(fd, p.data, p.data_size, 0, sa, len);
+}
+
+ssize_t nrg::Socket::recvPacket(Packet& p){
+	return ::recv(fd, p.data, p.data_size, 0);
+}
+
+ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr){
+	struct sockaddr_storage sas;
+	socklen_t len = 0;
+	ssize_t r = ::recvfrom(fd, p.data, p.data_size, 0, (struct sockaddr*)&sas, &len);
+	addr.set(sas, len);
+	return r;
 }
 
 nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(family, SOCK_DGRAM){

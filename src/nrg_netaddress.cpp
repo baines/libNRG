@@ -6,6 +6,11 @@
 static const off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
 static const off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
 
+nrg::NetAddress::NetAddress() : addr_len(0) {
+	memset(text, 0, INET6_ADDRSTRLEN);
+	memset(&addr, 0, sizeof(addr));
+};
+
 nrg::NetAddress::NetAddress(const char* name, const char* port) : addr_len(0) {
 	struct addrinfo* result = NULL;
 
@@ -28,6 +33,21 @@ nrg::NetAddress::NetAddress(const struct sockaddr_in& in) : addr_len(sizeof(in))
 nrg::NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in6)) {
 	memcpy(&addr, &in6, addr_len);
 	inet_ntop(AF_INET6, (char*)&addr + addr6_off, text, INET6_ADDRSTRLEN);
+}
+
+nrg::status_t nrg::NetAddress::set(const struct sockaddr_storage& s, const socklen_t len) {
+	off_t o = 0;
+	if(s.ss_family == AF_INET){
+		o = addr_off;
+	} else if(s.ss_family == AF_INET6){
+		o = addr6_off;
+	} else {
+		return status::ERROR;
+	}
+	addr_len = len;
+	memcpy(&addr, &s, len);
+	inet_ntop(s.ss_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
+	return status::OK;
 }
 
 const char* nrg::NetAddress::name() const {
