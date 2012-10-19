@@ -3,8 +3,8 @@
 #include <cstring>
 #include <cstdio>
 
-static off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
-static off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
+static const off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
+static const off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
 
 nrg::NetAddress::NetAddress(const char* name, const char* port) : addr_len(0) {
 	struct addrinfo* result = NULL;
@@ -36,6 +36,16 @@ const char* nrg::NetAddress::name() const {
 
 int nrg::NetAddress::family() const {
 	return addr.ss_family;
+}
+
+uint16_t nrg::NetAddress::port() const {
+	if(addr.ss_family == AF_INET){
+		return ntohs(reinterpret_cast<const struct sockaddr_in*>(&addr)->sin_port);
+	} else if(addr.ss_family == AF_INET6){
+		return ntohs(reinterpret_cast<const struct sockaddr_in6*>(&addr)->sin6_port);
+	} else {
+		return 0;
+	}
 }
 
 const struct sockaddr* nrg::NetAddress::toSockAddr(socklen_t& out_size) const {

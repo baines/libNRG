@@ -13,6 +13,7 @@ public:
 	friend bool operator!=(const NetAddress& a, const NetAddress& b);
 	const char* name() const;
 	int family() const;
+	uint16_t port() const;
 	const struct sockaddr* toSockAddr(socklen_t& out_size) const;
 protected:
 	char text[INET6_ADDRSTRLEN];
