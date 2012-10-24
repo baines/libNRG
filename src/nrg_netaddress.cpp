@@ -72,3 +72,19 @@ const struct sockaddr* nrg::NetAddress::toSockAddr(socklen_t& out_size) const {
 	out_size = addr_len;
 	return reinterpret_cast<const struct sockaddr*>(&addr);
 }
+
+namespace nrg {
+
+bool operator==(const NetAddress& a, const NetAddress& b){
+	if(a.addr_len == b.addr_len){
+		return (memcmp(&a.addr, &b.addr, a.addr_len) == 0);
+	} else {
+		return false;
+	}
+}
+
+bool operator!=(const nrg::NetAddress& a, const NetAddress& b){
+	return !(a == b);
+}
+
+};

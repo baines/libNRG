@@ -1,5 +1,5 @@
 CXXFLAGS := -I../include
-LDFLAGS := -L.. -l:libnrg.a
+LDFLAGS := ../libnrg.a
 
 all: test
 

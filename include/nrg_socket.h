@@ -24,10 +24,10 @@ public:
 			return status::ERROR;
 		}
 	}
-	const NetAddress* getBoundAddress(){
+	const NetAddress* getBoundAddress() const {
 		return bound_addr.get();
 	}
-	const NetAddress* getConnectedAddress(){
+	const NetAddress* getConnectedAddress() const {
 		return connected_addr.get();
 	}
 protected:

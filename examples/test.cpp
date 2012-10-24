@@ -8,6 +8,10 @@ int main(int argc, char** argv){
 	// should print 127.0.0.1
 	printf("%s\n", addr.name());
 
+	// test operator== and !=, should print 1 0
+	nrg::NetAddress addr2("127.0.0.1", "9999");
+	printf("%d %d\n", addr == addr2, addr != addr2);
+
 	// test binding socket
 	nrg::UDPSocket s;
 	s.bind(addr);
