@@ -6,10 +6,17 @@
 
 namespace nrg {
 
-class NRG_LIB Connection {
+class NRG_LIB ConnectionBase {
+protected:
+	bool isValidPacket(const Packet& p);
+	uint16_t getPacketSeqNum(const Packet& p) const;
+	uint8_t getPacketFlags(const Packet& p) const;
+}
+
+class NRG_LIB ConnectionIncoming : protected ConnectionBase {
 public:
-	Connection(const NetAddress& remote_addr);
-	bool addIncomingPacket(const Packet& p);
+	ConnectionIncoming(const NetAddress& remote_addr);
+	bool addPacket(const Packet& p);
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
 	void getLatestPacket(Packet& p);
@@ -18,6 +25,12 @@ protected:
 	Packet latest;
 	NetAddress addr;
 };
+
+class NRG_LIB ConnectionOutgoing : protected ConnectionBase {
+public:
+	ConnectionOutgoing(const NetAddress& remote_addr, const Socket& sock_out);
+	void sendPacket(const Packet& p);
+}
 
 };
 
