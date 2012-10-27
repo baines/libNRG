@@ -7,32 +7,42 @@
 
 namespace nrg {
 
+enum ConnectionFlags {
+	PKTFLAG_CONTINUATION = 0x01,
+	PKTFLAG_CONTINUED    = 0x02,
+};
+
 class NRG_LIB ConnectionBase {
 public:
-	size_t getHeaderSize(){ return 4; }
+	ConnectionBase(const NetAddress& remote_addr);
+	size_t getHeaderSize() const { return 4; }
 protected:
-	bool isValidPacket(const Packet& p);
-	uint16_t getPacketSeqNum(const Packet& p) const;
-	uint8_t getPacketFlags(const Packet& p) const;
+	uint16_t getPacketSeqNum(Packet& p) const;
+	uint8_t getPacketFlags(Packet& p) const;
+	NetAddress remote_addr;
+	uint16_t seq_num;
 };
 
 class NRG_LIB ConnectionIncoming : protected ConnectionBase {
 public:
 	ConnectionIncoming(const NetAddress& remote_addr);
-	bool addPacket(const Packet& p);
+	bool addPacket(Packet& p);
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
 	void getLatestPacket(Packet& p);
 	int getIdleSeconds();
 protected:
+	bool isValidPacketHeader(uint16_t seq, uint8_t flags);
 	Packet latest;
-	NetAddress addr;
+	PartialPacket partial;
 };
 
 class NRG_LIB ConnectionOutgoing : protected ConnectionBase {
 public:
 	ConnectionOutgoing(const NetAddress& remote_addr, const Socket& sock_out);
 	void sendPacket(const Packet& p);
+protected:
+	const Socket& sock;
 };
 
 };
