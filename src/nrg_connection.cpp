@@ -1,6 +1,7 @@
 #include "nrg_connection.h"
 #include "nrg_config.h"
 #include <climits>
+#include <cstdlib>
 
 nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na) {
 
@@ -15,7 +16,9 @@ bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags){
 	bool valid = false;
 		
 	if(flags & PKTFLAG_CONTINUATION){
-		valid = (seq == (seq_num + 1));
+		if(partial.tell() != 0 && !partial.isComplete()){
+			valid = (seq == (seq_num + 1));
+		}
 	} else {
 		for(int i = 1; i < NRG_NUM_PAST_STATES; ++i){
 			uint16_t v = (seq_num + i) & USHRT_MAX;
@@ -36,7 +39,8 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 		off_t o = p.tell();
 		p.seek(0, SEEK_SET).read16(seq).read8(flags);
 		
-		if(!isValidPacketHeader(seq, flags)){
+		if(!(latest.tell() == 0 && partial.tell() == 0) && 
+		!isValidPacketHeader(seq, flags)){
 			p.seek(o, SEEK_SET);
 			return false;
 		}
@@ -50,10 +54,38 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			p.seek(0, SEEK_SET);
 			ref.writeArray(p.getPointer(), p.remaining());
 		}
-
+		
+		seq_num = seq;
 		p.seek(o, SEEK_SET);
 		return true;
 	} else {
 		return false;
 	}
+}
+
+nrg::ConnectionOutgoing::ConnectionOutgoing(const NetAddress& na, const Socket& sock)
+: ConnectionBase(na), sock(sock) {
+	seq_num = rand() & USHRT_MAX;
+}
+
+void nrg::ConnectionOutgoing::sendPacket(Packet& p){
+	Packet p2(NRG_MAX_PACKET_SIZE);
+	uint8_t flags = 0;
+	off_t o = p.tell();
+	p.seek(0, SEEK_SET);	
+
+	while(p.remaining()){
+		size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - getHeaderSize());
+
+		if(p.remaining() > NRG_MAX_PACKET_SIZE - getHeaderSize()){
+			flags |= PKTFLAG_CONTINUED;
+		}
+
+		p2.reset().write16(seq_num).write8(flags).writeArray(p.getPointer(), n);
+		p.seek(n, SEEK_CUR);
+		
+		sock.sendPacket(p2, remote_addr);
+		flags = PKTFLAG_CONTINUATION;
+	}
+	p.seek(o, SEEK_SET);
 }

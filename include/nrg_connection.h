@@ -15,15 +15,13 @@ enum ConnectionFlags {
 class NRG_LIB ConnectionBase {
 public:
 	ConnectionBase(const NetAddress& remote_addr);
-	size_t getHeaderSize() const { return 4; }
+	size_t getHeaderSize() const { return 3; }
 protected:
-	uint16_t getPacketSeqNum(Packet& p) const;
-	uint8_t getPacketFlags(Packet& p) const;
 	NetAddress remote_addr;
 	uint16_t seq_num;
 };
 
-class NRG_LIB ConnectionIncoming : protected ConnectionBase {
+class NRG_LIB ConnectionIncoming : public ConnectionBase {
 public:
 	ConnectionIncoming(const NetAddress& remote_addr);
 	bool addPacket(Packet& p);
@@ -37,7 +35,7 @@ protected:
 	PartialPacket partial;
 };
 
-class NRG_LIB ConnectionOutgoing : protected ConnectionBase {
+class NRG_LIB ConnectionOutgoing : public ConnectionBase {
 public:
 	ConnectionOutgoing(const NetAddress& remote_addr, const Socket& sock_out);
 	void sendPacket(Packet& p);

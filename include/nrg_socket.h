@@ -12,10 +12,10 @@ public:
 	Socket(int family, int type);
 	status_t bind(const NetAddress& addr);
 	status_t connect(const NetAddress& addr);
-	ssize_t sendPacket(const Packet& p);
-	ssize_t sendPacket(const Packet& p, const NetAddress& addr);
-	ssize_t recvPacket(Packet& p);
-	ssize_t recvPacket(Packet& p, NetAddress& addr);
+	ssize_t sendPacket(const Packet& p) const;
+	ssize_t sendPacket(const Packet& p, const NetAddress& addr) const;
+	ssize_t recvPacket(Packet& p) const;
+	ssize_t recvPacket(Packet& p, NetAddress& addr) const;
 	template<typename T>
 	status_t setOption(int level, int name, const T& opt){
 		if(setsockopt(fd, level, name, &opt, sizeof(T)) == 0){

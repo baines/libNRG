@@ -61,6 +61,7 @@ public:
 	PartialPacket(size_t initial_size) : Packet(initial_size), complete(false){};
 	virtual ~PartialPacket(){};
 	void markComplete() { complete = true; }
+	bool isComplete(){ return complete; }
 	Packet& reset(){ Packet::reset(); complete = false; }
 private:
 	bool complete;
