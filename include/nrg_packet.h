@@ -25,6 +25,7 @@ public:
 		}
 		memcpy(pointer, &be_v, sizeof(be_v));
 		pointer += sizeof(be_v);
+		used_size += sizeof(be_v);
 		return *this;
 	}
 
@@ -35,7 +36,7 @@ public:
 
 	template<typename T>
 	Packet& readBE(T& be_v){
-		if((pointer - data) <= (data_size - sizeof(be_v))){
+		if((pointer - data) <= (used_size - sizeof(be_v))){
 			memcpy(&be_v, pointer, sizeof(be_v));
 			pointer += sizeof(be_v);
 		}
@@ -57,9 +58,10 @@ protected:
 
 class NRG_LIB PartialPacket : public Packet {
 public:
-	PartialPacket(size_t initial_size);
-	virtual ~PartialPacket();
-	void markComplete();
+	PartialPacket(size_t initial_size) : Packet(initial_size), complete(false){};
+	virtual ~PartialPacket(){};
+	void markComplete() { complete = true; }
+	Packet& reset(){ Packet::reset(); complete = false; }
 private:
 	bool complete;
 };

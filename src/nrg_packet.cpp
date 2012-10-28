@@ -2,7 +2,8 @@
 #include <algorithm>
 
 nrg::Packet::Packet(size_t initial_size) 
-: data(new uint8_t[initial_size]), pointer(data), data_size(initial_size) {
+: data(new uint8_t[initial_size]), pointer(data), data_size(initial_size)
+, used_size(0) {
 
 }
 
@@ -11,10 +12,7 @@ nrg::Packet::~Packet(){
 }
 
 nrg::Packet& nrg::Packet::write8(const uint8_t& v){
-	if(pointer - data <= (data_size - sizeof(v))){
-		*pointer++ = v;
-	}
-	return *this;
+	return writeBE(v);
 }
 
 nrg::Packet& nrg::Packet::write16(const uint16_t& v){
@@ -31,6 +29,7 @@ nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
 	}
 	memcpy(pointer, v, size);
 	pointer += size;
+	used_size += size;
 	return *this;
 }
 
@@ -53,6 +52,12 @@ nrg::Packet& nrg::Packet::read32(uint32_t& v){
 	readBE(be_v);
 	v = ntohl(be_v);
 	return *this;
+}
+
+nrg::Packet& nrg::Packet::reset(){
+	memset(data, 0, data_size);
+	used_size = 0;
+	pointer = data;
 }
 
 nrg::Packet& nrg::Packet::seek(off_t offset, int whence){

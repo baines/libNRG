@@ -1,4 +1,5 @@
 #include "nrg_socket.h"
+#include "nrg_config.h"
 
 using nrg::status_t;
 
@@ -46,15 +47,24 @@ ssize_t nrg::Socket::sendPacket(const Packet& p, const NetAddress& addr){
 }
 
 ssize_t nrg::Socket::recvPacket(Packet& p){
-	return ::recv(fd, p.data, p.data_size, 0);
+	uint8_t buf[NRG_MAX_PACKET_SIZE];
+	ssize_t result = ::recv(fd, buf, NRG_MAX_PACKET_SIZE, 0);
+	if(result > 0){
+		p.writeArray(buf, result);
+	}
+	return result;
 }
 
 ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr){
 	struct sockaddr_storage sas;
 	socklen_t len = 0;
-	ssize_t r = ::recvfrom(fd, p.data, p.data_size, 0, (struct sockaddr*)&sas, &len);
+	uint8_t buf[NRG_MAX_PACKET_SIZE];
+	ssize_t result = ::recvfrom(fd, buf, NRG_MAX_PACKET_SIZE, 0, (struct sockaddr*)&sas, &len);
+	if(result > 0){
+		p.writeArray(buf, result);
+	}
 	addr.set(sas, len);
-	return r;
+	return result;
 }
 
 nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(family, SOCK_DGRAM){

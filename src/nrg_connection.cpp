@@ -1,11 +1,15 @@
 #include "nrg_connection.h"
+#include "nrg_config.h"
 #include <climits>
-
-static const int NRG_NUM_PAST_STATES = 32;
 
 nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na) {
 
 };
+
+nrg::ConnectionIncoming::ConnectionIncoming(const NetAddress& na)
+: ConnectionBase(na), latest(NRG_MAX_PACKET_SIZE), partial(NRG_MAX_PACKET_SIZE) {
+
+}
 
 bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags){
 	bool valid = false;
@@ -41,11 +45,15 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			partial.writeArray(p.getPointer(), p.remaining());
 			if(!(flags & PKTFLAG_CONTINUED)) partial.markComplete();
 		} else {
-			Packet& pref = (flags & PKTFLAG_CONTINUED) ? partial : latest;
-			pref.reset();
+			Packet& ref = (flags & PKTFLAG_CONTINUED) ? partial : latest;
+			ref.reset();
 			p.seek(0, SEEK_SET);
-			pref.writeArray(p.getPointer(), p.remaining());
+			ref.writeArray(p.getPointer(), p.remaining());
 		}
+
+		p.seek(o, SEEK_SET);
+		return true;
+	} else {
+		return false;
 	}
-	return true;
 }

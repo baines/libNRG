@@ -40,7 +40,7 @@ protected:
 class NRG_LIB ConnectionOutgoing : protected ConnectionBase {
 public:
 	ConnectionOutgoing(const NetAddress& remote_addr, const Socket& sock_out);
-	void sendPacket(const Packet& p);
+	void sendPacket(Packet& p);
 protected:
 	const Socket& sock;
 };
