@@ -28,9 +28,9 @@ public:
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
 	void getLatestPacket(Packet& p);
-	int getIdleSeconds();
+	int getIdleSeconds() const;
 protected:
-	bool isValidPacketHeader(uint16_t seq, uint8_t flags);
+	bool isValidPacketHeader(uint16_t seq, uint8_t flags) const;
 	Packet latest;
 	PartialPacket partial;
 };

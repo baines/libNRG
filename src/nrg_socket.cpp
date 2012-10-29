@@ -67,6 +67,21 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
 	return result;
 }
 
+#if defined __WIN32
+#include <Winsock2.h>
+void nrg::Socket::setNonBlocking(bool enabled){
+	u_long l = enabled ? 1 : 0;
+	ioctlsocket(fd, FIONBIO, &i);
+}
+#else
+#include <fcntl.h>
+void nrg::Socket::setNonBlocking(bool enabled){
+	int flags = fcntl(fd, F_GETFL, 0);
+	flags = (enabled ? flags | O_NONBLOCK : flags & ~O_NONBLOCK);
+	fcntl(fd, F_SETFL, flags);
+}
+#endif
+
 nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(family, SOCK_DGRAM){
 
 }

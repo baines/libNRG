@@ -12,12 +12,12 @@ nrg::ConnectionIncoming::ConnectionIncoming(const NetAddress& na)
 
 }
 
-bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags){
+bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags) const {
 	bool valid = false;
 		
 	if(flags & PKTFLAG_CONTINUATION){
 		if(partial.tell() != 0 && !partial.isComplete()){
-			valid = (seq == (seq_num + 1));
+			valid = (seq == ((seq_num + 1) & USHRT_MAX));
 		}
 	} else {
 		for(int i = 1; i < NRG_NUM_PAST_STATES; ++i){
@@ -81,7 +81,7 @@ void nrg::ConnectionOutgoing::sendPacket(Packet& p){
 			flags |= PKTFLAG_CONTINUED;
 		}
 
-		p2.reset().write16(seq_num).write8(flags).writeArray(p.getPointer(), n);
+		p2.reset().write16(seq_num++).write8(flags).writeArray(p.getPointer(), n);
 		p.seek(n, SEEK_CUR);
 		
 		sock.sendPacket(p2, remote_addr);

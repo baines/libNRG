@@ -73,7 +73,7 @@ nrg::Packet& nrg::Packet::seek(off_t offset, int whence){
 	return *this;
 }
 
-off_t nrg::Packet::tell(){
+off_t nrg::Packet::tell() const {
 	return pointer - data;
 }
 

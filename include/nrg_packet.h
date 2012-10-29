@@ -45,7 +45,7 @@ public:
 
 	virtual Packet& reset();
 	Packet& seek(off_t offset, int whence);
-	off_t tell();
+	off_t tell() const;
 	size_t size() const { return used_size; }
 	size_t remaining() const { return used_size - (pointer - data); }
 	const uint8_t* getPointer() const { return pointer; }
@@ -61,7 +61,7 @@ public:
 	PartialPacket(size_t initial_size) : Packet(initial_size), complete(false){};
 	virtual ~PartialPacket(){};
 	void markComplete() { complete = true; }
-	bool isComplete(){ return complete; }
+	bool isComplete() const { return complete; }
 	Packet& reset(){ Packet::reset(); complete = false; }
 private:
 	bool complete;
