@@ -1,6 +1,9 @@
 #ifndef NRG_CLIENT_H
 #define NRG_CLIENT_H
 #include "nrg_core.h"
+#include "nrg_socket.h"
+#include "nrg_netaddress.h"
+#include "nrg_state.h"
 #include <vector>
 
 namespace nrg {

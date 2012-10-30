@@ -24,6 +24,7 @@ public:
 			return status::ERROR;
 		}
 	}
+	bool dataPending() const;
 	void setNonBlocking(bool nonblock);
 	const NetAddress* getBoundAddress() const {
 		return bound_addr.get();

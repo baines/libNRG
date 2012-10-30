@@ -9,7 +9,6 @@ connected_addr(), fd(0), family(family), type(type), error(false) {
 	if(fd == -1) error = true;
 }
 
-
 status_t nrg::Socket::bind(const NetAddress& addr){
 	if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
@@ -37,13 +36,13 @@ status_t nrg::Socket::connect(const NetAddress& addr){
 }
 
 ssize_t nrg::Socket::sendPacket(const Packet& p) const {
-	return ::send(fd, p.data, p.data_size, 0);
+	return ::send(fd, p.data, p.used_size, 0);
 }
 
 ssize_t nrg::Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
-	return ::sendto(fd, p.data, p.data_size, 0, sa, len);
+	return ::sendto(fd, p.data, p.used_size, 0, sa, len);
 }
 
 ssize_t nrg::Socket::recvPacket(Packet& p) const {
@@ -65,6 +64,18 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
 	}
 	addr.set(sas, len);
 	return result;
+}
+
+bool nrg::Socket::dataPending() const {
+	fd_set s;
+	FD_SET(fd, &s);
+	struct timeval tv = { 0, 0 };
+
+	if(select(fd+1, &s, NULL, NULL, &tv) == 1){
+		return true;
+	} else {
+		return false;
+	}
 }
 
 #if defined __WIN32
