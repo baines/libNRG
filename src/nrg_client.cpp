@@ -4,7 +4,7 @@
 nrg::Client::Client(const NetAddress& addr) : sock(), buffer(NRG_MAX_PACKET_SIZE), 
 serv_addr(addr), in(serv_addr), out(serv_addr, sock), states() {
 	sock.setNonBlocking(true);
-	states.push_back(new ClientHandshakeState(out));
+	states.push_back(new ClientHandshakeState());
 }
 
 nrg::status_t nrg::Client::update(){
@@ -16,12 +16,16 @@ nrg::status_t nrg::Client::update(){
 		NetAddress addr;
 		buffer.reset();
 		sock.recvPacket(buffer, addr);
-		if(addr != serv_addr) continue;
-		states.back()->addIncomingPacket(buffer);
+		//if(addr != serv_addr) continue;
+		if(in.addPacket(buffer) && in.hasNewPacket()){
+			buffer.reset();
+			in.getLatestPacket(buffer);
+			states.back()->addIncomingPacket(buffer);
+		}
 	}
 	
 	if(states.back()->needsUpdate()){
-		State::UpdateResult ur = states.back()->update();
+		State::UpdateResult ur = states.back()->update(out);
 		
 		if(ur != State::STATE_CONTINUE){
 			states.pop_back();

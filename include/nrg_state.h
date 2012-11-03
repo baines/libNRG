@@ -8,7 +8,7 @@ namespace nrg {
 
 class NRG_LIB State {
 public:
-	State(ConnectionOutgoing& out) : out(out){};
+	State(){};
 	
 	typedef enum {
 		STATE_EXIT_FAILURE = -1,
@@ -19,15 +19,13 @@ public:
 	virtual bool addIncomingPacket(Packet& p) = 0;
 	virtual bool needsUpdate() const = 0;
 	virtual size_t getTimeoutSeconds(){ return 10; }
-	virtual UpdateResult update() = 0;
+	virtual UpdateResult update(ConnectionOutgoing& out) = 0;
 	virtual ~State(){};
-protected:
-	ConnectionOutgoing& out;
 };
 
 class NRG_LIB ClientHandshakeState : public State {
 public:
-	ClientHandshakeState(ConnectionOutgoing& out) : State(out), phase(NOT_STARTED){};
+	ClientHandshakeState() : phase(NOT_STARTED){};
 	bool addIncomingPacket(Packet& p){
 		uint8_t v = 0;
 		if(phase != WAITING_ON_RESPONSE || p.size() < 1) return false;
@@ -39,7 +37,7 @@ public:
 		return (phase != WAITING_ON_RESPONSE);
 	}
 	
-	UpdateResult update(){
+	UpdateResult update(ConnectionOutgoing& out){
 		UpdateResult res;
 		if(phase == NOT_STARTED){
 			Packet p(1);

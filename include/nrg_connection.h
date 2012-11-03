@@ -28,11 +28,10 @@ public:
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
 	void getLatestPacket(Packet& p);
-	int getIdleSeconds() const;
 protected:
 	bool isValidPacketHeader(uint16_t seq, uint8_t flags) const;
-	Packet latest;
-	PartialPacket partial;
+	bool new_packet, first_packet;
+	PartialPacket latest;
 };
 
 class NRG_LIB ConnectionOutgoing : public ConnectionBase {
