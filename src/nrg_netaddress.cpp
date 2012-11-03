@@ -35,6 +35,10 @@ nrg::NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in
 	inet_ntop(AF_INET6, (char*)&addr + addr6_off, text, INET6_ADDRSTRLEN);
 }
 
+nrg::NetAddress::NetAddress(const struct sockaddr_storage& s, const socklen_t len){
+	set(s, len);
+}
+
 nrg::status_t nrg::NetAddress::set(const struct sockaddr_storage& s, const socklen_t len) {
 	off_t o = 0;
 	if(s.ss_family == AF_INET){

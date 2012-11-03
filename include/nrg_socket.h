@@ -26,7 +26,14 @@ public:
 	}
 	bool dataPending() const;
 	void setNonBlocking(bool nonblock);
-	const NetAddress* getBoundAddress() const {
+	const NetAddress* getBoundAddress() {
+		if(bound_addr.get() == NULL){
+			struct sockaddr_storage sas;
+			socklen_t len = sizeof(sas);
+			if(getsockname(fd, (struct sockaddr*)&sas, &len) == 0){
+				bound_addr = std::auto_ptr<NetAddress>(new NetAddress(sas, len));
+			}
+		}
 		return bound_addr.get();
 	}
 	const NetAddress* getConnectedAddress() const {

@@ -13,10 +13,10 @@ nrg::status_t nrg::Client::update(){
 	}
 	
 	while(sock.dataPending()){
-		NetAddress addr;
+		NetAddress addr, *bound_addr = sock.getBoundAddress();
 		buffer.reset();
 		sock.recvPacket(buffer, addr);
-		//if(addr != sock.getBoundAddr()) continue;
+		if(bound_addr != NULL && addr != *bound_addr) continue;
 		states.back()->addIncomingPacket(buffer);
 	}
 	

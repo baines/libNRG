@@ -10,9 +10,11 @@ public:
 	NetAddress(const char* name, const char* port);
 	explicit NetAddress(const struct sockaddr_in& in);
 	explicit NetAddress(const struct sockaddr_in6& in6);
+	NetAddress(const struct sockaddr_storage& s, const socklen_t len);
 	status_t set(const struct sockaddr_storage& s, const socklen_t len);
 	friend bool operator==(const NetAddress& a, const NetAddress& b);
 	friend bool operator!=(const NetAddress& a, const NetAddress& b);
+	bool isValid() const;
 	const char* name() const;
 	int family() const;
 	uint16_t port() const;
