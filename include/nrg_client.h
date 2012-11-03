@@ -17,10 +17,10 @@ public:
 	const NetAddress& getAddress() const;
 	//Input& getInput() const;
 	
-	bool sendUpdate();
-	bool recvUpdate();
+	status_t update();
 protected:
 	UDPSocket sock;
+	Packet buffer;
 	NetAddress serv_addr;
 	ConnectionIncoming in;
 	ConnectionOutgoing out;

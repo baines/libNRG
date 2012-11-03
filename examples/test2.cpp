@@ -8,7 +8,7 @@ int main(int argc, char** argv){
 	while(true){
 		usleep(500000);
 		puts("---");
-		client.sendUpdate();
+		if(client.update() == nrg::status::ERROR) break;
 	}
 
 	return 0;
