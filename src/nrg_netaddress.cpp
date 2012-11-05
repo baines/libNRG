@@ -87,8 +87,13 @@ bool operator==(const NetAddress& a, const NetAddress& b){
 	}
 }
 
-bool operator!=(const nrg::NetAddress& a, const NetAddress& b){
+bool operator!=(const NetAddress& a, const NetAddress& b){
 	return !(a == b);
+}
+
+bool operator<(const NetAddress& a, const NetAddress& b){
+	// FIXME: more efficient method
+	return strcmp(a.text, b.text) < 0;
 }
 
 };

@@ -68,6 +68,7 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
 
 bool nrg::Socket::dataPending() const {
 	fd_set s;
+	FD_ZERO(&s);
 	FD_SET(fd, &s);
 	struct timeval tv = { 0, 0 };
 

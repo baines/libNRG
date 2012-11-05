@@ -18,7 +18,7 @@ public:
 	
 	virtual bool addIncomingPacket(Packet& p) = 0;
 	virtual bool needsUpdate() const = 0;
-	virtual size_t getTimeoutSeconds(){ return 10; }
+	virtual size_t getTimeoutSeconds() const { return 10; }
 	virtual UpdateResult update(ConnectionOutgoing& out) = 0;
 	virtual ~State(){};
 };

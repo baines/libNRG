@@ -2,9 +2,9 @@
 #include "nrg_config.h"
 
 nrg::Client::Client(const NetAddress& addr) : sock(), buffer(NRG_MAX_PACKET_SIZE), 
-serv_addr(addr), in(serv_addr), out(serv_addr, sock), states() {
+serv_addr(addr), in(serv_addr), out(serv_addr, sock), states(), handshake() {
 	sock.setNonBlocking(true);
-	states.push_back(new ClientHandshakeState());
+	states.push_back(&handshake);
 }
 
 nrg::status_t nrg::Client::update(){

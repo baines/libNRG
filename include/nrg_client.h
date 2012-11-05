@@ -25,6 +25,7 @@ protected:
 	ConnectionIncoming in;
 	ConnectionOutgoing out;
 	std::vector<State*> states;
+	ClientHandshakeState handshake;
 };
 
 };
