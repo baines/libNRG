@@ -29,7 +29,7 @@ nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
 	}
 	memcpy(pointer, v, size);
 	pointer += size;
-	used_size += size;
+	used_size = std::max(used_size, (size_t)(pointer - data));
 	return *this;
 }
 
@@ -67,9 +67,9 @@ nrg::Packet& nrg::Packet::seek(off_t offset, int whence){
 	case SEEK_SET:
 		pointer = data + offset; break;
 	case SEEK_END:
-		pointer = (data + data_size) - offset; break;
+		pointer = (data + used_size) - offset; break;
 	}
-	pointer = std::max(data, std::min(data + data_size, pointer));
+	pointer = std::max(data, std::min(data + used_size, pointer));
 	return *this;
 }
 

@@ -4,6 +4,7 @@
 #include "nrg_netaddress.h"
 #include <cstring> // memcpy
 #include <cstdio> // SEEK_x
+#include <algorithm>
 
 namespace nrg {
 
@@ -25,7 +26,7 @@ public:
 		}
 		memcpy(pointer, &be_v, sizeof(be_v));
 		pointer += sizeof(be_v);
-		used_size += sizeof(be_v);
+		used_size = std::max(used_size, (size_t)(pointer - data));
 		return *this;
 	}
 

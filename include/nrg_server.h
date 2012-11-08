@@ -31,14 +31,14 @@ protected:
 class NRG_LIB PlayerConnection {
 public:
 	PlayerConnection(const UDPSocket& sock, const NetAddress& addr);
-	PlayerConnection(const PlayerConnection& copy);
 	bool addPacket(Packet& p);
-	void update();
+	bool update();
 protected:
 	const NetAddress& addr;
 	const UDPSocket& sock;
 	ConnectionIncoming in;
 	ConnectionOutgoing out;
+	Packet buffer;
 	std::vector<State*> states;
 	//ServerHandshakeState handshake;
 };

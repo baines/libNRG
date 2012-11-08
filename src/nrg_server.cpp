@@ -27,16 +27,50 @@ nrg::status_t nrg::Server::update(){
 		
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
-			clients[addr] = new PlayerConnection(sock, addr);
+			std::pair<ClientMap::iterator, bool> res = clients.insert(
+				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
+			);
+			res.first->second = new PlayerConnection(sock, res.first->first);
 		} else if(!it->second->addPacket(buffer)){
 			// kick client
 		}
 	}
 
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
-		i->second->update();
+		if(!i->second->update()){
+			// kick client
+		}
 	}
 	return status::OK;
 }
 
+nrg::PlayerConnection::PlayerConnection(const UDPSocket& sock, const NetAddress& addr)
+: addr(addr), sock(sock), in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(){
 
+}
+
+bool nrg::PlayerConnection::addPacket(Packet& p){
+	if(in.addPacket(p)){
+		if(in.hasNewPacket()){
+			buffer.reset();
+			in.getLatestPacket(buffer);
+			return states.back()->addIncomingPacket(buffer);
+		}
+	} else {
+		return false;
+	}
+}
+
+bool nrg::PlayerConnection::update(){
+	if(states.empty()) return false;
+	
+	if(states.back()->needsUpdate()){
+		State::UpdateResult ur = states.back()->update(out);
+		if(ur != State::STATE_CONTINUE){
+			states.pop_back();
+		}
+		return ur == State::STATE_EXIT_SUCCESS;
+	} else {
+		return true;
+	}
+}
