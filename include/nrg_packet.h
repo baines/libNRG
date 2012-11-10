@@ -21,7 +21,7 @@ public:
 
 	template<typename T>
 	Packet& writeBE(T be_v){
-		while((pointer - data) > (data_size - sizeof(be_v))){
+		while((size_t)(pointer - data) > (data_size - sizeof(be_v))){
 			resize();
 		}
 		memcpy(pointer, &be_v, sizeof(be_v));
@@ -37,7 +37,7 @@ public:
 
 	template<typename T>
 	Packet& readBE(T& be_v){
-		if((pointer - data) <= (used_size - sizeof(be_v))){
+		if((size_t)(pointer - data) <= (used_size - sizeof(be_v))){
 			memcpy(&be_v, pointer, sizeof(be_v));
 			pointer += sizeof(be_v);
 		}
@@ -63,7 +63,7 @@ public:
 	virtual ~PartialPacket(){};
 	void markComplete() { complete = true; }
 	bool isComplete() const { return complete; }
-	Packet& reset(){ Packet::reset(); complete = false; }
+	Packet& reset(){ complete = false; return Packet::reset(); }
 private:
 	bool complete;
 };

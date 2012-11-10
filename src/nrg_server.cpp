@@ -50,26 +50,28 @@ nrg::PlayerConnection::PlayerConnection(const UDPSocket& sock, const NetAddress&
 }
 
 bool nrg::PlayerConnection::addPacket(Packet& p){
+	bool valid = false;
 	if(in.addPacket(p)){
 		if(in.hasNewPacket()){
 			buffer.reset();
 			in.getLatestPacket(buffer);
-			return states.back()->addIncomingPacket(buffer);
+			valid = states.back()->addIncomingPacket(buffer);
+		} else {
+			valid = true;
 		}
-	} else {
-		return false;
 	}
+	return valid;
 }
 
 bool nrg::PlayerConnection::update(){
 	if(states.empty()) return false;
 	
 	if(states.back()->needsUpdate()){
-		State::UpdateResult ur = states.back()->update(out);
-		if(ur != State::STATE_CONTINUE){
+		StateUpdateResult ur = states.back()->update(out);
+		if(ur != STATE_CONTINUE){
 			states.pop_back();
 		}
-		return ur == State::STATE_EXIT_SUCCESS;
+		return ur == STATE_EXIT_SUCCESS;
 	} else {
 		return true;
 	}

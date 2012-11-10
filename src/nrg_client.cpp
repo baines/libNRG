@@ -25,13 +25,13 @@ nrg::status_t nrg::Client::update(){
 	}
 	
 	if(states.back()->needsUpdate()){
-		State::UpdateResult ur = states.back()->update(out);
+		StateUpdateResult ur = states.back()->update(out);
 		
-		if(ur != State::STATE_CONTINUE){
+		if(ur != STATE_CONTINUE){
 			states.pop_back();
 		}
 		
-		if(ur == State::STATE_EXIT_FAILURE){
+		if(ur == STATE_EXIT_FAILURE){
 			return status::ERROR;	
 		}
 	}

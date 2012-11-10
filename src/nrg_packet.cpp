@@ -58,6 +58,7 @@ nrg::Packet& nrg::Packet::reset(){
 	memset(data, 0, data_size);
 	used_size = 0;
 	pointer = data;
+	return *this;
 }
 
 nrg::Packet& nrg::Packet::seek(off_t offset, int whence){
