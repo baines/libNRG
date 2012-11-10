@@ -55,7 +55,7 @@ nrg::Packet& nrg::Packet::read32(uint32_t& v){
 }
 
 nrg::Packet& nrg::Packet::reset(){
-	memset(data, 0, data_size);
+	memset(data, 0, used_size);
 	used_size = 0;
 	pointer = data;
 	return *this;

@@ -3,6 +3,9 @@
 #include "nrg_core.h"
 #include "nrg_connection.h"
 #include "nrg_packet.h"
+#include "nrg_entity.h"
+#include <map>
+#include <vector>
 
 namespace nrg {
 
@@ -36,6 +39,21 @@ private:
 		ACCEPTED = 1,
 		REJECTED_FULL = 2
 	} phase;
+};
+
+class NRG_LIB ClientGameState : public State {
+public:
+	ClientGameState();
+	bool addIncomingPacket(Packet& p);
+	bool needsUpdate() const;
+	StateUpdateResult update(ConnectionOutgoing& out);
+	~ClientGameState();
+
+	void registerEntity(Entity* e);
+private:
+	std::vector<Entity*> entities;
+	std::map<uint16_t, Entity*> entity_types;
+	uint16_t state_id;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {
