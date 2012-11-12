@@ -5,6 +5,7 @@
 #include "nrg_packet.h"
 #include "nrg_netaddress.h"
 #include "nrg_connection.h"
+#include "nrg_snapshot.h"
 #include "nrg_state.h"
 #include <map>
 #include <vector>
@@ -39,6 +40,7 @@ protected:
 	ConnectionIncoming in;
 	ConnectionOutgoing out;
 	Packet buffer;
+	Snapshot snapshot;
 	std::vector<State*> states;
 	//ServerHandshakeState handshake;
 };

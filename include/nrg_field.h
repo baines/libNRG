@@ -9,6 +9,8 @@ struct NRG_LIB FieldBase {
 	virtual size_t getSize() = 0;
 	virtual void readFromPacket(Packet& p) = 0;
 	virtual void writeToPacket(Packet& p) = 0;
+	virtual bool wasUpdated() = 0;
+	virtual void setUpdated(bool updated) = 0;
 	virtual ~FieldBase(){};
 };
 
@@ -30,12 +32,31 @@ public:
 
 	}
 
+	virtual bool wasUpdated(){
+		return updated;
+	}
+
+	virtual void setUpdated(bool val){
+		updated = val;
+	}
+
+	void set(const T& other){
+		data = other;
+		updated = true;
+	}
+
 	Field& operator=(const T& other){
 		data = other;
+		updated = true;
 		return *this;
+	}
+	
+	T get(){
+		return data;
 	}
 protected:
 	T data;
+	bool updated;
 };
 
 };
