@@ -11,8 +11,9 @@ public:
 	uint16_t getID() const;
 	void setID(uint16_t id);
 
-	void addEntity(const Entity& e);
-	void merge(Snapshot& other);
+	void addEntity(const Entity* e);
+	void merge(const Snapshot& other);
+	void resetAndIncrement();
 protected:
 	uint16_t id;
 	Packet data;

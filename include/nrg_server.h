@@ -31,13 +31,13 @@ protected:
 	Packet buffer;
 	typedef std::map<NetAddress, PlayerConnection*> ClientMap;
 	ClientMap clients;
-	Snapshot master_state;
+	Snapshot master_snapshot;
 	std::vector<Entity*> entities, updated_entities;
 };
 
 class NRG_LIB PlayerConnection {
 public:
-	PlayerConnection(const UDPSocket& sock, const NetAddress& addr);
+	PlayerConnection(const Snapshot& master_ss, const UDPSocket& sock, const NetAddress& addr);
 	bool addPacket(Packet& p);
 	bool update();
 protected:
@@ -46,9 +46,10 @@ protected:
 	ConnectionIncoming in;
 	ConnectionOutgoing out;
 	Packet buffer;
-	Snapshot snapshot;
+	
 	std::vector<State*> states;
-	//ServerHandshakeState handshake;
+	ServerHandshakeState handshake;
+	ServerPlayerGameState game_state;
 };
 
 }

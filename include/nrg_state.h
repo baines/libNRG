@@ -68,13 +68,13 @@ struct NRG_LIB ServerHandshakeState : public State {
 
 class NRG_LIB ServerPlayerGameState : public State {
 public:
-	ServerPlayerGameState();
+	ServerPlayerGameState(const Snapshot& master_ss);
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
 	~ServerPlayerGameState();
 private:
-	Snapshot unacknowledged_state;
+	Snapshot unacknowledged_state, &master;
 };
 
 };

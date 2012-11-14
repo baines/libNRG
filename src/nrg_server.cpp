@@ -30,11 +30,21 @@ nrg::status_t nrg::Server::update(){
 			std::pair<ClientMap::iterator, bool> res = clients.insert(
 				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
 			);
-			res.first->second = new PlayerConnection(sock, res.first->first);
+			res.first->second = new PlayerConnection(master_snapshot, sock, res.first->first);
 		} else if(!it->second->addPacket(buffer)){
 			// kick client
 		}
 	}
+
+	// generate snapshot
+	master_snapshot.resetAndIncrement();
+
+	for(std::vector<Entity*>::iterator i = updated_entities.begin(),
+	j = updated_entities.end(); i != j; ++i){
+		master_snapshot.addEntity((*i));
+		(*i)->nrg_updated = false;
+	}
+	updated_entities.clear();
 
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
 		if(!i->second->update()){
@@ -62,8 +72,10 @@ nrg::Server::~Server(){
 		}
 	}
 }
-nrg::PlayerConnection::PlayerConnection(const UDPSocket& sock, const NetAddress& addr)
-: addr(addr), sock(sock), in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(){
+nrg::PlayerConnection::PlayerConnection(const Snapshot& ss, 
+	const UDPSocket& sock, const NetAddress& addr) : addr(addr), sock(sock), 
+	in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(), 
+	handshake(), game_state(ss) {
 
 }
 
