@@ -22,13 +22,17 @@ public:
 	bool isBound();
 	size_t playerCount() const;
 	status_t update();
+	~Server();
+
 	void registerEntity(Entity* e);
+	void markEntityUpdated(Entity* e);
 protected:
 	UDPSocket sock;
 	Packet buffer;
 	typedef std::map<NetAddress, PlayerConnection*> ClientMap;
 	ClientMap clients;
-	ServerMasterGameState master_game_state;
+	Snapshot master_state;
+	std::vector<Entity*> entities, updated_entities;
 };
 
 class NRG_LIB PlayerConnection {

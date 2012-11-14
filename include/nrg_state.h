@@ -66,21 +66,6 @@ struct NRG_LIB ServerHandshakeState : public State {
 	~ServerHandshakeState();
 };
 
-class NRG_LIB ServerMasterGameState : public State {
-public:
-	ServerMasterGameState();
-	bool addIncomingPacket(Packet& p);
-	bool needsUpdate() const;
-	StateUpdateResult update(ConnectionOutgoing& out);
-	~ServerMasterGameState();
-
-	void registerEntity(Entity* e);
-	void markEntityUpdated(Entity* e);
-private:
-	Snapshot current_state;
-	std::vector<Entity*> entities, updated_entities;
-};
-
 class NRG_LIB ServerPlayerGameState : public State {
 public:
 	ServerPlayerGameState();

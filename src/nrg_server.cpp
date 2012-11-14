@@ -45,9 +45,23 @@ nrg::status_t nrg::Server::update(){
 }
 
 void nrg::Server::registerEntity(Entity* e){
-	master_game_state.registerEntity(e);
+	e->nrg_serv_ptr = this;
+//	e->nrg_id = getNextEntityId();
 }
 
+void nrg::Server::markEntityUpdated(Entity* e){
+	updated_entities.push_back(e);
+}
+
+nrg::Server::~Server(){
+	for(std::vector<Entity*>::iterator i = entities.begin(), j = entities.end()
+	; i != j; ++i){
+		if((*i)){
+			(*i)->nrg_serv_ptr = NULL;
+			(*i)->nrg_id = 0;
+		}
+	}
+}
 nrg::PlayerConnection::PlayerConnection(const UDPSocket& sock, const NetAddress& addr)
 : addr(addr), sock(sock), in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(){
 

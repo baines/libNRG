@@ -6,7 +6,7 @@
 
 namespace nrg {
 
-class NRG_LIB ServerMasterGameState;
+class NRG_LIB Server;
 
 class NRG_LIB Entity {
 public:
@@ -17,12 +17,12 @@ public:
 	virtual ~Entity(){};
 	void markUpdated();
 
-	friend class ServerMasterGameState;
+	friend class Server;
 	friend class ClientGameState;
 private:
 	int nrg_id;
 	bool nrg_updated;
-	ServerMasterGameState* nrg_serv_ptr;
+	Server* nrg_serv_ptr;
 };
 
 };
