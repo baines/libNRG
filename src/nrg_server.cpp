@@ -44,6 +44,10 @@ nrg::status_t nrg::Server::update(){
 	return status::OK;
 }
 
+void nrg::Server::registerEntity(Entity* e){
+	master_game_state.registerEntity(e);
+}
+
 nrg::PlayerConnection::PlayerConnection(const UDPSocket& sock, const NetAddress& addr)
 : addr(addr), sock(sock), in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(){
 

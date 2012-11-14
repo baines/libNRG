@@ -5,20 +5,28 @@
 
 namespace nrg {
 
-struct NRG_LIB FieldBase {
+class NRG_LIB Entity;
+
+class NRG_LIB FieldBase {
+public:
+	FieldBase(Entity* containing_entity);
 	virtual size_t getSize() = 0;
 	virtual void readFromPacket(Packet& p) = 0;
 	virtual void writeToPacket(Packet& p) = 0;
-	virtual bool wasUpdated() = 0;
-	virtual void setUpdated(bool updated) = 0;
 	virtual ~FieldBase(){};
+
+	bool wasUpdated();
+	void setUpdated(bool updated);
+private:
+	Entity* containing_entity;
+	bool updated;
 };
 
 template<typename T>
 class Field {
 public:
-	Field() : data(){};
-	Field(const T& t) : data(t){};
+	Field(Entity* e) : FieldBase(e), data(){};
+	Field(Entity* e, const T& t) : FieldBase(e), data(t){};
 	
 	virtual size_t getSize(){
 		return sizeof(T);
@@ -32,22 +40,14 @@ public:
 
 	}
 
-	virtual bool wasUpdated(){
-		return updated;
-	}
-
-	virtual void setUpdated(bool val){
-		updated = val;
-	}
-
 	void set(const T& other){
 		data = other;
-		updated = true;
+		this->setUpdated(true);
 	}
 
 	Field& operator=(const T& other){
 		data = other;
-		updated = true;
+		this->setUpdated(true);
 		return *this;
 	}
 	
@@ -56,7 +56,6 @@ public:
 	}
 protected:
 	T data;
-	bool updated;
 };
 
 };

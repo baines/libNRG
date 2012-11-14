@@ -3,7 +3,7 @@
 #include "nrg_core.h"
 #include "nrg_connection.h"
 #include "nrg_packet.h"
-#include "nrg_entity.h"
+#include "nrg_snapshot.h"
 #include <map>
 #include <vector>
 
@@ -41,6 +41,8 @@ private:
 	} phase;
 };
 
+class Entity;
+
 class NRG_LIB ClientGameState : public State {
 public:
 	ClientGameState();
@@ -62,6 +64,32 @@ struct NRG_LIB ServerHandshakeState : public State {
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
 	~ServerHandshakeState();
+};
+
+class NRG_LIB ServerMasterGameState : public State {
+public:
+	ServerMasterGameState();
+	bool addIncomingPacket(Packet& p);
+	bool needsUpdate() const;
+	StateUpdateResult update(ConnectionOutgoing& out);
+	~ServerMasterGameState();
+
+	void registerEntity(Entity* e);
+	void markEntityUpdated(Entity* e);
+private:
+	Snapshot current_state;
+	std::vector<Entity*> entities, updated_entities;
+};
+
+class NRG_LIB ServerPlayerGameState : public State {
+public:
+	ServerPlayerGameState();
+	bool addIncomingPacket(Packet& p);
+	bool needsUpdate() const;
+	StateUpdateResult update(ConnectionOutgoing& out);
+	~ServerPlayerGameState();
+private:
+	Snapshot unacknowledged_state;
 };
 
 };
