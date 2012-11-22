@@ -12,6 +12,8 @@ class NRG_LIB Packet {
 public:
 	Packet();
 	Packet(size_t initial_size);
+	Packet(const Packet& copy);
+	Packet& operator=(const Packet& other);
 	virtual ~Packet();
 
 	Packet& write8(const uint8_t& v);

@@ -20,7 +20,7 @@ bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags) c
 			valid = (seq == ((seq_num + 1) & USHRT_MAX));
 		}
 	} else {
-		for(int i = 1; i < NRG_NUM_PAST_STATES; ++i){
+		for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
 			uint16_t v = (seq_num + i) & USHRT_MAX;
 			if(v == seq){
 				valid = true;

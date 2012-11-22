@@ -43,7 +43,7 @@ bool nrg::ClientGameState::addIncomingPacket(Packet& p){
 	uint16_t new_state_id = 0;
 	p.read16(new_state_id);
 
-	for(int i = 1; i < NRG_NUM_PAST_STATES; ++i){
+	for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
 		uint16_t id = (state_id + i) & USHRT_MAX;
 		if(id == new_state_id){
 			valid = true;

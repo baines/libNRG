@@ -13,8 +13,23 @@ nrg::Packet::Packet(size_t initial_size)
 
 }
 
+nrg::Packet::Packet(const Packet& copy) : data(new uint8_t[copy.data_size]), 
+pointer(data + (copy.pointer - copy.data)), data_size(copy.data_size), 
+used_size(copy.used_size){
+	memcpy(data, copy.data, copy.used_size);
+}
+
+nrg::Packet& nrg::Packet::operator=(const nrg::Packet& other){
+	reset();
+	while(data_size < other.used_size) resize();
+	used_size = other.used_size;
+	memcpy(data, other.data, other.used_size);
+	pointer = data + (other.pointer - other.data);
+	return *this;
+}
+
 nrg::Packet::~Packet(){
-	delete [] data;
+	if(data) delete [] data;
 }
 
 nrg::Packet& nrg::Packet::write8(const uint8_t& v){
