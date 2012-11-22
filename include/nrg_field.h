@@ -12,10 +12,10 @@ public:
 	FieldBase(Entity* containing_entity);
 	virtual size_t getSize() = 0;
 	virtual void readFromPacket(Packet& p) = 0;
-	virtual void writeToPacket(Packet& p) = 0;
+	virtual void writeToPacket(Packet& p) const = 0;
 	virtual ~FieldBase(){};
 
-	bool wasUpdated();
+	bool wasUpdated() const;
 	void setUpdated(bool updated);
 private:
 	Entity* containing_entity;

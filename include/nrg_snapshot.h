@@ -8,6 +8,7 @@ namespace nrg {
 class NRG_LIB Snapshot {
 public:
 	Snapshot();
+	Snapshot(uint16_t id);
 	uint16_t getID() const;
 	void setID(uint16_t id);
 
@@ -15,7 +16,7 @@ public:
 	void merge(const Snapshot& other);
 	void resetAndIncrement();
 protected:
-	uint16_t id;
+	int id;
 	Packet data;
 };
 

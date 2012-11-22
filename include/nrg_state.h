@@ -74,7 +74,8 @@ public:
 	StateUpdateResult update(ConnectionOutgoing& out);
 	~ServerPlayerGameState();
 private:
-	Snapshot unacknowledged_state, &master;
+	Snapshot unacknowledged_state;
+	const Snapshot& master;
 };
 
 };

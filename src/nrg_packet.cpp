@@ -1,5 +1,11 @@
 #include "nrg_packet.h"
+#include "nrg_config.h"
 #include <algorithm>
+
+nrg::Packet::Packet() : data(new uint8_t[NRG_MAX_PACKET_SIZE]), pointer(data), 
+data_size(NRG_MAX_PACKET_SIZE), used_size(0) {
+
+}
 
 nrg::Packet::Packet(size_t initial_size) 
 : data(new uint8_t[initial_size]), pointer(data), data_size(initial_size)

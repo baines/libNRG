@@ -11,11 +11,12 @@ class NRG_LIB Server;
 class NRG_LIB Entity {
 public:
 	Entity();
-	virtual Entity* clone() = 0;
-	virtual uint16_t getType() = 0;
-	virtual void getFields(std::vector<FieldBase*>& vec) = 0;
+	virtual Entity* clone() const = 0;
+	virtual uint16_t getType() const = 0;
+	virtual void getFields(std::vector<FieldBase*>& vec) const = 0;
 	virtual ~Entity(){};
 	void markUpdated();
+	uint16_t getID() const;
 
 	friend class Server;
 	friend class ClientGameState;

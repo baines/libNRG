@@ -10,6 +10,7 @@ namespace nrg {
 
 class NRG_LIB Packet {
 public:
+	Packet();
 	Packet(size_t initial_size);
 	virtual ~Packet();
 

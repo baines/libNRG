@@ -5,7 +5,7 @@ nrg::FieldBase::FieldBase(Entity* e) : containing_entity(e), updated(true) {
 	
 }
 
-bool nrg::FieldBase::wasUpdated(){
+bool nrg::FieldBase::wasUpdated() const{
 	return updated;
 }
 

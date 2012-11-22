@@ -4,4 +4,4 @@ LDFLAGS := ../libnrg.a
 all: test
 
 test: test.cpp ../libnrg.a
-	g++ $(CXXFLAGS) test.cpp $(LDFLAGS) -o test
+	g++ $(CXXFLAGS) test.cpp $(LDFLAGS) -o test -lrt
