@@ -3,7 +3,7 @@
 #include "nrg_core.h"
 #include "nrg_entity.h"
 #include <vector>
-#include <set>
+#include <map>
 
 namespace nrg {
 
@@ -21,15 +21,12 @@ public:
 	void resetAndIncrement();
 protected:
 	struct NRG_LIB EntityInfo {
-		uint16_t id;
+		uint16_t id, type;
 		off_t start;
 		std::vector<size_t> field_sizes;
-		bool operator<(const EntityInfo& other) const {
-			return id < other.id;
-		}
 	};
 	int id;
-	std::set<EntityInfo> stored_entities;
+	std::map<uint16_t, EntityInfo> stored_entities;
 	Packet field_data;
 };
 
