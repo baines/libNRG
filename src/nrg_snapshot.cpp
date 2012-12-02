@@ -44,11 +44,13 @@ void Snapshot::addEntity(const Entity* e){
 		if(fields[i]->wasUpdated()){
 			bits |= 1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS));
 		}
-		if((i & MAX_BYTE_SHIFTS) == MAX_BYTE_SHIFTS){
+		if((i < fields.size()-1) && (i & MAX_BYTE_SHIFTS) == MAX_BYTE_SHIFTS){
 			field_data.write8(bits);
 			bits = 0;
 		}
 	}
+	field_data.write8(bits);
+	bits = 0;
 
 	info.start = field_data.tell();
 
@@ -105,11 +107,13 @@ bool Snapshot::merge(const Snapshot& other){
 			if((newit && newit->field_sizes[x] != 0) || (oldit && oldit->field_sizes[x] != 0)){
 				bits |= 1 << (MAX_BYTE_SHIFTS - (x & MAX_BYTE_SHIFTS));
 			}
-			if((x & MAX_BYTE_SHIFTS) == MAX_BYTE_SHIFTS){
+			if((x < sz-1) && (x & MAX_BYTE_SHIFTS) == MAX_BYTE_SHIFTS){
 				field_data.write8(bits);
 				bits = 0;
 			}
 		}
+		field_data.write8(bits);
+		bits = 0;
 
 		info.id = *i;
 		info.type = newit == NULL ? oldit->type : newit->type;
