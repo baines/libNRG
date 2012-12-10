@@ -2,6 +2,7 @@
 #define NRG_PACKET_H
 #include "nrg_core.h"
 #include "nrg_netaddress.h"
+#include "nrg_endian.h"
 #include <cstring> // memcpy
 #include <cstdio> // SEEK_x
 #include <algorithm>
@@ -33,6 +34,11 @@ public:
 		return *this;
 	}
 
+	template<typename T>
+	Packet& write(const T& v){
+		return writeBE(nrg::hton(v));
+	}
+
 	Packet& read8(uint8_t& v);
 	Packet& read16(uint16_t& v);
 	Packet& read32(uint32_t& v);
@@ -44,6 +50,14 @@ public:
 			memcpy(&be_v, pointer, sizeof(be_v));
 			pointer += sizeof(be_v);
 		}
+		return *this;
+	}
+
+	template<typename T>
+	Packet& read(const T& v){
+		T be;
+		readBE(be);
+		v = nrg::ntoh(be);	
 		return *this;
 	}
 

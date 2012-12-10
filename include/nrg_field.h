@@ -2,6 +2,7 @@
 #define NRG_FIELD_H
 #include "nrg_core.h"
 #include "nrg_packet.h"
+#include "nrg_codec.h"
 
 namespace nrg {
 
@@ -33,11 +34,13 @@ public:
 	}
 
 	virtual void readFromPacket(Packet& p){
-
+		Codec<T> c;
+		c.decode(p, data);
 	}
 
 	virtual void writeToPacket(Packet& p){
-
+		Codec<T> c;
+		c.encode(p, data);
 	}
 
 	void set(const T& other){
