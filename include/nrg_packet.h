@@ -43,6 +43,7 @@ public:
 	Packet& read16(uint16_t& v);
 	Packet& read32(uint32_t& v);
 	Packet& read64(uint64_t& v);
+	Packet& readArray(uint8_t* v, size_t size);
 
 	template<typename T>
 	Packet& readBE(T& be_v){
@@ -54,7 +55,7 @@ public:
 	}
 
 	template<typename T>
-	Packet& read(const T& v){
+	Packet& read(T& v){
 		T be;
 		readBE(be);
 		v = nrg::ntoh(be);	
