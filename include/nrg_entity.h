@@ -13,10 +13,10 @@ public:
 	Entity();
 	virtual Entity* clone() const = 0;
 	virtual uint16_t getType() const = 0;
-	virtual void getFields(std::vector<FieldBase*>& vec) const = 0;
+	virtual void getFields(std::vector<FieldBase*>& vec) = 0;
 	virtual ~Entity(){};
 	void markUpdated();
-	uint16_t getID() const;
+	uint16_t getID() const { return nrg_id; }
 
 	friend class Server;
 	friend class ClientGameState;

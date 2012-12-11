@@ -11,7 +11,7 @@ class NRG_LIB Entity;
 class NRG_LIB FieldBase {
 public:
 	FieldBase(Entity* containing_entity);
-	virtual size_t getSize() = 0;
+	virtual size_t getSize() const = 0;
 	virtual void readFromPacket(Packet& p) = 0;
 	virtual void writeToPacket(Packet& p) const = 0;
 	virtual ~FieldBase(){};
@@ -23,24 +23,22 @@ private:
 	bool updated;
 };
 
-template<typename T>
-class Field {
+template<typename T, class Cdc = nrg::Codec<T> >
+class Field : public FieldBase {
 public:
 	Field(Entity* e) : FieldBase(e), data(){};
 	Field(Entity* e, const T& t) : FieldBase(e), data(t){};
 	
-	virtual size_t getSize(){
+	virtual size_t getSize() const {
 		return sizeof(T);
 	}
 
 	virtual void readFromPacket(Packet& p){
-		Codec<T> c;
-		c.decode(p, data);
+		Cdc().decode(p, data);
 	}
 
-	virtual void writeToPacket(Packet& p){
-		Codec<T> c;
-		c.encode(p, data);
+	virtual void writeToPacket(Packet& p) const {
+		Cdc().encode(p, data);
 	}
 
 	void set(const T& other){
@@ -57,7 +55,7 @@ public:
 	T get(){
 		return data;
 	}
-protected:
+private:
 	T data;
 };
 

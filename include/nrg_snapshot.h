@@ -16,7 +16,7 @@ public:
 
 	uint16_t getID() const;
 	void setID(uint16_t id);
-	void addEntity(const Entity* e);
+	void addEntity(Entity* e);
 	bool merge(const Snapshot& other);
 	void resetAndIncrement();
 protected:

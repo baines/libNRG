@@ -28,7 +28,7 @@ Snapshot& Snapshot::operator=(const Snapshot& other){
 	return *this;
 }
 
-void Snapshot::addEntity(const Entity* e){
+void Snapshot::addEntity(Entity* e){
 	std::vector<FieldBase*> fields;
 	EntityInfo info;
 	uint8_t bits = 0;

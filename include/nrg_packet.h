@@ -56,9 +56,9 @@ public:
 
 	template<typename T>
 	Packet& read(T& v){
-		T be;
+		T be = 0;
 		readBE(be);
-		v = nrg::ntoh(be);	
+		v = nrg::ntoh(be);
 		return *this;
 	}
 

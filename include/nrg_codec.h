@@ -10,7 +10,7 @@ struct Codec {
 	void encode(Packet& p, const T& data){
 		p.write(data);
 	}
-	bool decode(Packet& p, const T& data){
+	bool decode(Packet& p, T& data){
 		if(p.remaining() >= sizeof(T)){
 			p.read(data);
 			return true;

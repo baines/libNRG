@@ -63,7 +63,6 @@ struct NRG_LIB ServerHandshakeState : public State {
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
-	~ServerHandshakeState();
 };
 
 class NRG_LIB ServerPlayerGameState : public State {
@@ -72,9 +71,8 @@ public:
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
-	~ServerPlayerGameState();
 private:
-	Snapshot unacknowledged_state;
+	Snapshot snapshot;
 	const Snapshot& master;
 };
 
