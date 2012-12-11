@@ -11,9 +11,9 @@ class NRG_LIB Server;
 class NRG_LIB Entity {
 public:
 	Entity();
-	virtual Entity* clone() const = 0;
+	virtual Entity* clone() = 0;
 	virtual uint16_t getType() const = 0;
-	virtual void getFields(std::vector<FieldBase*>& vec) = 0;
+	virtual void getFields(FieldList& list) = 0;
 	virtual ~Entity(){};
 	void markUpdated();
 	uint16_t getID() const { return nrg_id; }

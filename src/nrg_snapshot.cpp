@@ -1,4 +1,5 @@
 #include "nrg_snapshot.h"
+#include "nrg_field_impl.h"
 #include <climits>
 #include <cassert>
 #include <numeric>
@@ -29,13 +30,14 @@ Snapshot& Snapshot::operator=(const Snapshot& other){
 }
 
 void Snapshot::addEntity(Entity* e){
-	std::vector<FieldBase*> fields;
+	FieldListImpl fl;
 	EntityInfo info;
 	uint8_t bits = 0;
 
 	info.id = e->getID();
 	info.type = e->getType();
-	e->getFields(fields);
+	e->getFields(fl);
+	std::vector<FieldBase*>& fields = fl.vec;
 
 	field_data.write16(info.id);
 	field_data.write16(info.type);

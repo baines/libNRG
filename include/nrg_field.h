@@ -23,6 +23,10 @@ private:
 	bool updated;
 };
 
+struct NRG_LIB FieldList {
+	virtual FieldList& add(FieldBase& f) = 0;
+};
+
 template<typename T, class Cdc = nrg::Codec<T> >
 class Field : public FieldBase {
 public:

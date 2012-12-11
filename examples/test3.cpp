@@ -1,17 +1,20 @@
 #include "nrg.h"
+#include <iostream>
 
-struct TestEntity : public nrg::Entity {
+struct TestEntity : EntityHelper<TestEntity, 1337> {
 	TestEntity() : f(this){};
-	virtual TestEntity* clone() const { return new TestEntity(); }
-	virtual uint16_t getType() const { return 1; }
-	virtual void getFields(std::vector<nrg::FieldBase*>& vec) {
-		vec.push_back(&f);
+	virtual void getFields(nrg::FieldList& list) {
+		list.add(f);
 	}
 	nrg::Field<int> f;
 };
 
 int main(void){
 	TestEntity te;
+	std::cout << te.getType() << std::endl;
+
+	nrg::Entity* te2 = te.clone();
+	std::cout << te2->getType() << std::endl;
 
 	return 0;
 }

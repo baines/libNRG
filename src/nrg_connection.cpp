@@ -8,7 +8,8 @@ nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na) {
 };
 
 nrg::ConnectionIncoming::ConnectionIncoming(const NetAddress& na)
-: ConnectionBase(na), new_packet(false), first_packet(true), latest(NRG_MAX_PACKET_SIZE) {
+: ConnectionBase(na), new_packet(false), first_packet(true), full_packet(false), 
+  latest(NRG_MAX_PACKET_SIZE) {
 
 }
 
@@ -16,7 +17,7 @@ bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags) c
 	bool valid = false;
 	
 	if(flags & PKTFLAG_CONTINUATION){
-		if(latest.tell() != 0 && !latest.isComplete()){
+		if(latest.tell() != 0 && !full_packet){
 			valid = (seq == ((seq_num + 1) & USHRT_MAX));
 		}
 	} else {
@@ -53,12 +54,13 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 		
 		if(!(flags & PKTFLAG_CONTINUATION)){
 			latest.reset();
+			full_packet = false;
 		}
 		
 		latest.writeArray(p.getPointer(), p.remaining());
 		
 		if(!(flags & PKTFLAG_CONTINUED)){
-			latest.markComplete();
+			full_packet = true;
 			new_packet = true;
 		}
 		

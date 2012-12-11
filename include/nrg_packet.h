@@ -75,17 +75,6 @@ protected:
 	size_t data_size, used_size;
 };
 
-class NRG_LIB PartialPacket : public Packet {
-public:
-	PartialPacket(size_t initial_size) : Packet(initial_size), complete(false){};
-	virtual ~PartialPacket(){};
-	void markComplete() { complete = true; }
-	bool isComplete() const { return complete; }
-	Packet& reset(){ complete = false; return Packet::reset(); }
-private:
-	bool complete;
-};
-
 };
 
 #endif

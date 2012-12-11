@@ -30,8 +30,8 @@ public:
 	void getLatestPacket(Packet& p);
 protected:
 	bool isValidPacketHeader(uint16_t seq, uint8_t flags) const;
-	bool new_packet, first_packet;
-	PartialPacket latest;
+	bool new_packet, first_packet, full_packet;
+	Packet latest;
 };
 
 class NRG_LIB ConnectionOutgoing : public ConnectionBase {

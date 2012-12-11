@@ -7,5 +7,6 @@
 #include "nrg_client.h"
 #include "nrg_entity.h"
 #include "nrg_config.h"
+#include "nrg_util.h"
 #include "nrg_os.h"
 #endif
