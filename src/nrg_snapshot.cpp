@@ -9,22 +9,22 @@ static const int MAX_BYTE_SHIFTS = 7;
 
 using namespace nrg;
 
-Snapshot::Snapshot() : id(-1), stored_entities(), field_data() {
+Snapshot::Snapshot() : id(-1), edata(), field_data() {
 
 }
 
-Snapshot::Snapshot(uint16_t id) : id(id), stored_entities(), field_data() {
+Snapshot::Snapshot(uint16_t id) : id(id), edata(), field_data() {
 
 }
 
-Snapshot::Snapshot(const Snapshot& copy) : id(copy.id), stored_entities(copy.stored_entities),
+Snapshot::Snapshot(const Snapshot& copy) : id(copy.id), edata(copy.edata),
 field_data(copy.field_data){
 	
 }
 
 Snapshot& Snapshot::operator=(const Snapshot& other){
 	id = other.id;
-	stored_entities = other.stored_entities;
+	edata = other.edata;
 	field_data = other.field_data;
 	return *this;
 }
@@ -59,14 +59,13 @@ void Snapshot::addEntity(Entity* e){
 	for(std::vector<FieldBase*>::const_iterator i = fields.begin(), 
 	j = fields.end(); i!=j; ++i){
 		if((*i)->wasUpdated()){
-			info.field_sizes.push_back((*i)->getSize());
-			(*i)->writeToPacket(field_data);
+			info.field_sizes.push_back((*i)->writeToPacket(field_data));
 		} else {
 			info.field_sizes.push_back(0);
 		}
 	}
 
-	stored_entities[info.id] = info;
+	edata[info.id] = info;
 }
 
 typedef std::map<uint16_t, Snapshot::EntityInfo>::const_iterator EInf_it;
@@ -87,22 +86,27 @@ bool Snapshot::merge(const Snapshot& other){
 	
 	copy.field_data.seek(0, SEEK_SET);
 	other_copy.field_data.seek(0, SEEK_SET);
-	stored_entities.clear();
+	edata.clear();
 	field_data.reset();
 	id = newer->id;
 
 	std::set<uint16_t> keys;
-	for(EInf_it i = older->stored_entities.begin(), j = older->stored_entities.end(); i!=j; ++i)
+	for(EInf_it i = older->edata.begin(), j = older->edata.end(); i!=j; ++i)
 		keys.insert(i->first);
-	for(EInf_it i = newer->stored_entities.begin(), j = newer->stored_entities.end(); i!=j; ++i)
+	for(EInf_it i = newer->edata.begin(), j = newer->edata.end(); i!=j; ++i)
 		keys.insert(i->first);
 
 	for(std::set<uint16_t>::const_iterator i = keys.begin(), j = keys.end(); i!=j; ++i){
 		const EntityInfo *newit = NULL, *oldit = NULL;
 		EntityInfo info;
 		EInf_it e;
-		if((e = newer->stored_entities.find(*i)) != newer->stored_entities.end()) newit = &e->second;
-		if((e = older->stored_entities.find(*i)) != older->stored_entities.end()) oldit = &e->second;
+
+		if((e = newer->edata.find(*i)) != newer->edata.end()){
+			newit = &e->second;
+		}
+		if((e = older->edata.find(*i)) != older->edata.end()){
+			oldit = &e->second;
+		}
 		
 		int sz = newit == NULL ? oldit->field_sizes.size() : newit->field_sizes.size();
 		for(int x = 0; x < sz; ++x){
@@ -153,14 +157,19 @@ bool Snapshot::merge(const Snapshot& other){
 				std::accumulate(eptr->field_sizes.begin(), eptr->field_sizes.end(), 0)
 			);
 		}
-		stored_entities[*i] = info;
+		edata[*i] = info;
 	}
 
 	return true;
 }
 
 void Snapshot::resetAndIncrement(){
-	stored_entities.clear();
+	edata.clear();
 	field_data.reset();
 	id = ((id + 1) & USHRT_MAX);
 }
+
+void Snapshot::writeToPacket(Packet& p){
+	p.writeArray(field_data.getBasePointer(), field_data.size());
+}
+

@@ -4,18 +4,29 @@ using namespace nrg;
 
 //TODO
 
-ServerHandshakeState::ServerHandshakeState(){};
+ServerHandshakeState::ServerHandshakeState() : send_response(false){};
 
 bool ServerHandshakeState::addIncomingPacket(Packet& p){
-	return false;
+	if(p.remaining() == 1){
+		uint8_t v;
+		p.read8(v);
+		if(v == 1) send_response = true;
+		return true;
+	} else {
+		return false;	
+	}
 }
 
 bool ServerHandshakeState::needsUpdate() const {
-	return false;
+	return send_response;
 }
 
 StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
-	return STATE_CONTINUE;
+	Packet p(1);
+	p.write8(1);
+	out.sendPacket(p);
+	send_response = false;
+	return STATE_EXIT_SUCCESS;
 }
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master) 
@@ -28,7 +39,7 @@ bool ServerPlayerGameState::addIncomingPacket(Packet& p){
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
-	return false;
+	return snapshot.getID() != master.getID();
 }
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){

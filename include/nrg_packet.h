@@ -68,6 +68,7 @@ public:
 	size_t size() const { return used_size; }
 	size_t remaining() const { return used_size - (pointer - data); }
 	const uint8_t* getPointer() const { return pointer; }
+	const uint8_t* getBasePointer() const { return data; }
 	friend class Socket;
 protected:
 	void resize();

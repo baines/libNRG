@@ -14,11 +14,14 @@ public:
 	Snapshot(const Snapshot& copy);
 	Snapshot& operator=(const Snapshot& other);
 
-	uint16_t getID() const;
+	int getID() const { return id; }
 	void setID(uint16_t id);
 	void addEntity(Entity* e);
 	bool merge(const Snapshot& other);
 	void resetAndIncrement();
+
+	void writeToPacket(Packet& p);
+
 protected:
 	struct NRG_LIB EntityInfo {
 		uint16_t id, type;
@@ -26,7 +29,7 @@ protected:
 		std::vector<size_t> field_sizes;
 	};
 	int id;
-	std::map<uint16_t, EntityInfo> stored_entities;
+	std::map<uint16_t, EntityInfo> edata;
 	Packet field_data;
 };
 

@@ -36,8 +36,10 @@ nrg::ClientGameState::ClientGameState() : entities(), entity_types(){
 
 }
 
+static const size_t NRG_CGS_HEADER_SIZE = 4;
+
 bool nrg::ClientGameState::addIncomingPacket(Packet& p){
-	if(p.size() < 2) return false;
+	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
 
 	bool valid = false;
 	uint16_t new_state_id = 0;
@@ -52,7 +54,11 @@ bool nrg::ClientGameState::addIncomingPacket(Packet& p){
 	}
 	if(!valid) return false;
 
-	// get last acknowledged input.
+	uint16_t ackd_input_id = 0;
+	p.read16(ackd_input_id);
+	// acknowledge input
+
+	
 
 	// get all entity changes and apply them
 	return true;

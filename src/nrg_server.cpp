@@ -31,7 +31,10 @@ nrg::status_t nrg::Server::update(){
 				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
 			);
 			res.first->second = new PlayerConnection(master_snapshot, sock, res.first->first);
-		} else if(!it->second->addPacket(buffer)){
+			it = res.first;
+		}
+		
+		if(!it->second->addPacket(buffer)){
 			// kick client
 		}
 	}
@@ -74,10 +77,11 @@ nrg::Server::~Server(){
 }
 
 nrg::PlayerConnection::PlayerConnection(const Snapshot& ss, 
-	const UDPSocket& sock, const NetAddress& addr) : addr(addr), sock(sock), 
-	in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(), 
-	handshake(), game_state(ss) {
-
+const UDPSocket& sock, const NetAddress& addr) : addr(addr), sock(sock), 
+in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(), 
+handshake(), game_state(ss) {
+	states.push_back(&game_state);
+	states.push_back(&handshake);
 }
 
 bool nrg::PlayerConnection::addPacket(Packet& p){
