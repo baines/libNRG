@@ -32,6 +32,10 @@ nrg::StateUpdateResult nrg::ClientHandshakeState::update(ConnectionOutgoing& out
 	return res;
 }
 
+nrg::ClientHandshakeState::~ClientHandshakeState(){
+
+}
+
 nrg::ClientGameState::ClientGameState() : entities(), entity_types(), snapshot(){
 
 }
@@ -63,6 +67,20 @@ bool nrg::ClientGameState::addIncomingPacket(Packet& p){
 	return true;
 }
 
+bool nrg::ClientGameState::needsUpdate() const {
+	//TODO
+	return false;
+}
+	
+nrg::StateUpdateResult nrg::ClientGameState::update(ConnectionOutgoing& out){
+	//TODO
+	return STATE_CONTINUE;
+}
+
 void nrg::ClientGameState::registerEntity(Entity* e){
 	entity_types.insert(std::pair<uint16_t, Entity*>(e->getType(), e));
+}
+
+nrg::ClientGameState::~ClientGameState(){
+
 }

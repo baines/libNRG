@@ -37,3 +37,7 @@ nrg::status_t nrg::Client::update(){
 	}
 	return status::OK;
 }
+
+nrg::Client::~Client(){
+
+}

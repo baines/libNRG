@@ -66,11 +66,11 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
 	return result;
 }
 
-bool nrg::Socket::dataPending() const {
+bool nrg::Socket::dataPending(int msToBlock) const {
 	fd_set s;
 	FD_ZERO(&s);
 	FD_SET(fd, &s);
-	struct timeval tv = { 0, 0 };
+	struct timeval tv = { 0, msToBlock * 1000 };
 
 	if(select(fd+1, &s, NULL, NULL, &tv) == 1){
 		return true;

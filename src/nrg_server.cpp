@@ -1,8 +1,10 @@
 #include "nrg_server.h"
 #include "nrg_config.h"
+#include "nrg_os.h"
 
 nrg::Server::Server(const NetAddress& bind_addr) 
-: sock(), buffer(NRG_MAX_PACKET_SIZE), clients() {
+: sock(), buffer(NRG_MAX_PACKET_SIZE), clients(), timer(nrg::os::microseconds()),
+interval(50000) {
 	sock.setNonBlocking(true);
 	sock.bind(bind_addr);
 }
@@ -20,7 +22,9 @@ size_t nrg::Server::playerCount() const {
 }
 
 nrg::status_t nrg::Server::update(){
-	while(sock.dataPending()){
+	uint64_t delta = std::max<int>(0, interval - (os::microseconds() - timer));
+
+	while(sock.dataPending(delta / 1000)){
 		NetAddress addr;
 		buffer.reset();
 		sock.recvPacket(buffer, addr);
@@ -37,7 +41,10 @@ nrg::status_t nrg::Server::update(){
 		if(!it->second->addPacket(buffer)){
 			// kick client
 		}
+		delta = std::max<int>(0, interval - (os::microseconds() - timer));
 	}
+
+	timer = os::microseconds();
 
 	// generate snapshot
 	master_snapshot.resetAndIncrement();
@@ -57,9 +64,15 @@ nrg::status_t nrg::Server::update(){
 	return status::OK;
 }
 
+// TODO reuse removed entity IDs
+static uint16_t getNextEntityId(void){
+	static uint16_t id = 0;
+	return id++;
+}
+
 void nrg::Server::registerEntity(Entity* e){
 	e->nrg_serv_ptr = this;
-//	e->nrg_id = getNextEntityId();
+	e->nrg_id = getNextEntityId();
 }
 
 void nrg::Server::markEntityUpdated(Entity* e){

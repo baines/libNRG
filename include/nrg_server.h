@@ -33,6 +33,8 @@ protected:
 	ClientMap clients;
 	Snapshot master_snapshot;
 	std::vector<Entity*> entities, updated_entities;
+	uint64_t timer;
+	int interval;
 };
 
 class NRG_LIB PlayerConnection {

@@ -12,6 +12,7 @@ class NRG_LIB Client {
 public:
 	Client();
 	Client(const NetAddress& server_addr);
+	~Client();
 	status_t connect(const NetAddress& server_addr);
 	bool isConnected() const;
 	const NetAddress& getAddress() const;
