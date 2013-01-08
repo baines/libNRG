@@ -170,6 +170,66 @@ void Snapshot::resetAndIncrement(){
 }
 
 void Snapshot::writeToPacket(Packet& p){
+	p.write32(field_data.size());
 	p.writeArray(field_data.getBasePointer(), field_data.size());
+}
+
+bool Snapshot::readFromPacket(Packet& p){
+	uint32_t num_bytes = 0;
+	p.read32(num_bytes);
+
+	if(p.remaining() >= num_bytes){
+		field_data.writeArray(p.getPointer(), num_bytes);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void Snapshot::applyUpdate(std::vector<Entity*>& entities, 
+const std::map<uint16_t, Entity*>& entity_types){
+
+	field_data.seek(0, SEEK_SET);
+
+	while(field_data.remaining()){
+		uint16_t eid = 0, etype = 0;
+		field_data.read16(eid);
+		field_data.read16(etype);
+
+		if(entities.size() <= eid){
+			entities.resize(eid+1);
+		}
+
+		if(entities[eid] == NULL){
+			std::map<uint16_t, Entity*>::const_iterator i = entity_types.find(eid);
+			assert(i != entity_types.end());
+			entities[eid] = i->second->clone();
+			// new entity event
+		}
+
+		FieldListImpl fl;
+		entities[eid]->getFields(fl);
+
+		size_t num_fields = fl.vec.size();
+		int num_field_bytes = ((num_fields-1)/8)+1;
+		uint8_t* bytes = new uint8_t[num_field_bytes]();
+		int all_zero_test = 0;
+		
+		for(int i = 0; i < num_field_bytes; ++i){
+			field_data.read8(bytes[i]);
+			all_zero_test |= bytes[i];
+		}
+	
+		if(all_zero_test == 0){
+			// TODO special case - delete entity
+		}
+		
+		for(unsigned int i = 0; i < num_fields; ++i){
+			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
+				fl.vec[i]->readFromPacket(field_data);
+			}
+		}
+	}
+
 }
 

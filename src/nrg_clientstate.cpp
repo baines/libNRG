@@ -32,7 +32,7 @@ nrg::StateUpdateResult nrg::ClientHandshakeState::update(ConnectionOutgoing& out
 	return res;
 }
 
-nrg::ClientGameState::ClientGameState() : entities(), entity_types(){
+nrg::ClientGameState::ClientGameState() : entities(), entity_types(), snapshot(){
 
 }
 
@@ -56,11 +56,10 @@ bool nrg::ClientGameState::addIncomingPacket(Packet& p){
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
-	// acknowledge input
+	// TODO: acknowledge input
 
+	if(!snapshot.readFromPacket(p)) return false;
 	
-
-	// get all entity changes and apply them
 	return true;
 }
 

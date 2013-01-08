@@ -21,7 +21,9 @@ public:
 	void resetAndIncrement();
 
 	void writeToPacket(Packet& p);
-
+	bool readFromPacket(Packet& p);
+	void applyUpdate(std::vector<Entity*>& entities, 
+		const std::map<uint16_t, Entity*>& entity_types);
 protected:
 	struct NRG_LIB EntityInfo {
 		uint16_t id, type;

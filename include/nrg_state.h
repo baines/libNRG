@@ -56,6 +56,7 @@ private:
 	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
 	uint16_t state_id;
+	Snapshot snapshot;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {
