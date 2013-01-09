@@ -7,6 +7,7 @@
 #include "nrg_connection.h"
 #include "nrg_snapshot.h"
 #include "nrg_state.h"
+#include "nrg_event.h"
 #include <map>
 #include <vector>
 
@@ -27,8 +28,10 @@ public:
 	void registerEntity(Entity* e);
 	void markEntityUpdated(Entity* e);
 protected:
+	friend class PlayerConnection;
 	UDPSocket sock;
 	Packet buffer;
+	EventQueue eventq;
 	typedef std::map<NetAddress, PlayerConnection*> ClientMap;
 	ClientMap clients;
 	Snapshot master_snapshot;
@@ -39,9 +42,10 @@ protected:
 
 class NRG_LIB PlayerConnection {
 public:
-	PlayerConnection(const Snapshot& master_ss, const UDPSocket& sock, const NetAddress& addr);
+	PlayerConnection(uint16_t id, const Server& server, const NetAddress& addr);
 	bool addPacket(Packet& p);
 	bool update();
+	uint16_t getID()  { return id; }
 protected:
 	const NetAddress& addr;
 	const UDPSocket& sock;
@@ -52,6 +56,7 @@ protected:
 	std::vector<State*> states;
 	ServerHandshakeState handshake;
 	ServerPlayerGameState game_state;
+	uint16_t id;
 };
 
 }

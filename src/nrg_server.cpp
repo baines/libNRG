@@ -3,8 +3,8 @@
 #include "nrg_os.h"
 
 nrg::Server::Server(const NetAddress& bind_addr) 
-: sock(), buffer(NRG_MAX_PACKET_SIZE), clients(), timer(nrg::os::microseconds()),
-interval(50000) {
+: sock(), buffer(NRG_MAX_PACKET_SIZE), eventq(), clients(), 
+timer(nrg::os::microseconds()), interval(50000) {
 	sock.setNonBlocking(true);
 	sock.bind(bind_addr);
 }
@@ -21,6 +21,12 @@ size_t nrg::Server::playerCount() const {
 	return clients.size();
 }
 
+// TODO reuse removed player IDs
+static uint16_t getNextPlayerId(void){
+	static uint16_t id = 0;
+	return id++;
+}
+
 nrg::status_t nrg::Server::update(){
 	uint64_t delta = std::max<int>(0, interval - (os::microseconds() - timer));
 
@@ -32,10 +38,15 @@ nrg::status_t nrg::Server::update(){
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
 			printf("new client: %s:%d\n", addr.name(), addr.port());
+			uint16_t pid = getNextPlayerId();
 			std::pair<ClientMap::iterator, bool> res = clients.insert(
 				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
 			);
-			res.first->second = new PlayerConnection(master_snapshot, sock, res.first->first);
+			res.first->second = new PlayerConnection(pid, *this, res.first->first);
+			
+			PlayerJoinEvent e = { PLAYER_JOIN, pid, res.first->second };
+			eventq.pushEvent(e);
+			
 			it = res.first;
 		}
 		
@@ -90,10 +101,9 @@ nrg::Server::~Server(){
 	}
 }
 
-nrg::PlayerConnection::PlayerConnection(const Snapshot& ss, 
-const UDPSocket& sock, const NetAddress& addr) : addr(addr), sock(sock), 
-in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), states(), 
-handshake(), game_state(ss) {
+nrg::PlayerConnection::PlayerConnection(uint16_t id, const Server& s, const NetAddress& addr) : addr(addr), sock(sock), 
+in(addr), out(addr, s.sock), buffer(NRG_MAX_PACKET_SIZE), states(), 
+handshake(), game_state(s.master_snapshot) {
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }

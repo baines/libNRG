@@ -206,11 +206,11 @@ const std::map<uint16_t, Entity*>& entity_types){
 
 		if(entities[eid] == NULL){
 			std::map<uint16_t, Entity*>::const_iterator i = entity_types.find(eid);
-			assert(i != entity_types.end());
+			assert(i != entity_types.end() && "Entity type not registered");
 			entities[eid] = i->second->clone();
 			// new entity event
 		}
-
+		
 		FieldListImpl fl;
 		entities[eid]->getFields(fl);
 
@@ -231,6 +231,7 @@ const std::map<uint16_t, Entity*>& entity_types){
 		for(unsigned int i = 0; i < num_fields; ++i){
 			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
 				fl.vec[i]->readFromPacket(field_data);
+				fl.vec[i]->setUpdated(true);
 			}
 		}
 	}

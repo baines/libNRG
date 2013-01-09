@@ -3,6 +3,7 @@
 
 static const int NRG_MAX_PACKET_SIZE = 1400;
 static const int NRG_NUM_PAST_SNAPSHOTS = 32;
+static const int NRG_DEFAULT_EVENT_QUEUE_SIZE = 128;
 
 
 #endif
