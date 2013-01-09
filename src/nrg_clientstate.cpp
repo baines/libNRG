@@ -63,17 +63,27 @@ bool nrg::ClientGameState::addIncomingPacket(Packet& p){
 	// TODO: acknowledge input
 
 	if(!snapshot.readFromPacket(p)) return false;
+
+	// TODO timing of applying new snapshot
+	EventQueue eq;
+	snapshot.applyUpdate(entities, entity_types, eq);
+
+	while(eq.pollEvent()){
+	//TODO store updated entities so that they can be setUpdated(false) next frame.
+	//     add all events to main Client EventQueue
+	}
 	
 	return true;
 }
 
 bool nrg::ClientGameState::needsUpdate() const {
-	//TODO
+	//TODO, true if new input to send, or new snapshot to ack
 	return false;
 }
 	
 nrg::StateUpdateResult nrg::ClientGameState::update(ConnectionOutgoing& out){
-	//TODO
+	//TODO collect and send input to server w/ last recieved snapshot id
+
 	return STATE_CONTINUE;
 }
 

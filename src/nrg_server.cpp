@@ -28,9 +28,9 @@ static uint16_t getNextPlayerId(void){
 }
 
 nrg::status_t nrg::Server::update(){
-	uint64_t delta = std::max<int>(0, interval - (os::microseconds() - timer));
+	uint64_t blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
 
-	while(sock.dataPending(delta)){
+	while(sock.dataPending(blocktime)){
 		NetAddress addr;
 		buffer.reset();
 		sock.recvPacket(buffer, addr);
@@ -53,7 +53,7 @@ nrg::status_t nrg::Server::update(){
 		if(!it->second->addPacket(buffer)){
 			// kick client
 		}
-		delta = std::max<int>(0, interval - (os::microseconds() - timer));
+		blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
 	}
 
 	timer = os::microseconds();

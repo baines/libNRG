@@ -4,6 +4,7 @@
 #include "nrg_socket.h"
 #include "nrg_netaddress.h"
 #include "nrg_state.h"
+#include "nrg_event.h"
 #include <vector>
 
 namespace nrg {
@@ -19,12 +20,14 @@ public:
 	//Input& getInput() const;
 	
 	status_t update();
+	bool pollEvent(Event& e);
 protected:
 	UDPSocket sock;
 	Packet buffer;
 	NetAddress serv_addr;
 	ConnectionIncoming in;
 	ConnectionOutgoing out;
+	EventQueue eventq;
 	std::vector<State*> states;
 	ClientHandshakeState handshake;
 	ClientGameState game_state;

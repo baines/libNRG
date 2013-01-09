@@ -2,6 +2,7 @@
 #define NRG_SNAPSHOT_H
 #include "nrg_core.h"
 #include "nrg_entity.h"
+#include "nrg_event.h"
 #include <vector>
 #include <map>
 
@@ -23,7 +24,7 @@ public:
 	void writeToPacket(Packet& p);
 	bool readFromPacket(Packet& p);
 	void applyUpdate(std::vector<Entity*>& entities, 
-		const std::map<uint16_t, Entity*>& entity_types);
+		const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq);
 protected:
 	struct NRG_LIB EntityInfo {
 		uint16_t id, type;

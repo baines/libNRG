@@ -191,7 +191,7 @@ bool Snapshot::readFromPacket(Packet& p){
 }
 
 void Snapshot::applyUpdate(std::vector<Entity*>& entities, 
-const std::map<uint16_t, Entity*>& entity_types){
+const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 
 	field_data.seek(0, SEEK_SET);
 
@@ -208,7 +208,8 @@ const std::map<uint16_t, Entity*>& entity_types){
 			std::map<uint16_t, Entity*>::const_iterator i = entity_types.find(eid);
 			assert(i != entity_types.end() && "Entity type not registered");
 			entities[eid] = i->second->clone();
-			// new entity event
+			EntityEvent e = { ENTITY_CREATED, eid, etype, entities[eid] };
+			eq.pushEvent(e);
 		}
 		
 		FieldListImpl fl;
@@ -225,16 +226,25 @@ const std::map<uint16_t, Entity*>& entity_types){
 		}
 	
 		if(all_zero_test == 0){
-			// TODO special case - delete entity
-		}
-		
-		for(unsigned int i = 0; i < num_fields; ++i){
-			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
-				fl.vec[i]->readFromPacket(field_data);
-				fl.vec[i]->setUpdated(true);
+			// special case - delete entity
+			EntityEvent e = { ENTITY_DESTROYED, eid, etype, NULL };
+			eq.pushEvent(e);
+
+			delete entities[eid];
+			entities[eid] = NULL;
+		} else {
+			EntityEvent e = { ENTITY_UPDATED, eid, etype, entities[eid] };
+			eq.pushEvent(e);
+
+			for(unsigned int i = 0; i < num_fields; ++i){
+				if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
+					fl.vec[i]->readFromPacket(field_data);
+					fl.vec[i]->setUpdated(true);
+				}
 			}
 		}
 	}
-
+	
+	field_data.seek(0, SEEK_SET);
 }
 

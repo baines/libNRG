@@ -23,6 +23,7 @@ public:
 	bool isBound();
 	size_t playerCount() const;
 	status_t update();
+	bool pollEvent(Event& e);
 	~Server();
 
 	void registerEntity(Entity* e);
