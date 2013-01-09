@@ -74,7 +74,7 @@ bool Snapshot::merge(const Snapshot& other){
 	Snapshot copy = *this, other_copy = other, *newer, *older;
 	uint8_t bits = 0;
 
-	if(other.id == ((id + 1) & USHRT_MAX)){
+	if(id == -1 || other.id == ((id + 1) & USHRT_MAX)){
 		newer = &other_copy;
 		older = &copy;
 	} else if(id == ((other.id + 1) & USHRT_MAX)){
@@ -108,7 +108,13 @@ bool Snapshot::merge(const Snapshot& other){
 			oldit = &e->second;
 		}
 		
+		info.id = *i;
+		info.type = newit == NULL ? oldit->type : newit->type;
 		int sz = newit == NULL ? oldit->field_sizes.size() : newit->field_sizes.size();
+
+		field_data.write16(info.id);
+		field_data.write16(info.type);
+
 		for(int x = 0; x < sz; ++x){
 			if((newit && newit->field_sizes[x] != 0) || (oldit && oldit->field_sizes[x] != 0)){
 				bits |= 1 << (MAX_BYTE_SHIFTS - (x & MAX_BYTE_SHIFTS));
@@ -121,8 +127,6 @@ bool Snapshot::merge(const Snapshot& other){
 		field_data.write8(bits);
 		bits = 0;
 
-		info.id = *i;
-		info.type = newit == NULL ? oldit->type : newit->type;
 		info.start = field_data.tell();
 
 		if(newit != NULL && oldit != NULL){

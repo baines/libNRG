@@ -4,6 +4,7 @@
 nrg::Client::Client(const NetAddress& addr) : sock(), buffer(NRG_MAX_PACKET_SIZE), 
 serv_addr(addr), in(serv_addr), out(serv_addr, sock), states(), handshake() {
 	sock.setNonBlocking(true);
+	states.push_back(&game_state);
 	states.push_back(&handshake);
 }
 

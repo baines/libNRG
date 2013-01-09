@@ -3,4 +3,6 @@
 /libnrg.so.0
 /examples/test
 /examples/t2
+/examples/game/game_server
+/examples/game/game_client
 /libnrg.a

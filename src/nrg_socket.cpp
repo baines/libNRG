@@ -56,7 +56,7 @@ ssize_t nrg::Socket::recvPacket(Packet& p) const {
 
 ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
 	struct sockaddr_storage sas;
-	socklen_t len = 0;
+	socklen_t len = sizeof(sas);
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
 	ssize_t result = ::recvfrom(fd, buf, NRG_MAX_PACKET_SIZE, 0, (struct sockaddr*)&sas, &len);
 	if(result > 0){
@@ -66,11 +66,11 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
 	return result;
 }
 
-bool nrg::Socket::dataPending(int msToBlock) const {
+bool nrg::Socket::dataPending(int usToBlock) const {
 	fd_set s;
 	FD_ZERO(&s);
 	FD_SET(fd, &s);
-	struct timeval tv = { 0, msToBlock * 1000 };
+	struct timeval tv = { 0, usToBlock };
 
 	if(select(fd+1, &s, NULL, NULL, &tv) == 1){
 		return true;

@@ -105,7 +105,6 @@ void nrg::ConnectionOutgoing::sendPacket(Packet& p){
 
 		p2.reset().write16(seq_num++).write8(flags).writeArray(p.getPointer(), n);
 		p.seek(n, SEEK_CUR);
-		
 		sock.sendPacket(p2, remote_addr);
 		flags = PKTFLAG_CONTINUATION;
 	}

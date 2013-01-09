@@ -24,13 +24,14 @@ size_t nrg::Server::playerCount() const {
 nrg::status_t nrg::Server::update(){
 	uint64_t delta = std::max<int>(0, interval - (os::microseconds() - timer));
 
-	while(sock.dataPending(delta / 1000)){
+	while(sock.dataPending(delta)){
 		NetAddress addr;
 		buffer.reset();
 		sock.recvPacket(buffer, addr);
 		
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
+			printf("new client: %s:%d\n", addr.name(), addr.port());
 			std::pair<ClientMap::iterator, bool> res = clients.insert(
 				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
 			);

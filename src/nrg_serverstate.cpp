@@ -43,5 +43,14 @@ bool ServerPlayerGameState::needsUpdate() const {
 }
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
+	if(snapshot.merge(master)){
+		Packet p;
+		p.write16(snapshot.getID());
+		p.write16(0); // TODO: Input ID
+		snapshot.writeToPacket(p);
+		out.sendPacket(p);	
+	} else {
+		// kick
+	}
 	return STATE_CONTINUE;
 }

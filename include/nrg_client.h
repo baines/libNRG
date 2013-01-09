@@ -27,6 +27,7 @@ protected:
 	ConnectionOutgoing out;
 	std::vector<State*> states;
 	ClientHandshakeState handshake;
+	ClientGameState game_state;
 };
 
 };
