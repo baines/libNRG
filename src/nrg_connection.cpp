@@ -1,9 +1,11 @@
 #include "nrg_connection.h"
 #include "nrg_config.h"
+#include "nrg_os.h"
 #include <climits>
 #include <cstdlib>
 
-nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na) {
+nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na), 
+seq_num(os::random()) {
 
 };
 
@@ -87,7 +89,6 @@ void nrg::ConnectionIncoming::getLatestPacket(Packet& p){
 
 nrg::ConnectionOutgoing::ConnectionOutgoing(const NetAddress& na, const Socket& sock)
 : ConnectionBase(na), sock(sock) {
-	seq_num = rand() & USHRT_MAX;
 }
 
 void nrg::ConnectionOutgoing::sendPacket(Packet& p){

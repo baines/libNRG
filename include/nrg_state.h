@@ -56,7 +56,7 @@ private:
 	std::vector<Entity*> entities, updated_entities;
 	std::map<uint16_t, Entity*> entity_types;
 	EventQueue& client_eventq;
-	uint16_t state_id;
+	int state_id;
 	Snapshot snapshot;
 };
 

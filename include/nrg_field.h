@@ -51,7 +51,7 @@ public:
 		return *this;
 	}
 	
-	T get(){
+	T get() const {
 		return data;
 	}
 private:

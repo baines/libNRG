@@ -40,7 +40,7 @@ ClientHandshakeState::~ClientHandshakeState(){
 }
 
 ClientGameState::ClientGameState(EventQueue& eq) : entities(), updated_entities(),
-entity_types(), client_eventq(eq), state_id(0), snapshot(){
+entity_types(), client_eventq(eq), state_id(-1), snapshot(){
 
 }
 
@@ -55,11 +55,15 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	uint16_t new_state_id = 0;
 	p.read16(new_state_id);
 
-	for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
-		uint16_t id = (state_id + i) & USHRT_MAX;
-		if(id == new_state_id){
-			valid = true;
-			break;
+	if(state_id == -1){
+		valid = true;
+	} else {
+		for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
+			uint16_t id = (state_id + i) & USHRT_MAX;
+			if(id == new_state_id){
+				valid = true;
+				break;
+			}
 		}
 	}
 	if(!valid) return false;
@@ -70,6 +74,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 
 	Snapshot new_ss;
 	if(!new_ss.readFromPacket(p)) return false;
+	state_id = new_state_id;
 
 	// Mark all previously updated entities as no longer updated
 	// Could maybe store fields instead of entities for better efficiency

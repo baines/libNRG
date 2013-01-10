@@ -42,6 +42,10 @@ nrg::status_t nrg::Client::update(){
 	return status::OK;
 }
 
+void nrg::Client::registerEntity(Entity* e){
+	game_state.registerEntity(e);
+}
+
 bool nrg::Client::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }

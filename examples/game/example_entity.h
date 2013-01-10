@@ -21,6 +21,14 @@ public:
 		xpos = 320 + (60 * sin(timer));
 		ypos = 240 + (60 * cos(timer));
 	}
+	
+	uint16_t getx() const {
+		return xpos.get();
+	}
+
+	uint16_t gety() const {
+		return ypos.get();
+	}
 private:
 	float timer;
 	nrg::Field<uint16_t> xpos, ypos;

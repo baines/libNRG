@@ -5,6 +5,7 @@
 namespace nrg {
 namespace os {
 	uint64_t microseconds(void);
+	uint32_t random();
 }
 }
 
