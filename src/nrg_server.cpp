@@ -28,6 +28,8 @@ static uint16_t getNextPlayerId(void){
 }
 
 nrg::status_t nrg::Server::update(){
+	eventq.clear();
+
 	uint64_t blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
 
 	while(sock.dataPending(blocktime)){
@@ -74,6 +76,10 @@ nrg::status_t nrg::Server::update(){
 		}
 	}
 	return status::OK;
+}
+
+bool nrg::Server::pollEvent(Event& e){
+	return eventq.pollEvent(e);
 }
 
 // TODO reuse removed entity IDs

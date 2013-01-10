@@ -61,9 +61,8 @@ union NRG_LIB Event {
 class EventQueue {
 public:
 	EventQueue() : queue(){}
-	template<class E>
-	void pushEvent(const E& e){
-		queue.push(Event(e));
+	void pushEvent(const Event& e){
+		queue.push(e);
 	}
 	bool pollEvent(Event& e){
 		if(queue.empty()){
@@ -73,6 +72,9 @@ public:
 			queue.pop();
 			return true;
 		}
+	}
+	void clear(){
+		while(!queue.empty()) queue.pop();
 	}
 private:
 	std::queue<Event> queue;

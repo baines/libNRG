@@ -45,7 +45,7 @@ class Entity;
 
 class NRG_LIB ClientGameState : public State {
 public:
-	ClientGameState();
+	ClientGameState(EventQueue& eq);
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
@@ -53,8 +53,9 @@ public:
 
 	void registerEntity(Entity* e);
 private:
-	std::vector<Entity*> entities;
+	std::vector<Entity*> entities, updated_entities;
 	std::map<uint16_t, Entity*> entity_types;
+	EventQueue& client_eventq;
 	uint16_t state_id;
 	Snapshot snapshot;
 };

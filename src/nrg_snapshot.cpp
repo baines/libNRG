@@ -236,6 +236,8 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 			EntityEvent e = { ENTITY_UPDATED, eid, etype, entities[eid] };
 			eq.pushEvent(e);
 
+			entities[eid]->markUpdated();
+
 			for(unsigned int i = 0; i < num_fields; ++i){
 				if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
 					fl.vec[i]->readFromPacket(field_data);
