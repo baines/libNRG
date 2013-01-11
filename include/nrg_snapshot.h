@@ -30,6 +30,7 @@ protected:
 		uint16_t id, type;
 		off_t start;
 		std::vector<size_t> field_sizes;
+		off_t getFieldOffset(int num) const;
 	};
 	int id;
 	std::map<uint16_t, EntityInfo> edata;

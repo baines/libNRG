@@ -129,25 +129,32 @@ bool Snapshot::merge(const Snapshot& other){
 
 		info.start = field_data.tell();
 
+		const EntityInfo* eptr;
+		Snapshot* sptr;
+
 		if(newit != NULL && oldit != NULL){
 			assert(newit->field_sizes.size() == oldit->field_sizes.size());
 
 			for(int x = 0; x < sz; ++x){
-				if(newit->field_sizes[x] != 0){
-					info.field_sizes.push_back(newit->field_sizes[x]);
-					field_data.writeArray(newer->field_data.getPointer()
-					                    + newit->start, newit->field_sizes[x]);
-				} else if(oldit->field_sizes[x] != 0){
-					info.field_sizes.push_back(oldit->field_sizes[x]);
-					field_data.writeArray(older->field_data.getPointer()
-					                    + oldit->start, oldit->field_sizes[x]);
-				} else {
+				if(newit->field_sizes[x] == 0 && oldit->field_sizes[x] == 0){
 					info.field_sizes.push_back(0);
+				} else {
+					if(newit->field_sizes[x] != 0){
+						eptr = newit;
+						sptr = newer;
+					} else {
+						eptr = oldit;
+						sptr = older;
+					}
+					size_t fsz = eptr->field_sizes[x];
+					info.field_sizes.push_back(fsz);
+					field_data.writeArray(
+						sptr->field_data.getPointer() + 
+						eptr->getFieldOffset(x), fsz
+					);
 				}
 			}
 		} else {
-			const EntityInfo* eptr;
-			Snapshot* sptr;
 			if(newit){
 				eptr = newit;
 				sptr = newer;
@@ -249,4 +256,9 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 	
 	field_data.seek(0, SEEK_SET);
 }
+
+off_t Snapshot::EntityInfo::getFieldOffset(int num) const {
+	return start + std::accumulate(field_sizes.begin(), field_sizes.begin() + num, 0);
+}
+
 

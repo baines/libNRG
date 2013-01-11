@@ -1,6 +1,7 @@
 #ifdef __linux
 #include <time.h>
 #include <cstdio>
+#include <cstdlib>
 #include "nrg_os.h"
 
 uint64_t nrg::os::microseconds(){
@@ -11,11 +12,13 @@ uint64_t nrg::os::microseconds(){
 }
 
 uint32_t nrg::os::random(){
-	uint32_t r = 0;	
+	uint32_t r = rand();
 
 	FILE* f = fopen("/dev/urandom", "rb");
-	fread(&r, sizeof(r), 1, f);
-	fclose(f);
+	if(f){
+		fread(&r, sizeof(r), 1, f);
+		fclose(f);
+	}
 	
 	return r;
 }
