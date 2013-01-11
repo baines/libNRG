@@ -41,13 +41,14 @@ public:
 	}
 
 	void set(const T& other){
-		data = other;
-		this->setUpdated(true);
+		*this = other;
 	}
 
 	Field& operator=(const T& other){
-		data = other;
-		this->setUpdated(true);
+		if(data != other){
+			data = other;
+			this->setUpdated(true);
+		}
 		return *this;
 	}
 	

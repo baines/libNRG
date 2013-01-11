@@ -15,11 +15,11 @@ class NRG_LIB Input {
 	void readFromPacket(Packet& p);
 protected:
 	uint32_t input_id;
-	struct Event {
+	struct InputEvent {
 		int32_t value;
 		uint32_t state_added;
 	};
-	std::map<int32_t, Event> events;
+	std::map<int32_t, InputEvent> events;
 };
 
 };

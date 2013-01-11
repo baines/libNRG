@@ -1,5 +1,6 @@
 #include "nrg_socket.h"
 #include "nrg_config.h"
+#include <unistd.h>
 
 using nrg::status_t;
 
@@ -77,6 +78,21 @@ bool nrg::Socket::dataPending(int usToBlock) const {
 	} else {
 		return false;
 	}
+}
+
+const nrg::NetAddress* nrg::Socket::getBoundAddress(){
+	if(bound_addr.get() == NULL){
+		struct sockaddr_storage sas;
+		socklen_t len = sizeof(sas);
+		if(getsockname(fd, (struct sockaddr*)&sas, &len) == 0){
+			bound_addr = std::auto_ptr<NetAddress>(new NetAddress(sas, len));
+		}
+	}
+	return bound_addr.get();
+}
+
+nrg::Socket::~Socket(){
+	if(fd) close(fd);
 }
 
 #if defined __WIN32

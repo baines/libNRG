@@ -31,10 +31,10 @@ Snapshot& Snapshot::operator=(const Snapshot& other){
 
 void Snapshot::addEntity(Entity* e){
 	FieldListImpl fl;
-	EntityInfo info;
-	uint8_t bits = 0;
+	uint8_t bits = 0, id = e->getID();
+	EntityInfo& info = edata[id];
 
-	info.id = e->getID();
+	info.id = id;
 	info.type = e->getType();
 	e->getFields(fl);
 	std::vector<FieldBase*>& fields = fl.vec;
@@ -56,16 +56,15 @@ void Snapshot::addEntity(Entity* e){
 
 	info.start = field_data.tell();
 
-	for(std::vector<FieldBase*>::const_iterator i = fields.begin(), 
+	for(std::vector<FieldBase*>::iterator i = fields.begin(), 
 	j = fields.end(); i!=j; ++i){
 		if((*i)->wasUpdated()){
 			info.field_sizes.push_back((*i)->writeToPacket(field_data));
+			(*i)->setUpdated(false);
 		} else {
 			info.field_sizes.push_back(0);
 		}
 	}
-
-	edata[info.id] = info;
 }
 
 typedef std::map<uint16_t, Snapshot::EntityInfo>::const_iterator EInf_it;

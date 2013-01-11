@@ -3,7 +3,7 @@
 #include <climits>
 
 using namespace nrg;
-typedef std::map<int32_t, Input::Event>::iterator ev_it;
+typedef std::map<int32_t, Input::InputEvent>::iterator ev_it;
 
 Input::Input() : input_id(0), events(){
 
@@ -25,8 +25,8 @@ Input& Input::nextFrame(){
 }
 
 void Input::addEvent(int32_t key, int32_t value){
-	Event e = { value, input_id };
-	events.insert(std::pair<int32_t, Event>(key, e));
+	InputEvent e = { value, input_id };
+	events.insert(std::make_pair(key, e));
 }
 
 void Input::acknowledge(uint32_t id){
@@ -58,8 +58,8 @@ void Input::readFromPacket(Packet& p){
 	while(p.remaining() >= 2 * sizeof(int32_t)){
 		uint32_t k, v;
 		p.read32(k).read32(v);
-		Event e = { v, input_id };
-		events.insert(std::pair<int32_t, Event>(k, e));
+		InputEvent e = { v, input_id };
+		events.insert(std::make_pair(k, e));
 	}
 }
 

@@ -97,7 +97,11 @@ bool operator!=(const NetAddress& a, const NetAddress& b){
 
 bool operator<(const NetAddress& a, const NetAddress& b){
 	// FIXME: more efficient method
-	return strcmp(a.text, b.text) < 0;
+	if(a.addr_len != b.addr_len){
+		return a.addr_len < b.addr_len;
+	} else {
+		return memcmp(&a.addr, &b.addr, a.addr_len) < 0;
+	}
 }
 
 };
