@@ -27,6 +27,7 @@ public:
 	~Server();
 
 	void registerEntity(Entity* e);
+	void unregisterEntity(Entity* e);
 	void markEntityUpdated(Entity* e);
 protected:
 	friend class PlayerConnection;

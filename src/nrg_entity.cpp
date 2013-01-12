@@ -13,3 +13,9 @@ void nrg::Entity::markUpdated(){
 		}
 	}
 }
+
+nrg::Entity::~Entity(){
+	if(nrg_serv_ptr){
+		nrg_serv_ptr->unregisterEntity(this);
+	}
+}

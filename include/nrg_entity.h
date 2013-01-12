@@ -14,7 +14,7 @@ public:
 	virtual Entity* clone() = 0;
 	virtual uint16_t getType() const = 0;
 	virtual void getFields(FieldList& list) = 0;
-	virtual ~Entity(){};
+	virtual ~Entity();
 	void markUpdated();
 	uint16_t getID() const { return nrg_id; }
 

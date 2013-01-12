@@ -93,6 +93,13 @@ void nrg::Server::registerEntity(Entity* e){
 	e->nrg_id = getNextEntityId();
 }
 
+void nrg::Server::unregisterEntity(Entity* e){
+	if(e && entities[e->nrg_id]){
+		entities[e->nrg_id] = NULL;
+		//TODO allow this id to be reused.
+	}
+}
+
 void nrg::Server::markEntityUpdated(Entity* e){
 	updated_entities.push_back(e);
 }
