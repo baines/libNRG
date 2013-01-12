@@ -233,7 +233,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 	
 		if(all_zero_test == 0){
 			// special case - delete entity
-			EntityEvent e = { ENTITY_DESTROYED, eid, etype, NULL };
+			EntityEvent e = { ENTITY_DESTROYED, eid, etype, entities[eid] };
 			eq.pushEvent(e);
 
 			delete entities[eid];

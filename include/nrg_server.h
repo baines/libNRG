@@ -8,6 +8,7 @@
 #include "nrg_snapshot.h"
 #include "nrg_state.h"
 #include "nrg_event.h"
+#include "nrg_util.h"
 #include <map>
 #include <vector>
 
@@ -38,6 +39,7 @@ protected:
 	ClientMap clients;
 	Snapshot master_snapshot;
 	std::vector<Entity*> entities, updated_entities;
+	IDAssigner<uint16_t> player_ids, entity_ids;
 	uint64_t timer;
 	int interval;
 };

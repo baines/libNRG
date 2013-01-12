@@ -21,12 +21,6 @@ size_t nrg::Server::playerCount() const {
 	return clients.size();
 }
 
-// TODO reuse removed player IDs
-static uint16_t getNextPlayerId(void){
-	static uint16_t id = 0;
-	return id++;
-}
-
 nrg::status_t nrg::Server::update(){
 	eventq.clear();
 
@@ -40,7 +34,7 @@ nrg::status_t nrg::Server::update(){
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
 			printf("new client: %s:%d\n", addr.name(), addr.port());
-			uint16_t pid = getNextPlayerId();
+			uint16_t pid = player_ids.acquire();
 			std::pair<ClientMap::iterator, bool> res = clients.insert(
 				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
 			);
@@ -82,21 +76,15 @@ bool nrg::Server::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }
 
-// TODO reuse removed entity IDs
-static uint16_t getNextEntityId(void){
-	static uint16_t id = 0;
-	return id++;
-}
-
 void nrg::Server::registerEntity(Entity* e){
 	e->nrg_serv_ptr = this;
-	e->nrg_id = getNextEntityId();
+	e->nrg_id = entity_ids.acquire();
 }
 
 void nrg::Server::unregisterEntity(Entity* e){
 	if(e && entities[e->nrg_id]){
+		entity_ids.release(e->nrg_id);
 		entities[e->nrg_id] = NULL;
-		//TODO allow this id to be reused.
 	}
 }
 
@@ -114,9 +102,9 @@ nrg::Server::~Server(){
 	}
 }
 
-nrg::PlayerConnection::PlayerConnection(uint16_t id, const Server& s, const NetAddress& addr) : addr(addr), sock(sock), 
-in(addr), out(addr, s.sock), buffer(NRG_MAX_PACKET_SIZE), states(), 
-handshake(), game_state(s.master_snapshot) {
+nrg::PlayerConnection::PlayerConnection(uint16_t id, const Server& s, const NetAddress& addr) 
+: addr(addr), sock(sock), in(addr), out(addr, s.sock), buffer(NRG_MAX_PACKET_SIZE), 
+states(), handshake(), game_state(s.master_snapshot) {
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }
