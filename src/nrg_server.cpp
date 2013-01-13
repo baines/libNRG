@@ -57,10 +57,16 @@ nrg::status_t nrg::Server::update(){
 	// generate snapshot
 	master_snapshot.resetAndIncrement();
 
-	for(std::vector<Entity*>::iterator i = updated_entities.begin(),
+	for(std::set<uint16_t>::iterator i = updated_entities.begin(),
 	j = updated_entities.end(); i != j; ++i){
-		master_snapshot.addEntity((*i));
-		(*i)->nrg_updated = false;
+		if(entities.size() > *i){
+			if(entities[*i] != NULL){
+				master_snapshot.addEntity(entities[*i]);
+				entities[*i]->nrg_updated = false;
+			} else {
+				master_snapshot.removeEntityById(*i);
+			}
+		}
 	}
 	updated_entities.clear();
 
@@ -78,7 +84,12 @@ bool nrg::Server::pollEvent(Event& e){
 
 void nrg::Server::registerEntity(Entity* e){
 	e->nrg_serv_ptr = this;
-	e->nrg_id = entity_ids.acquire();
+	uint16_t id = entity_ids.acquire();
+	e->nrg_id = id;
+	if(entities.size() <= id){
+		entities.resize(id+1);
+	}
+	entities[id] = e;
 }
 
 void nrg::Server::unregisterEntity(Entity* e){
@@ -89,7 +100,7 @@ void nrg::Server::unregisterEntity(Entity* e){
 }
 
 void nrg::Server::markEntityUpdated(Entity* e){
-	updated_entities.push_back(e);
+	if(e) updated_entities.insert(e->getID());
 }
 
 nrg::Server::~Server(){

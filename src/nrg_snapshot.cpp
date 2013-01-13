@@ -67,7 +67,24 @@ void Snapshot::addEntity(Entity* e){
 	}
 }
 
-typedef std::map<uint16_t, Snapshot::EntityInfo>::const_iterator EInf_it;
+typedef std::map<uint16_t, Snapshot::EntityInfo>::iterator EInf_it;
+
+void Snapshot::removeEntityById(uint16_t id){
+	EInf_it it = edata.find(id);
+	if(it != edata.end()){
+		EntityInfo& i = it->second;
+		size_t fdatasz = std::accumulate(i.field_sizes.begin(), i.field_sizes.end(), 0);
+		off_t fdatastart = i.start - (2*sizeof(uint16_t)) - (((i.field_sizes.size()-1)/8)+1);
+		field_data.erase(fdatastart, fdatasz);
+
+		// all the entities encoded after this one need to have their start offset updated
+		for(EInf_it a = edata.begin(), b = edata.end(); a != b; ++a){
+			if(a->second.start > i.start){
+				a->second.start -= fdatasz;
+			}
+		}
+	}
+}
 
 bool Snapshot::merge(const Snapshot& other){
 	Snapshot copy = *this, other_copy = other, *newer, *older;

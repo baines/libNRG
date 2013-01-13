@@ -18,6 +18,7 @@ public:
 	int getID() const { return id; }
 	void setID(uint16_t id);
 	void addEntity(Entity* e);
+	void removeEntityById(uint16_t id);
 	bool merge(const Snapshot& other);
 	void resetAndIncrement();
 

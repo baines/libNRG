@@ -10,6 +10,7 @@
 #include "nrg_event.h"
 #include "nrg_util.h"
 #include <map>
+#include <set>
 #include <vector>
 
 namespace nrg {
@@ -38,7 +39,8 @@ protected:
 	typedef std::map<NetAddress, PlayerConnection*> ClientMap;
 	ClientMap clients;
 	Snapshot master_snapshot;
-	std::vector<Entity*> entities, updated_entities;
+	std::vector<Entity*> entities;
+	std::set<uint16_t> updated_entities;
 	IDAssigner<uint16_t> player_ids, entity_ids;
 	uint64_t timer;
 	int interval;
