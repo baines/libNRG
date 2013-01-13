@@ -20,6 +20,7 @@ public:
 	void addEntity(Entity* e);
 	void removeEntityById(uint16_t id);
 	bool merge(const Snapshot& other);
+	void reset();
 	void resetAndIncrement();
 
 	void writeToPacket(Packet& p);

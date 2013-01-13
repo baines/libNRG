@@ -57,7 +57,7 @@ private:
 	std::map<uint16_t, Entity*> entity_types;
 	EventQueue& client_eventq;
 	int state_id;
-	Snapshot snapshot;
+	Snapshot snapshot, next_snapshot;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {

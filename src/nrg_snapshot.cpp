@@ -190,6 +190,12 @@ bool Snapshot::merge(const Snapshot& other){
 	return true;
 }
 
+void Snapshot::reset(){
+	edata.clear();
+	field_data.reset();
+	id = -1;
+}
+
 void Snapshot::resetAndIncrement(){
 	edata.clear();
 	field_data.reset();
@@ -268,6 +274,8 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 				}
 			}
 		}
+
+		delete [] bytes;
 	}
 	
 	field_data.seek(0, SEEK_SET);

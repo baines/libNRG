@@ -72,20 +72,22 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	p.read16(ackd_input_id);
 	// TODO: acknowledge input
 
-	Snapshot new_ss;
-	if(!new_ss.readFromPacket(p)) return false;
+	next_snapshot.reset();
+	if(!next_snapshot.readFromPacket(p)) return false;
 	state_id = new_state_id;
 
 	// Mark all previously updated entities as no longer updated
 	// Could maybe store fields instead of entities for better efficiency
+	FieldListImpl fl;
 	for(e_it i = updated_entities.begin(), j = updated_entities.end(); i != j; ++i){
-		(*i)->nrg_updated = false;		
-		FieldListImpl fl;
+		fl.vec.clear();
+		(*i)->nrg_updated = false;
 		(*i)->getFields(fl);
 		for(f_it k = fl.vec.begin(), l = fl.vec.end(); k != l; ++k){
 			(*k)->setUpdated(false);
 		}
 	}
+	updated_entities.clear();
 
 	// TODO timing of applying new snapshot
 	EventQueue eq;
@@ -99,8 +101,8 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		client_eventq.pushEvent(e);
 	}
 
-	snapshot = new_ss;
-	
+	snapshot = next_snapshot;
+
 	return true;
 }
 
@@ -116,7 +118,7 @@ StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
 }
 
 void ClientGameState::registerEntity(Entity* e){
-	entity_types.insert(std::pair<uint16_t, Entity*>(e->getType(), e));
+	entity_types.insert(std::make_pair(e->getType(), e));
 }
 
 ClientGameState::~ClientGameState(){
