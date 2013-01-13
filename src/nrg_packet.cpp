@@ -84,7 +84,7 @@ nrg::Packet& nrg::Packet::readArray(uint8_t* v, size_t size){
 }
 
 nrg::Packet& nrg::Packet::reset(){
-	memset(data, 0, used_size);
+	//memset(data, 0, used_size);
 	used_size = 0;
 	pointer = data;
 	return *this;
@@ -125,3 +125,48 @@ void nrg::Packet::resize(){
 	data = new_data;
 }
 
+static const int NRG_COMPRESSION_LEVEL = 3;
+
+#ifdef NRG_ENABLE_ZLIB_COMPRESSION
+#include <zlib.h>
+
+bool nrg::PacketCompressor::apply(Packet& in, Packet& out){
+	size_t buff_size = ::compressBound(in.remaining()), len = buff_size;
+	uint8_t* buff = new uint8_t[buff_size];
+	::compress2(buff, &len, in.getPointer(), in.remaining(), NRG_COMPRESSION_LEVEL);
+	if(len < in.size()){
+		out.write8(1);
+		out.write16(in.remaining());
+		out.writeArray(buff, len);
+	} else {
+		out.write8(0);
+		out.writeArray(in.getPointer(), in.remaining());
+	}
+	return true;
+}
+
+bool nrg::PacketCompressor::remove(Packet& in, Packet& out){
+	uint8_t v = 2;
+	in.read8(v);
+	if(v == 0){
+		out.writeArray(in.getPointer(), in.remaining());
+		return true;
+	} else if(v == 1){
+		uint16_t unc_len = 0;
+		in.read16(unc_len);
+		if(unc_len == 0) return false;
+
+		uint8_t* buff = new uint8_t[unc_len];
+		size_t sz = unc_len;
+		if(::uncompress(buff, &sz, in.getPointer(), in.remaining()) == Z_OK){
+			out.writeArray(buff, sz);
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+}
+
+#endif

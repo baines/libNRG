@@ -1,6 +1,7 @@
 #ifndef NRG_PACKET_H
 #define NRG_PACKET_H
 #include "nrg_core.h"
+#include "nrg_config.h"
 #include "nrg_netaddress.h"
 #include "nrg_endian.h"
 #include <cstring> // memcpy
@@ -76,6 +77,20 @@ protected:
 	uint8_t *data, *pointer;
 	size_t data_size, used_size;
 };
+
+struct NRG_LIB PacketTransformation {
+	virtual bool apply(Packet& in, Packet& out) = 0;
+	virtual bool remove(Packet& in, Packet& out) = 0;
+};
+
+#ifdef NRG_ENABLE_ZLIB_COMPRESSION
+
+struct NRG_LIB PacketCompressor : PacketTransformation {
+	virtual bool apply(Packet& in, Packet& out);
+	virtual bool remove(Packet& in, Packet& out);
+};
+
+#endif
 
 };
 

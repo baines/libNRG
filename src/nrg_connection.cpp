@@ -5,9 +5,13 @@
 #include <cstdlib>
 
 nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na), 
-seq_num(os::random()) {
+seq_num(os::random()), transform(NULL) {
 
 };
+
+void nrg::ConnectionBase::setTransform(nrg::PacketTransformation* t){
+	transform = t;
+}
 
 nrg::ConnectionIncoming::ConnectionIncoming(const NetAddress& na)
 : ConnectionBase(na), new_packet(false), first_packet(true), full_packet(false), 
@@ -38,19 +42,24 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 	uint16_t seq = 0;
 	uint8_t flags = 0;
 	
-	if(p.size() >= (sizeof(seq) + sizeof(flags))){
+	buffer.reset();
+	p.seek(0, SEEK_SET);
+	if(transform && !transform->remove(p, buffer)) return false;
+	Packet& ref = transform ? buffer : p;
+	
+	if(ref.size() >= (sizeof(seq) + sizeof(flags))){
 		off_t o = p.tell();
-		p.seek(0, SEEK_SET).read16(seq).read8(flags);
+		ref.seek(0, SEEK_SET).read16(seq).read8(flags);
 				
 		if(first_packet){
 			if(flags & PKTFLAG_CONTINUATION){
-				p.seek(o, SEEK_SET);
+				ref.seek(o, SEEK_SET);
 				return false;
 			} else {
 				first_packet = false;
 			}
 		} else if(!isValidPacketHeader(seq, flags)){
-			p.seek(o, SEEK_SET);
+			ref.seek(o, SEEK_SET);
 			return false;
 		}
 		
@@ -59,7 +68,7 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			full_packet = false;
 		}
 		
-		latest.writeArray(p.getPointer(), p.remaining());
+		latest.writeArray(ref.getPointer(), ref.remaining());
 		
 		if(!(flags & PKTFLAG_CONTINUED)){
 			full_packet = true;
@@ -67,7 +76,7 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 		}
 		
 		seq_num = seq;
-		p.seek(o, SEEK_SET);
+		ref.seek(o, SEEK_SET);
 		return true;
 	} else {
 		return false;
@@ -92,7 +101,7 @@ nrg::ConnectionOutgoing::ConnectionOutgoing(const NetAddress& na, const Socket& 
 }
 
 void nrg::ConnectionOutgoing::sendPacket(Packet& p){
-	Packet p2(NRG_MAX_PACKET_SIZE);
+	buffer.reset();
 	uint8_t flags = 0;
 	off_t o = p.tell();
 	p.seek(0, SEEK_SET);	
@@ -104,9 +113,16 @@ void nrg::ConnectionOutgoing::sendPacket(Packet& p){
 			flags |= PKTFLAG_CONTINUED;
 		}
 
-		p2.reset().write16(seq_num++).write8(flags).writeArray(p.getPointer(), n);
+		buffer.write16(seq_num++).write8(flags).writeArray(p.getPointer(), n);
 		p.seek(n, SEEK_CUR);
-		sock.sendPacket(p2, remote_addr);
+		buffer.seek(0, SEEK_SET);
+		if(transform){
+			buffer2.reset();
+			transform->apply(buffer, buffer2);
+			sock.sendPacket(buffer2, remote_addr);
+		} else {
+			sock.sendPacket(buffer, remote_addr);
+		}
 		flags = PKTFLAG_CONTINUATION;
 	}
 	p.seek(o, SEEK_SET);

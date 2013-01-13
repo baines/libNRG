@@ -16,9 +16,11 @@ class NRG_LIB ConnectionBase {
 public:
 	ConnectionBase(const NetAddress& remote_addr);
 	size_t getHeaderSize() const { return 3; }
+	void setTransform(PacketTransformation* transform);
 protected:
 	NetAddress remote_addr;
 	uint16_t seq_num;
+	PacketTransformation* transform;
 };
 
 class NRG_LIB ConnectionIncoming : public ConnectionBase {
@@ -31,7 +33,7 @@ public:
 protected:
 	bool isValidPacketHeader(uint16_t seq, uint8_t flags) const;
 	bool new_packet, first_packet, full_packet;
-	Packet latest;
+	Packet latest, buffer;
 };
 
 class NRG_LIB ConnectionOutgoing : public ConnectionBase {
@@ -40,6 +42,7 @@ public:
 	void sendPacket(Packet& p);
 protected:
 	const Socket& sock;
+	Packet buffer, buffer2;
 };
 
 };

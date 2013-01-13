@@ -3,10 +3,10 @@
 all: game_server game_client
 
 game_server: server.cpp example_entity.h ../../libnrg.a
-	$(CXX) -I../../include $< ../../libnrg.a -lrt -o $@ 
+	$(CXX) -I../../include $< ../../libnrg.a -lrt -lz -o $@ 
 
 game_client: client.cpp example_entity.h ../../libnrg.a
-	$(CXX) -I../../include $< ../../libnrg.a -lrt -o $@
+	$(CXX) -I../../include $< ../../libnrg.a -lrt -lz -o $@
 
 clean:
 	$(RM) game_server game_client
