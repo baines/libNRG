@@ -96,7 +96,6 @@ bool operator!=(const NetAddress& a, const NetAddress& b){
 }
 
 bool operator<(const NetAddress& a, const NetAddress& b){
-	// FIXME: more efficient method
 	if(a.addr_len != b.addr_len){
 		return a.addr_len < b.addr_len;
 	} else {

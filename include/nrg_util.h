@@ -1,13 +1,9 @@
 #ifndef NRG_UTIL_H
 #define NRG_UTIL_H
+#include "nrg_core.h"
+#include <vector>
 
 namespace nrg {
-
-template<class T, uint16_t type>
-struct EntityHelper : nrg::Entity {
-	virtual nrg::Entity* clone(){ return new T(*static_cast<T*>(this)); }
-	virtual uint16_t getType() const { return type; }
-};
 
 template<class ID>
 class IDAssigner {
@@ -29,6 +25,22 @@ private:
 	std::vector<ID> reusable_ids;
 	ID max_id;
 };
+
+template<size_t N>
+struct min_sizeof {
+	static const size_t val 
+		= (N < 256U)        ? 1 // pow(2,8)
+		: (N < 65536U)      ? 2 // pow(2,16)
+		: (N < 4294967296U) ? 4 // pow(2,32)
+		: 8
+		;
+};
+
+template<int N> struct size2type {};
+template<>      struct size2type<1> { typedef uint8_t  type;};
+template<>      struct size2type<2> { typedef uint16_t type;};
+template<>      struct size2type<4> { typedef uint32_t type;};
+template<>      struct size2type<8> { typedef uint64_t type;};
 
 }
 

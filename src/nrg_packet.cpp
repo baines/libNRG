@@ -142,31 +142,31 @@ bool nrg::PacketCompressor::apply(Packet& in, Packet& out){
 		out.write8(0);
 		out.writeArray(in.getPointer(), in.remaining());
 	}
+	delete [] buff;
 	return true;
 }
 
 bool nrg::PacketCompressor::remove(Packet& in, Packet& out){
+	bool ret = false;	
 	uint8_t v = 2;
 	in.read8(v);
 	if(v == 0){
 		out.writeArray(in.getPointer(), in.remaining());
-		return true;
+		ret = true;
 	} else if(v == 1){
 		uint16_t unc_len = 0;
 		in.read16(unc_len);
-		if(unc_len == 0) return false;
-
-		uint8_t* buff = new uint8_t[unc_len];
-		size_t sz = unc_len;
-		if(::uncompress(buff, &sz, in.getPointer(), in.remaining()) == Z_OK){
-			out.writeArray(buff, sz);
-			return true;
-		} else {
-			return false;
+		if(unc_len > 0){
+			uint8_t* buff = new uint8_t[unc_len];
+			size_t sz = unc_len;
+			if(::uncompress(buff, &sz, in.getPointer(), in.remaining()) == Z_OK){
+				out.writeArray(buff, sz);
+				ret = true;
+			}
+			delete [] buff;
 		}
-	} else {
-		return false;
 	}
+	return ret;
 }
 
 #endif

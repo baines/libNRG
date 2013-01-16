@@ -47,6 +47,7 @@ entity_types(), client_eventq(eq), state_id(-1), snapshot(){
 static const size_t NRG_CGS_HEADER_SIZE = 4;
 typedef std::vector<Entity*>::iterator e_it;
 typedef std::vector<FieldBase*>::iterator f_it;
+typedef std::map<uint16_t, Entity*>::iterator et_it;
 
 bool ClientGameState::addIncomingPacket(Packet& p){
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
@@ -122,5 +123,12 @@ void ClientGameState::registerEntity(Entity* e){
 }
 
 ClientGameState::~ClientGameState(){
-
+	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
+		if(*i){
+			delete *i;
+		}
+	}
+	for(et_it i = entity_types.begin(), j = entity_types.end(); i != j; ++i){
+		delete i->second;
+	}
 }

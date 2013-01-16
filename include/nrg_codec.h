@@ -19,6 +19,10 @@ struct Codec {
 			return 0;
 		}
 	}
+	template<class New>
+	struct rebind {
+		typedef Codec<New> type;
+	};
 };
 
 template<size_t len>
