@@ -30,6 +30,10 @@ public:
 	uint16_t gety() const {
 		return ypos.get();
 	}
+	
+	uint8_t getArray(int i){
+		return array.get(i);
+	}
 private:
 	float timer;
 	nrg::Field<uint16_t> xpos, ypos;

@@ -71,7 +71,7 @@ public:
 	virtual size_t readFromPacket(Packet& p){
 		index_t count;		
 		p.read<index_t>(count);
-		for(size_t i = 0; i < count; ++i){
+		for(size_t i = 0; i < count+1; ++i){
 			index_t k;
 			T v;
 			p.read<index_t>(k);
@@ -82,7 +82,7 @@ public:
 	}
 
 	virtual size_t writeToPacket(Packet& p) const {
-		p.write<index_t>(updated_indices.count());
+		p.write<index_t>(updated_indices.count()-1);
 		for(size_t i = 0; i < N; ++i){
 			if(updated_indices[i]){
 				p.write<index_t>(i);
@@ -115,7 +115,7 @@ public:
 private:
 	T data[N];
 	std::bitset<N> updated_indices;
-	typedef typename size2type<min_sizeof<N>::val>::type index_t;
+	typedef typename size2type<min_sizeof<N-1>::val>::type index_t;
 };
 
 };
