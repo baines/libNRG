@@ -90,15 +90,6 @@ nrg::Packet& nrg::Packet::reset(){
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::erase(off_t offset, size_t size){
-	size_t end = std::min(used_size, offset + size);
-	offset = std::min<size_t>(used_size, std::max<size_t>(0, offset));
-	if(end < used_size){
-		memmove(data + offset, data + end, used_size - end);
-	}
-	return *this;
-}
-
 nrg::Packet& nrg::Packet::seek(off_t offset, int whence){
 	switch(whence){
 	case SEEK_CUR:

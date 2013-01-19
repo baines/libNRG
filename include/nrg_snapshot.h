@@ -12,31 +12,65 @@ class NRG_LIB Snapshot {
 public:
 	Snapshot();
 	Snapshot(uint16_t id);
-	Snapshot(const Snapshot& copy);
-	Snapshot& operator=(const Snapshot& other);
-
 	int getID() const { return id; }
-	void setID(uint16_t id);
+	void setID(uint16_t id){ this->id = id; }
 	void addEntity(Entity* e);
-	void removeEntityById(uint16_t id);
-	bool merge(const Snapshot& other);
+	virtual void removeEntityById(uint16_t id);
+	bool mergeWithNext(const Snapshot& next);
+	void writeToPacket(Packet& p) const;
 	void reset();
-	void resetAndIncrement();
+protected:
+	struct NRG_LIB EntityData {
+		uint16_t id, type;
+		std::vector<size_t> field_sizes;
+		Packet field_data;
+		off_t getFieldOffset(int num) const;
+		size_t getTotalBytes() const;
+	};
+	int id;
+	std::map<uint16_t, EntityData> edata;
+};
 
-	void writeToPacket(Packet& p);
+struct NRG_LIB DeltaSnapshot : public Snapshot {
+	virtual void removeEntityById(uint16_t id);
+};
+
+class NRG_LIB ClientSnapshot {
+public:
+	ClientSnapshot() : data() {};
 	bool readFromPacket(Packet& p);
 	void applyUpdate(std::vector<Entity*>& entities, 
 		const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq);
-protected:
-	struct NRG_LIB EntityInfo {
-		uint16_t id, type;
-		off_t start;
-		std::vector<size_t> field_sizes;
-		off_t getFieldOffset(int num) const;
-	};
-	int id;
-	std::map<uint16_t, EntityInfo> edata;
-	Packet field_data;
+	void reset();
+private:
+	Packet data;
+};
+
+class NRG_LIB DeltaSnapshotBuffer {
+	static const int N = NRG_NUM_PAST_SNAPSHOTS;
+public:
+	DeltaSnapshotBuffer() : snaps(), cur_id(0){};
+	DeltaSnapshot* find(uint16_t id) {
+		DeltaSnapshot* s = &snaps[id % N];	
+		return s->getID() == id ? s : NULL;
+	}
+	const DeltaSnapshot* find(uint16_t id) const {
+		const DeltaSnapshot* s = &snaps[id % N];	
+		return s->getID() == id ? s : NULL;
+	}
+	DeltaSnapshot& next(){
+		DeltaSnapshot& ds = snaps[cur_id % N];
+		ds.reset();
+		ds.setID(cur_id);
+		cur_id++;
+		return ds;
+	}
+	uint16_t getCurrentID() const {
+		return cur_id;
+	}
+private:
+	DeltaSnapshot snaps[N];
+	uint16_t cur_id;
 };
 
 };

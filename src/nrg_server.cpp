@@ -55,16 +55,19 @@ nrg::status_t nrg::Server::update(){
 	timer = os::microseconds();
 
 	// generate snapshot
-	master_snapshot.resetAndIncrement();
+	DeltaSnapshot& delta_ss = snaps.next();
+	master_snapshot.setID(delta_ss.getID());
 
 	for(std::set<uint16_t>::iterator i = updated_entities.begin(),
 	j = updated_entities.end(); i != j; ++i){
 		if(entities.size() > *i){
 			if(entities[*i] != NULL){
 				master_snapshot.addEntity(entities[*i]);
+				delta_ss.addEntity(entities[*i]);
 				entities[*i]->nrg_updated = false;
 			} else {
 				master_snapshot.removeEntityById(*i);
+				delta_ss.removeEntityById(*i);
 			}
 		}
 	}
@@ -90,11 +93,13 @@ void nrg::Server::registerEntity(Entity* e){
 		entities.resize(id+1);
 	}
 	entities[id] = e;
+	updated_entities.insert(e->getID());
 }
 
 void nrg::Server::unregisterEntity(Entity* e){
 	if(e && entities[e->nrg_id]){
 		entity_ids.release(e->nrg_id);
+		updated_entities.insert(e->nrg_id);
 		entities[e->nrg_id] = NULL;
 	}
 }
@@ -115,7 +120,7 @@ nrg::Server::~Server(){
 
 nrg::PlayerConnection::PlayerConnection(uint16_t id, const Server& s, const NetAddress& addr) 
 : addr(addr), sock(sock), in(addr), out(addr, s.sock), buffer(NRG_MAX_PACKET_SIZE), 
-states(), handshake(), game_state(s.master_snapshot) {
+states(), handshake(), game_state(s.master_snapshot, s.snaps) {
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }

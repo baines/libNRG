@@ -1,4 +1,5 @@
 #include "nrg_state.h"
+#include <climits>
 
 using namespace nrg;
 
@@ -29,8 +30,9 @@ StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
 	return STATE_EXIT_SUCCESS;
 }
 
-ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master) 
-: snapshot(), master(master){
+ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
+const DeltaSnapshotBuffer& dsb) : snapshot(), master_ss(master), snaps(dsb), 
+ackd_id(-1), buffer() {
 
 }
 
@@ -39,18 +41,27 @@ bool ServerPlayerGameState::addIncomingPacket(Packet& p){
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
-	return snapshot.getID() != master.getID();
+	return snapshot.getID() != master_ss.getID();
 }
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
-	if(snapshot.merge(master)){
-		Packet p;
-		p.write16(snapshot.getID());
-		p.write16(0); // TODO: Input ID
-		snapshot.writeToPacket(p);
-		out.sendPacket(p);	
+	if(ackd_id == -1){
+		buffer.reset().write16(master_ss.getID()).write16(0); // TODO: Input ID
+		master_ss.writeToPacket(buffer);
+		out.sendPacket(buffer);
 	} else {
-		// kick
+		const DeltaSnapshot* ss = snaps.find((ackd_id + 1) & USHRT_MAX);
+		if(ss != NULL){
+			snapshot.reset();
+			for(uint16_t i = ackd_id + 1; i != snaps.getCurrentID(); ++i){
+				snapshot.mergeWithNext(*snaps.find(i));
+			}
+			buffer.reset().write16(snapshot.getID()).write16(0);
+			snapshot.writeToPacket(buffer);
+			out.sendPacket(buffer);
+		} else {
+			// kick
+		}
 	}
 	return STATE_CONTINUE;
 }

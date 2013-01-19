@@ -57,7 +57,7 @@ private:
 	std::map<uint16_t, Entity*> entity_types;
 	EventQueue& client_eventq;
 	int state_id;
-	Snapshot snapshot, next_snapshot;
+	ClientSnapshot snapshot, next_snapshot;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {
@@ -71,13 +71,16 @@ private:
 
 class NRG_LIB ServerPlayerGameState : public State {
 public:
-	ServerPlayerGameState(const Snapshot& master_ss);
+	ServerPlayerGameState(const Snapshot& master_ss, const DeltaSnapshotBuffer& dsb);
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
 private:
 	Snapshot snapshot;
-	const Snapshot& master;
+	const Snapshot& master_ss;
+	const DeltaSnapshotBuffer& snaps;
+	int ackd_id;
+	Packet buffer;
 };
 
 };

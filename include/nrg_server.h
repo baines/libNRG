@@ -39,6 +39,7 @@ protected:
 	typedef std::map<NetAddress, PlayerConnection*> ClientMap;
 	ClientMap clients;
 	Snapshot master_snapshot;
+	DeltaSnapshotBuffer snaps;
 	std::vector<Entity*> entities;
 	std::set<uint16_t> updated_entities;
 	IDAssigner<uint16_t> player_ids, entity_ids;

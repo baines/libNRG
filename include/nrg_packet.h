@@ -64,7 +64,6 @@ public:
 	}
 
 	virtual Packet& reset();
-	Packet& erase(off_t offset, size_t size);
 	Packet& seek(off_t offset, int whence);
 	off_t tell() const;
 	size_t size() const { return used_size; }
