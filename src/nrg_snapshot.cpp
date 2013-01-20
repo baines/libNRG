@@ -147,8 +147,26 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 
 	while(data.remaining()){
 		uint16_t eid = 0, etype = 0;
+		uint8_t delete_test = 0;
+
 		data.read16(eid);
 		data.read16(etype);
+		data.read8(delete_test);
+
+		if(delete_test == 0){
+			// special case - delete entity
+			if(entities.size() > eid && entities[eid] != NULL){
+				EntityEvent e = { ENTITY_DESTROYED, eid, etype, entities[eid] };
+				eq.pushEvent(e);
+
+				delete entities[eid];
+				entities[eid] = NULL;
+			}
+			
+			continue;
+		} else {
+			data.seek(-1, SEEK_CUR);
+		}
 
 		if(entities.size() <= eid){
 			entities.resize(eid+1);
@@ -168,31 +186,20 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		size_t num_fields = fl.vec.size();
 		int num_field_bytes = ((num_fields-1)/8)+1;
 		uint8_t* bytes = new uint8_t[num_field_bytes]();
-		int all_zero_test = 0;
 		
 		for(int i = 0; i < num_field_bytes; ++i){
 			data.read8(bytes[i]);
-			all_zero_test |= bytes[i];
 		}
 	
-		if(all_zero_test == 0){
-			// special case - delete entity
-			EntityEvent e = { ENTITY_DESTROYED, eid, etype, entities[eid] };
-			eq.pushEvent(e);
+		EntityEvent e = { ENTITY_UPDATED, eid, etype, entities[eid] };
+		eq.pushEvent(e);
 
-			delete entities[eid];
-			entities[eid] = NULL;
-		} else {
-			EntityEvent e = { ENTITY_UPDATED, eid, etype, entities[eid] };
-			eq.pushEvent(e);
+		entities[eid]->markUpdated();
 
-			entities[eid]->markUpdated();
-
-			for(unsigned int i = 0; i < num_fields; ++i){
-				if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
-					fl.vec[i]->readFromPacket(data);
-					fl.vec[i]->setUpdated(true);
-				}
+		for(unsigned int i = 0; i < num_fields; ++i){
+			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
+				fl.vec[i]->readFromPacket(data);
+				fl.vec[i]->setUpdated(true);
 			}
 		}
 
