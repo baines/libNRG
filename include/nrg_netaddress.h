@@ -14,7 +14,7 @@ public:
 	status_t set(const struct sockaddr_storage& s, const socklen_t len);
 
 	bool isValid() const;
-	const char* name() const;
+	const char* name();
 	int family() const;
 	uint16_t port() const;
 	const struct sockaddr* toSockAddr(socklen_t& out_size) const;

@@ -17,9 +17,6 @@ nrg::NetAddress::NetAddress(const char* name, const char* port) : text(), addr_l
 	if((err = getaddrinfo(name, port, NULL, &result)) == 0){
 		addr_len = result->ai_addrlen;
 		memcpy(&addr, result->ai_addr, addr_len);
-	
-		off_t o = result->ai_family == AF_INET ? addr_off : addr6_off;
-		inet_ntop(result->ai_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
 
 		freeaddrinfo(result);
 	}
@@ -27,12 +24,10 @@ nrg::NetAddress::NetAddress(const char* name, const char* port) : text(), addr_l
 
 nrg::NetAddress::NetAddress(const struct sockaddr_in& in) : addr_len(sizeof(in)) {
 	memcpy(&addr, &in, addr_len);
-	inet_ntop(AF_INET, (char*)&addr + addr_off, text, INET6_ADDRSTRLEN);
 }
 
 nrg::NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in6)) {
 	memcpy(&addr, &in6, addr_len);
-	inet_ntop(AF_INET6, (char*)&addr + addr6_off, text, INET6_ADDRSTRLEN);
 }
 
 nrg::NetAddress::NetAddress(const struct sockaddr_storage& s, const socklen_t len){
@@ -40,25 +35,30 @@ nrg::NetAddress::NetAddress(const struct sockaddr_storage& s, const socklen_t le
 }
 
 nrg::status_t nrg::NetAddress::set(const struct sockaddr_storage& s, const socklen_t len) {
-	off_t o = 0;
-	if(s.ss_family == AF_INET){
-		o = addr_off;
-	} else if(s.ss_family == AF_INET6){
-		o = addr6_off;
-	} else {
+	if(s.ss_family != AF_INET && s.ss_family != AF_INET6){
 		return status::ERROR;
 	}
 	addr_len = len;
 	memcpy(&addr, &s, len);
-	inet_ntop(s.ss_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
 	return status::OK;
 }
 
 bool nrg::NetAddress::isValid() const {
-	return addr_len == 0;
+	return addr_len != 0;
 }
 
-const char* nrg::NetAddress::name() const {
+const char* nrg::NetAddress::name() {
+	if(!text[0] && isValid()){
+		off_t o;
+		if(addr.ss_family == AF_INET){
+			o = addr_off;
+		} else if(addr.ss_family == AF_INET6){
+			o = addr6_off;
+		} else {
+			return text;
+		}
+		inet_ntop(addr.ss_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
+	}
 	return text;
 }
 

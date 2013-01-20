@@ -26,6 +26,8 @@ private:
 
 struct NRG_LIB FieldList {
 	virtual FieldList& add(FieldBase& f) = 0;
+	virtual size_t size() const = 0;
+	virtual FieldBase* get(size_t index) = 0;
 };
 
 template<typename T, class Cdc = nrg::Codec<T> >
@@ -98,9 +100,11 @@ public:
 	}
 
 	void set(size_t index, const T& other){
-		data[index] = other;
-		updated_indices.set(index);
-		FieldBase::setUpdated(true);
+		if(data[index] != other){
+			data[index] = other;
+			updated_indices.set(index);
+			FieldBase::setUpdated(true);
+		}
 	}
 
 	Field& operator=(const T (&other)[N]){

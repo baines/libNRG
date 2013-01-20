@@ -58,6 +58,7 @@ private:
 	EventQueue& client_eventq;
 	int state_id;
 	ClientSnapshot snapshot, next_snapshot;
+	Packet buffer;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {

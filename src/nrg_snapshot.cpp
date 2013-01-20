@@ -11,24 +11,21 @@ Snapshot::Snapshot() : id(-1), edata(){ }
 
 Snapshot::Snapshot(uint16_t id) : id(id), edata(){ }
 
-void Snapshot::addEntity(Entity* e){
+void Snapshot::addEntity(Entity* e, FieldList& fl){
 	bool merge = edata.find(e->getID()) != edata.end();
 
 	EntityData& ed = edata[e->getID()];
-	Packet old_field_data = ed.field_data;
+	buffer.reset().writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
 	ed.field_data.reset();
 	
-	FieldListImpl fl;
-	e->getFields(fl);
+	if(ed.field_sizes.size() != fl.size()) ed.field_sizes.resize(fl.size());
 
-	if(ed.field_sizes.size() != fl.vec.size()) ed.field_sizes.resize(fl.vec.size());
-
-	for(size_t i = 0; i < fl.vec.size(); ++i){
-		if(fl.vec[i]->wasUpdated()){
-			ed.field_sizes[i] = fl.vec[i]->writeToPacket(ed.field_data);
+	for(size_t i = 0; i < fl.size(); ++i){
+		if(fl.get(i)->wasUpdated()){
+			ed.field_sizes[i] = fl.get(i)->writeToPacket(ed.field_data);
 		} else if(merge && ed.field_sizes[i] != 0){
 			ed.field_data.writeArray(
-				old_field_data.getBasePointer() + ed.getFieldOffset(i), ed.field_sizes[i]
+				buffer.getBasePointer() + ed.getFieldOffset(i), ed.field_sizes[i]
 			);
 		}
 	}
@@ -52,13 +49,16 @@ void DeltaSnapshot::removeEntityById(uint16_t id){
 
 bool Snapshot::mergeWithNext(const Snapshot& next){
 	if(id != -1 && next.id != ((id + 1) & USHRT_MAX)) return false;
+	id = next.id;
 
 	for(EDat_cit i = next.edata.begin(), j = next.edata.end(); i!=j; ++i){
 		EDat_it k = edata.find(i->first);		
 		if(k != edata.end()){
 			EntityData& ed_this = k->second;
 			const EntityData& ed_next = i->second;
-			Packet old_field_data = ed_this.field_data;
+			buffer.reset().writeArray(
+				ed_this.field_data.getBasePointer(), ed_this.field_data.size()
+			);
 			ed_this.field_data.reset();
 
 			if(ed_this.field_sizes.size() < ed_next.field_sizes.size())
@@ -73,7 +73,7 @@ bool Snapshot::mergeWithNext(const Snapshot& next){
 					ed_this.field_sizes[x] = sz;
 				} else if((sz = ed_this.field_sizes[x]) != 0){
 					ed_this.field_data.writeArray(
-						old_field_data.getBasePointer() + ed_this.getFieldOffset(x), sz
+						buffer.getBasePointer() + ed_this.getFieldOffset(x), sz
 					);
 				}
 			}

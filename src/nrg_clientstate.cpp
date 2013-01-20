@@ -109,12 +109,13 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 
 bool ClientGameState::needsUpdate() const {
 	//TODO, true if new input to send, or new snapshot to ack
-	return false;
+	return state_id != -1;
 }
 	
 StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
 	//TODO collect and send input to server w/ last recieved snapshot id
-
+	buffer.reset().write16(state_id);
+	out.sendPacket(buffer);
 	return STATE_CONTINUE;
 }
 

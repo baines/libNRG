@@ -32,6 +32,7 @@ public:
 	void unregisterEntity(Entity* e);
 	void markEntityUpdated(Entity* e);
 protected:
+	void clearEntityUpdated(Entity* e, FieldList& fl);
 	friend class PlayerConnection;
 	UDPSocket sock;
 	Packet buffer;
@@ -52,7 +53,7 @@ public:
 	PlayerConnection(uint16_t id, const Server& server, const NetAddress& addr);
 	bool addPacket(Packet& p);
 	bool update();
-	uint16_t getID()  { return id; }
+	uint16_t getID() const { return id; }
 protected:
 	const NetAddress& addr;
 	const UDPSocket& sock;

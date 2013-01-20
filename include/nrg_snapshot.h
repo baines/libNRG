@@ -14,7 +14,7 @@ public:
 	Snapshot(uint16_t id);
 	int getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
-	void addEntity(Entity* e);
+	void addEntity(Entity* e, FieldList& fl);
 	virtual void removeEntityById(uint16_t id);
 	bool mergeWithNext(const Snapshot& next);
 	void writeToPacket(Packet& p) const;
@@ -29,6 +29,7 @@ protected:
 	};
 	int id;
 	std::map<uint16_t, EntityData> edata;
+	Packet buffer;
 };
 
 struct NRG_LIB DeltaSnapshot : public Snapshot {

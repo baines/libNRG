@@ -1,5 +1,6 @@
 #include "nrg_server.h"
 #include "nrg_config.h"
+#include "nrg_field_impl.h"
 #include "nrg_os.h"
 
 nrg::Server::Server(const NetAddress& bind_addr) 
@@ -19,6 +20,14 @@ bool nrg::Server::isBound() {
 
 size_t nrg::Server::playerCount() const {
 	return clients.size();
+}
+
+void nrg::Server::clearEntityUpdated(Entity* e, FieldList& fl){
+	e->nrg_updated = false;
+	
+	for(size_t i = 0; i < fl.size(); ++i){
+		fl.get(i)->setUpdated(false);
+	}
 }
 
 nrg::status_t nrg::Server::update(){
@@ -57,14 +66,18 @@ nrg::status_t nrg::Server::update(){
 	// generate snapshot
 	DeltaSnapshot& delta_ss = snaps.next();
 	master_snapshot.setID(delta_ss.getID());
+	
+	FieldListImpl fl;
 
 	for(std::set<uint16_t>::iterator i = updated_entities.begin(),
 	j = updated_entities.end(); i != j; ++i){
 		if(entities.size() > *i){
 			if(entities[*i] != NULL){
-				master_snapshot.addEntity(entities[*i]);
-				delta_ss.addEntity(entities[*i]);
-				entities[*i]->nrg_updated = false;
+				fl.vec.clear();
+				entities[*i]->getFields(fl);
+				master_snapshot.addEntity(entities[*i], fl);
+				delta_ss.addEntity(entities[*i], fl);
+				clearEntityUpdated(entities[*i], fl);
 			} else {
 				master_snapshot.removeEntityById(*i);
 				delta_ss.removeEntityById(*i);

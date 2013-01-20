@@ -37,7 +37,11 @@ ackd_id(-1), buffer() {
 }
 
 bool ServerPlayerGameState::addIncomingPacket(Packet& p){
-	return false;
+	if(p.remaining() != 2) return false;
+	uint16_t new_ackd_id = 0;
+	p.read16(new_ackd_id);
+	ackd_id = new_ackd_id;
+	return true;
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
