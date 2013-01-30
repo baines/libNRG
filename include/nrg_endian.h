@@ -19,24 +19,18 @@ static inline T swapbytes(const T& data){
 
 template<typename T>
 static inline T ntoh(const T& data){
-	static const int one = 1;
-	static const char tst = *reinterpret_cast<const char*>(&one);
-	if(tst == 0){ // host is big endian
-		return data;
-	} else {
-		return swapbytes(data);
-	}
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+	return data;
+#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	return swapbytes(data);
+#else
+	#error BYTE_ORDER is not defined!
+#endif
 }
 
 template<typename T>
 static inline T hton(const T& data){
-	static const int one = 1;
-	static const char tst = *reinterpret_cast<const char*>(&one);
-	if(tst == 0){ // host is big endian
-		return data;
-	} else {
-		return swapbytes(data);
-	}
+	return nrg::ntoh(data);
 }
 
 }

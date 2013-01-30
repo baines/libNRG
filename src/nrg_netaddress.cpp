@@ -1,4 +1,5 @@
 #include "nrg_netaddress.h"
+#include "nrg_endian.h"
 #include <cstddef>
 #include <cstring>
 #include <cstdio>
@@ -6,8 +7,8 @@
 static const off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
 static const off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
 
-nrg::NetAddress::NetAddress() : text(), addr_len(0) {
-	memset(&addr, 0, sizeof(addr));
+nrg::NetAddress::NetAddress() : text(), addr(), addr_len(0) {
+
 };
 
 nrg::NetAddress::NetAddress(const char* name, const char* port) : text(), addr_len(0) {
@@ -39,7 +40,7 @@ nrg::status_t nrg::NetAddress::set(const struct sockaddr_storage& s, const sockl
 		return status::ERROR;
 	}
 	addr_len = len;
-	memcpy(&addr, &s, len);
+	addr = s;
 	return status::OK;
 }
 
@@ -68,9 +69,9 @@ int nrg::NetAddress::family() const {
 
 uint16_t nrg::NetAddress::port() const {
 	if(addr.ss_family == AF_INET){
-		return ntohs(reinterpret_cast<const struct sockaddr_in*>(&addr)->sin_port);
+		return nrg::ntoh(reinterpret_cast<const struct sockaddr_in*>(&addr)->sin_port);
 	} else if(addr.ss_family == AF_INET6){
-		return ntohs(reinterpret_cast<const struct sockaddr_in6*>(&addr)->sin6_port);
+		return nrg::ntoh(reinterpret_cast<const struct sockaddr_in6*>(&addr)->sin6_port);
 	} else {
 		return 0;
 	}

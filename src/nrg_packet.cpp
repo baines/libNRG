@@ -37,11 +37,11 @@ nrg::Packet& nrg::Packet::write8(const uint8_t& v){
 }
 
 nrg::Packet& nrg::Packet::write16(const uint16_t& v){
-	return writeBE(htons(v));
+	return writeBE(nrg::hton(v));
 }
 
 nrg::Packet& nrg::Packet::write32(const uint32_t& v){
-	return writeBE(htonl(v));
+	return writeBE(nrg::hton(v));
 }
 
 nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
@@ -64,14 +64,14 @@ nrg::Packet& nrg::Packet::read8(uint8_t& v){
 nrg::Packet& nrg::Packet::read16(uint16_t& v){
 	uint16_t be_v;
 	readBE(be_v);
-	v = ntohs(be_v);
+	v = nrg::ntoh(be_v);
 	return *this;
 }
 
 nrg::Packet& nrg::Packet::read32(uint32_t& v){
 	uint32_t be_v;
 	readBE(be_v);
-	v = ntohl(be_v);
+	v = nrg::ntoh(be_v);
 	return *this;
 }
 
@@ -122,7 +122,7 @@ static const int NRG_COMPRESSION_LEVEL = 3;
 #include <zlib.h>
 
 bool nrg::PacketCompressor::apply(Packet& in, Packet& out){
-	size_t buff_size = ::compressBound(in.remaining()), len = buff_size;
+	uLongf buff_size = ::compressBound(in.remaining()), len = buff_size;
 	uint8_t* buff = new uint8_t[buff_size];
 	::compress2(buff, &len, in.getPointer(), in.remaining(), NRG_COMPRESSION_LEVEL);
 	if(len < in.size()){
@@ -149,7 +149,7 @@ bool nrg::PacketCompressor::remove(Packet& in, Packet& out){
 		in.read16(unc_len);
 		if(unc_len > 0){
 			uint8_t* buff = new uint8_t[unc_len];
-			size_t sz = unc_len;
+			uLongf sz = unc_len;
 			if(::uncompress(buff, &sz, in.getPointer(), in.remaining()) == Z_OK){
 				out.writeArray(buff, sz);
 				ret = true;

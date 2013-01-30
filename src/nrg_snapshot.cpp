@@ -15,8 +15,10 @@ void Snapshot::addEntity(Entity* e, FieldList& fl){
 	bool merge = edata.find(e->getID()) != edata.end();
 
 	EntityData& ed = edata[e->getID()];
-	buffer.reset().writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
-	ed.field_data.reset();
+	if(merge){
+		buffer.reset().writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
+		ed.field_data.reset();
+	}
 	
 	if(ed.field_sizes.size() != fl.size()) ed.field_sizes.resize(fl.size());
 
