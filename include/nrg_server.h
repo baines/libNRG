@@ -4,18 +4,14 @@
 #include "nrg_socket.h"
 #include "nrg_packet.h"
 #include "nrg_netaddress.h"
-#include "nrg_connection.h"
 #include "nrg_snapshot.h"
-#include "nrg_state.h"
 #include "nrg_event.h"
-#include "nrg_util.h"
+#include "nrg_player.h"
 #include <map>
 #include <set>
 #include <vector>
 
 namespace nrg {
-
-class NRG_LIB PlayerConnection;
 
 class NRG_LIB Server {
 public:
@@ -31,13 +27,17 @@ public:
 	void registerEntity(Entity* e);
 	void unregisterEntity(Entity* e);
 	void markEntityUpdated(Entity* e);
+	Player* getPlayerByID(uint16_t) const;
+	
+	const UDPSocket& getSocket() const { return sock; }
+	const Snapshot& getSnapshot() const { return master_snapshot; }
+	const DeltaSnapshotBuffer& getDeltaSnapshots() const { return snaps; }
 protected:
 	void clearEntityUpdated(Entity* e, FieldList& fl);
-	friend class PlayerConnection;
 	UDPSocket sock;
 	Packet buffer;
 	EventQueue eventq;
-	typedef std::map<NetAddress, PlayerConnection*> ClientMap;
+	typedef std::map<NetAddress, Player*> ClientMap;
 	ClientMap clients;
 	Snapshot master_snapshot;
 	DeltaSnapshotBuffer snaps;
@@ -46,25 +46,6 @@ protected:
 	IDAssigner<uint16_t> player_ids, entity_ids;
 	uint64_t timer;
 	int interval;
-};
-
-class NRG_LIB PlayerConnection {
-public:
-	PlayerConnection(uint16_t id, const Server& server, const NetAddress& addr);
-	bool addPacket(Packet& p);
-	bool update();
-	uint16_t getID() const { return id; }
-protected:
-	const NetAddress& addr;
-	const UDPSocket& sock;
-	ConnectionIncoming in;
-	ConnectionOutgoing out;
-	Packet buffer;
-	
-	std::vector<State*> states;
-	ServerHandshakeState handshake;
-	ServerPlayerGameState game_state;
-	uint16_t id;
 };
 
 }

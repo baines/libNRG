@@ -1,6 +1,7 @@
 #include "nrg_server.h"
 #include "nrg_config.h"
 #include "nrg_field_impl.h"
+#include "nrg_player_impl.h"
 #include "nrg_os.h"
 
 nrg::Server::Server(const NetAddress& bind_addr) 
@@ -30,6 +31,10 @@ void nrg::Server::clearEntityUpdated(Entity* e, FieldList& fl){
 	}
 }
 
+static inline nrg::PlayerImpl* IMPL(nrg::Player* p){
+	return static_cast<nrg::PlayerImpl*>(p);
+}
+
 nrg::status_t nrg::Server::update(){
 	eventq.clear();
 
@@ -45,17 +50,17 @@ nrg::status_t nrg::Server::update(){
 			printf("new client: %s:%d\n", addr.name(), addr.port());
 			uint16_t pid = player_ids.acquire();
 			std::pair<ClientMap::iterator, bool> res = clients.insert(
-				std::pair<NetAddress, PlayerConnection*>(addr, NULL)
+				std::pair<NetAddress, PlayerImpl*>(addr, NULL)
 			);
-			res.first->second = new PlayerConnection(pid, *this, res.first->first);
+			res.first->second = new PlayerImpl(pid, *this, res.first->first);
 			
-			PlayerJoinEvent e = { PLAYER_JOIN, pid, res.first->second };
+			PlayerEvent e = { PLAYER_JOIN, pid, res.first->second };
 			eventq.pushEvent(e);
 			
 			it = res.first;
 		}
 		
-		if(!it->second->addPacket(buffer)){
+		if(!IMPL(it->second)->addPacket(buffer)){
 			// kick client
 		}
 		blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
@@ -87,7 +92,7 @@ nrg::status_t nrg::Server::update(){
 	updated_entities.clear();
 
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
-		if(!i->second->update()){
+		if(!IMPL(i->second)->update()){
 			// kick client
 		}
 	}
@@ -128,40 +133,5 @@ nrg::Server::~Server(){
 			(*i)->nrg_serv_ptr = NULL;
 			(*i)->nrg_id = 0;
 		}
-	}
-}
-
-nrg::PlayerConnection::PlayerConnection(uint16_t id, const Server& s, const NetAddress& addr) 
-: addr(addr), sock(sock), in(addr), out(addr, s.sock), buffer(NRG_MAX_PACKET_SIZE), 
-states(), handshake(), game_state(s.master_snapshot, s.snaps) {
-	states.push_back(&game_state);
-	states.push_back(&handshake);
-}
-
-bool nrg::PlayerConnection::addPacket(Packet& p){
-	bool valid = false;
-	if(in.addPacket(p)){
-		if(in.hasNewPacket()){
-			buffer.reset();
-			in.getLatestPacket(buffer);
-			valid = states.back()->addIncomingPacket(buffer);
-		} else {
-			valid = true;
-		}
-	}
-	return valid;
-}
-
-bool nrg::PlayerConnection::update(){
-	if(states.empty()) return false;
-	
-	if(states.back()->needsUpdate()){
-		StateUpdateResult ur = states.back()->update(out);
-		if(ur != STATE_CONTINUE){
-			states.pop_back();
-		}
-		return ur == STATE_EXIT_SUCCESS;
-	} else {
-		return true;
 	}
 }

@@ -1,27 +1,20 @@
 #ifndef NRG_INPUT_H
 #define NRG_INPUT_H
 #include "nrg_core.h"
-#include "nrg_packet.h"
-#include <map>
+#include "nrg_field.h"
+#include "nrg_player.h"
 
 namespace nrg {
 
-class NRG_LIB Input {
-	Input();
-	Input& nextFrame();
-	void addEvent(int32_t key, int32_t value);
-	void acknowledge(uint32_t id);
+struct NRG_LIB Input : public FieldContainer {
+	virtual void getFields(FieldList& list) = 0;
+	virtual void onUpdateNRG(Player& player){}
+
+	void markUpdated();
+	bool readFromPacket(Packet& p);
 	void writeToPacket(Packet& p);
-	void readFromPacket(Packet& p);
-protected:
-	uint32_t input_id;
-	struct InputEvent {
-		int32_t value;
-		uint32_t state_added;
-	};
-	std::map<int32_t, InputEvent> events;
 };
 
-};
+}
 
 #endif

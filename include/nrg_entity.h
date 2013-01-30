@@ -8,7 +8,7 @@ namespace nrg {
 
 class NRG_LIB Server;
 
-class NRG_LIB Entity {
+class NRG_LIB Entity : public FieldContainer {
 public:
 	Entity();
 	virtual Entity* clone() = 0;

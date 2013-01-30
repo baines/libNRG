@@ -17,7 +17,7 @@ public:
 	status_t connect(const NetAddress& server_addr);
 	bool isConnected() const;
 	const NetAddress& getAddress() const;
-	//Input& getInput() const;
+
 	void registerEntity(Entity* e);
 	status_t update();
 	bool pollEvent(Event& e);

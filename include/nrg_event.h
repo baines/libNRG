@@ -6,7 +6,6 @@
 namespace nrg {
 
 typedef enum {
-
 	/* Client-side */
 	DISCONNECTED = 1,
 	ENTITY_UPDATED,
@@ -31,31 +30,24 @@ struct NRG_LIB EntityEvent {
 	Entity* pointer;
 };
 
-class NRG_LIB PlayerConnection;
+class NRG_LIB Player;
 
-struct NRG_LIB PlayerJoinEvent {
-	uint8_t type; /* PLAYER_JOIN */
+struct NRG_LIB PlayerEvent {
+	uint8_t type; /* PLAYER_{JOIN, LEAVE} */
 	uint16_t id;
-	PlayerConnection* player;
-};
-
-struct NRG_LIB PlayerLeaveEvent {
-	uint8_t type; /* PLAYER_LEAVE */
-	uint16_t id;
+	Player* player;
 };
 
 union NRG_LIB Event {
 	uint8_t type;
 	DisconnectEvent dc;
 	EntityEvent entity;
-	PlayerJoinEvent join;
-	PlayerLeaveEvent leave;
+	PlayerEvent join;
 	
 	Event() : type(0){}
 	Event(const DisconnectEvent& e) : dc(e){}
 	Event(const EntityEvent& e) : entity(e){}
-	Event(const PlayerJoinEvent& e) : join(e){}
-	Event(const PlayerLeaveEvent& e) : leave(e){}
+	Event(const PlayerEvent& e) : join(e){}
 };
 
 class EventQueue {

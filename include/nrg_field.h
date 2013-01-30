@@ -8,11 +8,11 @@
 
 namespace nrg {
 
-class NRG_LIB Entity;
+class NRG_LIB FieldContainer;
 
 class NRG_LIB FieldBase {
 public:
-	FieldBase(Entity* containing_entity);
+	FieldBase(FieldContainer* container);
 	virtual size_t readFromPacket(Packet& p) = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
 	virtual ~FieldBase(){};
@@ -20,7 +20,7 @@ public:
 	virtual bool wasUpdated() const;
 	virtual void setUpdated(bool updated);
 private:
-	Entity* containing_entity;
+	FieldContainer* container;
 	bool updated;
 };
 
@@ -30,11 +30,16 @@ struct NRG_LIB FieldList {
 	virtual FieldBase* get(size_t index) = 0;
 };
 
+struct NRG_LIB FieldContainer {
+	virtual void markUpdated() = 0;
+	virtual void getFields(FieldList& list) = 0;
+};
+
 template<typename T, class Cdc = nrg::Codec<T> >
 class Field : public FieldBase {
 public:
-	Field(Entity* e) : FieldBase(e), data(){};
-	Field(Entity* e, const T& t) : FieldBase(e), data(t){};
+	Field(FieldContainer* c) : FieldBase(c), data(){};
+	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t){};
 
 	virtual size_t readFromPacket(Packet& p){
 		return Cdc().decode(p, data);
@@ -66,8 +71,8 @@ private:
 template<typename T, size_t N>
 class Field<T[N]> : public FieldBase {
 public:
-	Field(Entity* e) : FieldBase(e), data(){};
-	Field(Entity* e, const T (&t)[N]) : FieldBase(e), data(t){};
+	Field(FieldContainer* c) : FieldBase(c), data(){};
+	Field(FieldContainer* c, const T (&t)[N]) : FieldBase(c), data(t){};
 
 	//TODO: read/write whole array if (index, val) pairs will take up more space
 	virtual size_t readFromPacket(Packet& p){

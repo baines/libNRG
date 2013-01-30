@@ -3,7 +3,7 @@
 
 using namespace nrg;
 
-FieldBase::FieldBase(Entity* e) : containing_entity(e), updated(true) {
+FieldBase::FieldBase(FieldContainer* c) : container(c), updated(true) {
 	
 }
 
@@ -14,6 +14,6 @@ bool FieldBase::wasUpdated() const{
 void FieldBase::setUpdated(bool val){
 	updated = val;
 	if(updated){
-		containing_entity->markUpdated();
+		container->markUpdated();
 	}
 }
