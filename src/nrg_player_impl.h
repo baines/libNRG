@@ -12,9 +12,11 @@ public:
 	bool addPacket(Packet& p);
 	bool update();
 	void kick(const char* reason);
+	bool isConnected() const;
 	int getPing() const;
 	uint16_t getID() const { return id; }
 protected:
+	const Server& server;
 	const NetAddress& addr;
 	const UDPSocket& sock;
 	ConnectionIncoming in;
@@ -25,6 +27,7 @@ protected:
 	ServerHandshakeState handshake;
 	ServerPlayerGameState game_state;
 	uint16_t id;
+	bool connected;
 };
 
 }

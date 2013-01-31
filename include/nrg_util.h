@@ -20,6 +20,7 @@ public:
 	}
 	void release(const ID& id){
 		reusable_ids.push_back(id);
+		std::sort(reusable_ids.begin(), reusable_ids.end(), std::greater<ID>());
 	}
 private:
 	std::vector<ID> reusable_ids;

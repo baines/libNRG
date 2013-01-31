@@ -61,7 +61,7 @@ nrg::status_t nrg::Server::update(){
 		}
 		
 		if(!IMPL(it->second)->addPacket(buffer)){
-			// kick client
+			it->second->kick("Recieved invalid packet from client.");
 		}
 		blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
 	}
@@ -91,9 +91,22 @@ nrg::status_t nrg::Server::update(){
 	}
 	updated_entities.clear();
 
+	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; /**/){
+		if(!i->second->isConnected()){
+			printf("client quit: %s:%d\n", i->first.name(), i->first.port());
+			PlayerEvent e = { PLAYER_LEAVE, i->second->getID(), i->second };
+			eventq.pushEvent(e);
+
+			delete i->second;
+			clients.erase(i++);
+		} else {
+			++i;
+		}
+	}
+
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
 		if(!IMPL(i->second)->update()){
-			// kick client
+			i->second->kick("Client update failed.");
 		}
 	}
 	return status::OK;
@@ -126,7 +139,21 @@ void nrg::Server::markEntityUpdated(Entity* e){
 	if(e) updated_entities.insert(e->getID());
 }
 
+nrg::Player* nrg::Server::getPlayerByID(uint16_t id) const {
+	for(ClientMap::const_iterator i = clients.begin(), j = clients.end(); i != j; ++i){
+		if(IMPL(i->second)->getID() == id){
+			return i->second;		
+		}
+	}
+	return NULL;
+}
+
 nrg::Server::~Server(){
+	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
+		i->second->kick("Server closing.");
+		delete i->second;
+	}
+
 	for(std::vector<Entity*>::iterator i = entities.begin(), j = entities.end()
 	; i != j; ++i){
 		if((*i)){

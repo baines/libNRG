@@ -6,6 +6,7 @@
 #include "nrg_connection.h"
 #include "nrg_client.h"
 #include "nrg_server.h"
+#include "nrg_player.h"
 #include "nrg_entity.h"
 #include "nrg_config.h"
 #include "nrg_util.h"

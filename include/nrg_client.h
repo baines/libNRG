@@ -31,6 +31,7 @@ protected:
 	std::vector<State*> states;
 	ClientHandshakeState handshake;
 	ClientGameState game_state;
+	char dc_reason[NRG_MAX_ERRORMSG_LEN];
 };
 
 };

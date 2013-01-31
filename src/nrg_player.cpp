@@ -3,19 +3,26 @@
 using namespace nrg;
 
 PlayerImpl::PlayerImpl(uint16_t id, const Server& s, const NetAddress& addr) 
-: addr(addr), sock(s.getSocket()), in(addr), out(addr, sock), buffer(NRG_MAX_PACKET_SIZE), 
-states(), handshake(), game_state(s.getSnapshot(), s.getDeltaSnapshots()) {
+: server(s), addr(addr), sock(s.getSocket()), in(addr), out(addr, sock), 
+buffer(NRG_MAX_PACKET_SIZE), states(), handshake(), game_state(s.getSnapshot(), 
+s.getDeltaSnapshots()), id(id), connected(true) {
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }
 
 bool PlayerImpl::addPacket(Packet& p){
 	bool valid = false;
-	if(in.addPacket(p)){
+	if(!states.empty() && in.addPacket(p)){
 		if(in.hasNewPacket()){
 			buffer.reset();
 			in.getLatestPacket(buffer);
-			valid = states.back()->addIncomingPacket(buffer);
+			if(in.isLatestPacketFinal()){
+				valid = true;				
+				connected = false;
+				states.clear();
+			} else {
+				valid = states.back()->addIncomingPacket(buffer);
+			}
 		} else {
 			valid = true;
 		}
@@ -31,14 +38,20 @@ bool PlayerImpl::update(){
 		if(ur != STATE_CONTINUE){
 			states.pop_back();
 		}
-		return ur == STATE_EXIT_SUCCESS;
+		return ur != STATE_EXIT_FAILURE;
 	} else {
 		return true;
 	}
 }
 
 void PlayerImpl::kick(const char* reason){
-	//TODO
+	buffer.reset().writeArray((uint8_t*)reason, strlen(reason));
+	out.sendDisconnect(buffer);
+	connected = false;
+}
+
+bool PlayerImpl::isConnected() const {
+	return connected;
 }
 
 int PlayerImpl::getPing() const {

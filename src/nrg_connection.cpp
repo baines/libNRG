@@ -15,7 +15,7 @@ void nrg::ConnectionBase::setTransform(nrg::PacketTransformation* t){
 
 nrg::ConnectionIncoming::ConnectionIncoming(const NetAddress& na)
 : ConnectionBase(na), new_packet(false), first_packet(true), full_packet(false), 
-  latest(NRG_MAX_PACKET_SIZE) {
+  final_packet(false), latest(NRG_MAX_PACKET_SIZE) {
 
 }
 
@@ -39,6 +39,8 @@ bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags) c
 }
 
 bool nrg::ConnectionIncoming::addPacket(Packet& p){
+	if(final_packet) return false;
+	
 	uint16_t seq = 0;
 	uint8_t flags = 0;
 	
@@ -62,10 +64,14 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			ref.seek(o, SEEK_SET);
 			return false;
 		}
+
+		if(flags & PKTFLAG_FINISHED){
+			final_packet = true;
+			flags &= ~(PKTFLAG_CONTINUATION | PKTFLAG_CONTINUED);
+		}
 		
 		if(!(flags & PKTFLAG_CONTINUATION)){
 			latest.reset();
-			full_packet = false;
 		}
 		
 		latest.writeArray(ref.getPointer(), ref.remaining());
@@ -73,6 +79,8 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 		if(!(flags & PKTFLAG_CONTINUED)){
 			full_packet = true;
 			new_packet = true;
+		} else {
+			full_packet = false;
 		}
 		
 		seq_num = seq;
@@ -94,6 +102,10 @@ void nrg::ConnectionIncoming::getLatestPacket(Packet& p){
 	p.seek(0, SEEK_SET);
 	latest.seek(o, SEEK_SET);
 	new_packet = false;
+}
+
+bool nrg::ConnectionIncoming::isLatestPacketFinal() const {
+	return final_packet;
 }
 
 nrg::ConnectionOutgoing::ConnectionOutgoing(const NetAddress& na, const Socket& sock)
@@ -125,5 +137,24 @@ void nrg::ConnectionOutgoing::sendPacket(Packet& p){
 		}
 		flags = PKTFLAG_CONTINUATION;
 	}
+	p.seek(o, SEEK_SET);
+}
+
+void nrg::ConnectionOutgoing::sendDisconnect(Packet& p){
+	off_t o = p.tell();
+	p.seek(0, SEEK_SET);
+	size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - getHeaderSize());
+
+	buffer.reset().write16(seq_num++).write8(PKTFLAG_FINISHED)
+	      .writeArray(p.getPointer(), n).seek(0, SEEK_SET);
+	
+	if(transform){
+		buffer2.reset();
+		transform->apply(buffer, buffer2);
+		sock.sendPacket(buffer2, remote_addr);
+	} else {
+		sock.sendPacket(buffer, remote_addr);
+	}
+
 	p.seek(o, SEEK_SET);
 }

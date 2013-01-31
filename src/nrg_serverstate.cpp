@@ -64,7 +64,7 @@ StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 			snapshot.writeToPacket(buffer);
 			out.sendPacket(buffer);
 		} else {
-			// kick
+			return STATE_EXIT_FAILURE;
 		}
 	}
 	return STATE_CONTINUE;
