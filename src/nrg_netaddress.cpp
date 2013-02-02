@@ -8,22 +8,10 @@ static const off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
 static const off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
 
 nrg::NetAddress::NetAddress() : text(), addr(), addr_len(0) {
-
 };
 
 nrg::NetAddress::NetAddress(const char* name, const char* port) : text(), addr_len(0) {
-	struct addrinfo* result = NULL;
-	int err = 0;
-
-	if((err = getaddrinfo(name, port, NULL, &result)) == 0){
-		addr_len = result->ai_addrlen;
-		memcpy(&addr, result->ai_addr, addr_len);
-
-		off_t o = result->ai_family == AF_INET ? addr_off : addr6_off;
-		inet_ntop(result->ai_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
-
-		freeaddrinfo(result);
-	}
+	resolve(name, port);
 }
 
 nrg::NetAddress::NetAddress(const struct sockaddr_in& in) : addr_len(sizeof(in)) {
@@ -53,6 +41,22 @@ nrg::status_t nrg::NetAddress::set(const struct sockaddr_storage& s, const sockl
 	addr = s;
 	inet_ntop(s.ss_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
 	return status::OK;
+}
+
+bool nrg::NetAddress::resolve(const char* name, const char* port){
+	struct addrinfo* result = NULL;
+	int err = 0;
+
+	if((err = getaddrinfo(name, port, NULL, &result)) == 0){
+		addr_len = result->ai_addrlen;
+		memcpy(&addr, result->ai_addr, addr_len);
+
+		off_t o = result->ai_family == AF_INET ? addr_off : addr6_off;
+		inet_ntop(result->ai_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
+
+		freeaddrinfo(result);
+	}
+	return isValid();
 }
 
 bool nrg::NetAddress::isValid() const {

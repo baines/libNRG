@@ -12,6 +12,7 @@ public:
 	explicit NetAddress(const struct sockaddr_in6& in6);
 	NetAddress(const struct sockaddr_storage& s, const socklen_t len);
 	status_t set(const struct sockaddr_storage& s, const socklen_t len);
+	bool resolve(const char* name, const char* port);
 
 	bool isValid() const;
 	const char* name() const;

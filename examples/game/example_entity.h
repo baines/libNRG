@@ -9,25 +9,24 @@ enum MyEntities {
 
 class ExampleEntity : public nrg::EntityHelper<ExampleEntity, EXAMPLE> {
 public:	
-	ExampleEntity() : timer(0.0f), xpos(this, 320), ypos(this, 240), array(this){}
+	ExampleEntity() : angle(0.0f), xpos(this, 320), ypos(this, 240), array(this){}
 
 	virtual void getFields(nrg::FieldList& list){
 		list.add(xpos).add(ypos).add(array);
 	}
 
 	void update(){
-		timer += M_PI / 180.0f;
+		angle += M_PI / 90.0f;
 
-		xpos = 320 + (60 * sin(timer));
-		ypos = 240 + (60 * cos(timer));
-		array.set(0, 5);
+		xpos = 320 + (200 * sin(angle));
+		ypos = 240 + (200 * cos(angle));
 	}
 	
-	uint16_t getx() const {
+	uint16_t getX() const {
 		return xpos.get();
 	}
 
-	uint16_t gety() const {
+	uint16_t getY() const {
 		return ypos.get();
 	}
 	
@@ -35,7 +34,7 @@ public:
 		return array.get(i);
 	}
 private:
-	float timer;
+	float angle;
 	nrg::Field<uint16_t> xpos, ypos;
 	nrg::Field<uint8_t[8]> array;
 };
