@@ -1,4 +1,5 @@
 #include "nrg_state.h"
+#include "nrg_os.h"
 #include <climits>
 
 using namespace nrg;
@@ -32,15 +33,20 @@ StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
 const DeltaSnapshotBuffer& dsb) : snapshot(), master_ss(master), snaps(dsb), 
-ackd_id(-1), buffer() {
+ackd_id(-1), latency(0), buffer() {
 
 }
 
 bool ServerPlayerGameState::addIncomingPacket(Packet& p){
-	if(p.remaining() != 2) return false;
+	if(p.remaining() != 6) return false;
 	uint16_t new_ackd_id = 0;
-	p.read16(new_ackd_id);
+	uint32_t c_time = 0;
+
+	p.read16(new_ackd_id).read32(c_time);
 	ackd_id = new_ackd_id;
+
+	latency = (os::microseconds() / 1000) - c_time;
+	printf("%p latency: %dms\n", this, latency);
 	return true;
 }
 
@@ -49,8 +55,10 @@ bool ServerPlayerGameState::needsUpdate() const {
 }
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
+	//printf("%p latency: %dms\n", this, latency);
 	if(ackd_id == -1){
-		buffer.reset().write16(master_ss.getID()).write16(0); // TODO: Input ID
+		//TODO: input id
+		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000).write16(0);
 		master_ss.writeToPacket(buffer);
 		out.sendPacket(buffer);
 	} else {
@@ -60,7 +68,7 @@ StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 			for(uint16_t i = ackd_id + 1; i != snaps.getCurrentID(); ++i){
 				snapshot.mergeWithNext(*snaps.find(i));
 			}
-			buffer.reset().write16(snapshot.getID()).write16(0);
+			buffer.reset().write16(snapshot.getID()).write32(os::microseconds()/1000).write16(0);
 			snapshot.writeToPacket(buffer);
 			out.sendPacket(buffer);
 		} else {

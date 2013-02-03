@@ -45,20 +45,23 @@ class Entity;
 
 class NRG_LIB ClientGameState : public State {
 public:
-	ClientGameState(EventQueue& eq);
+	ClientGameState(EventQueue& eq, const Socket& s);
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
 	~ClientGameState();
 
 	void registerEntity(Entity* e);
+	double getSnapshotTiming() const;
 private:
 	std::vector<Entity*> entities, updated_entities;
 	std::map<uint16_t, Entity*> entity_types;
 	EventQueue& client_eventq;
 	int state_id;
+	uint32_t s_time_ms, c_time_ms;
 	ClientSnapshot snapshot, next_snapshot;
 	Packet buffer;
+	const Socket& sock;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {
@@ -81,6 +84,7 @@ private:
 	const Snapshot& master_ss;
 	const DeltaSnapshotBuffer& snaps;
 	int ackd_id;
+	int latency;
 	Packet buffer;
 };
 

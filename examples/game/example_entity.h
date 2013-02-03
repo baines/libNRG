@@ -16,18 +16,20 @@ public:
 	}
 
 	void update(){
-		angle += M_PI / 90.0f;
+		angle += M_PI / 45.0f;
 
 		xpos = 320 + (200 * sin(angle));
 		ypos = 240 + (200 * cos(angle));
 	}
 	
-	uint16_t getX() const {
-		return xpos.get();
+	uint16_t getX(bool interp) const {
+		if(interp) return xpos.getInterp(nrg::lerp<uint16_t>());
+		else return xpos.get();
 	}
 
-	uint16_t getY() const {
-		return ypos.get();
+	uint16_t getY(bool interp) const {
+		if(interp) return ypos.getInterp(nrg::lerp<uint16_t>());
+		else return ypos.get();
 	}
 	
 	uint8_t getArray(int i){

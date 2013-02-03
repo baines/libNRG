@@ -15,7 +15,7 @@ public:
 	ssize_t sendPacket(const Packet& p) const;
 	ssize_t sendPacket(const Packet& p, const NetAddress& addr) const;
 	ssize_t recvPacket(Packet& p) const;
-	ssize_t recvPacket(Packet& p, NetAddress& addr) const;
+	ssize_t recvPacket(Packet& p, NetAddress& addr);
 	template<typename T>
 	status_t setOption(int level, int name, const T& opt){
 		if(setsockopt(fd, level, name, &opt, sizeof(T)) == 0){
@@ -30,11 +30,15 @@ public:
 	const NetAddress* getConnectedAddress() const {
 		return connected_addr.get();
 	}
+	uint64_t getLastTimestamp() const {
+		return last_timestamp;
+	}
 	~Socket();
 protected:
 	std::auto_ptr<NetAddress> bound_addr, connected_addr;
 	int fd, family, type;
 	bool error;
+	uint64_t last_timestamp;
 };
 
 struct NRG_LIB UDPSocket : public Socket {

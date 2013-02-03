@@ -5,7 +5,7 @@ all: game_server game_client
 game_server: server.cpp example_entity.h ../../libnrg.a
 	$(CXX) -I../../include $< ../../libnrg.a -lrt -lz -o $@ 
 
-game_client: client.cpp example_entity.h ../../libnrg.a
+game_client: client.cpp example_entity.h sprite.h ../../libnrg.a
 	$(CXX) -I../../include $< ../../libnrg.a -lsfml-graphics -lrt -lz -o $@
 
 clean:

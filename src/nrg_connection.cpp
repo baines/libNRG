@@ -96,11 +96,7 @@ bool nrg::ConnectionIncoming::hasNewPacket() const {
 }
 
 void nrg::ConnectionIncoming::getLatestPacket(Packet& p){
-	off_t o = latest.tell();
-	latest.seek(0, SEEK_SET);
-	p.writeArray(latest.getPointer(), latest.remaining());
-	p.seek(0, SEEK_SET);
-	latest.seek(o, SEEK_SET);
+	p.writeArray(latest.getBasePointer(), latest.size()).seek(0, SEEK_SET);
 	new_packet = false;
 }
 
@@ -129,8 +125,7 @@ void nrg::ConnectionOutgoing::sendPacket(Packet& p){
 		p.seek(n, SEEK_CUR);
 		buffer.seek(0, SEEK_SET);
 		if(transform){
-			buffer2.reset();
-			transform->apply(buffer, buffer2);
+			transform->apply(buffer, buffer2.reset());
 			sock.sendPacket(buffer2, remote_addr);
 		} else {
 			sock.sendPacket(buffer, remote_addr);
@@ -149,8 +144,7 @@ void nrg::ConnectionOutgoing::sendDisconnect(Packet& p){
 	      .writeArray(p.getPointer(), n).seek(0, SEEK_SET);
 	
 	if(transform){
-		buffer2.reset();
-		transform->apply(buffer, buffer2);
+		transform->apply(buffer, buffer2.reset());
 		sock.sendPacket(buffer2, remote_addr);
 	} else {
 		sock.sendPacket(buffer, remote_addr);

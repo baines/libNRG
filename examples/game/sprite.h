@@ -4,10 +4,10 @@
 class Sprite {
 public:
 	Sprite(sf::Image i, ExampleEntity* e) : s(i), entity(e){ 
-		update();
+		update(true);
 	}
-	void update(){
-		s.SetPosition(entity->getX(), entity->getY());
+	void update(bool interp){
+		s.SetPosition(entity->getX(interp), entity->getY(interp));
 	}
 	void draw(sf::RenderWindow& win){
 		win.Draw(s);

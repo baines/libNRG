@@ -9,6 +9,7 @@
 #include "nrg_player.h"
 #include "nrg_entity.h"
 #include "nrg_config.h"
+#include "nrg_interp.h"
 #include "nrg_util.h"
 #include "nrg_os.h"
 #endif

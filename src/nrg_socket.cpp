@@ -1,11 +1,14 @@
 #include "nrg_socket.h"
 #include "nrg_config.h"
+#include "nrg_os.h"
 #include <unistd.h>
+#include <sys/time.h>
+#include <iostream>
 
 using nrg::status_t;
 
-nrg::Socket::Socket(int family, int type) : bound_addr(), 
-connected_addr(), fd(0), family(family), type(type), error(false) {
+nrg::Socket::Socket(int family, int type) : bound_addr(), connected_addr(), 
+fd(0), family(family), type(type), error(false), last_timestamp(0) {
 	fd = socket(family, type, 0);
 	if(fd == -1) error = true;
 }
@@ -55,15 +58,47 @@ ssize_t nrg::Socket::recvPacket(Packet& p) const {
 	return result;
 }
 
-ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) const {
-	struct sockaddr_storage sas;
-	socklen_t len = sizeof(sas);
+ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) {
+	struct sockaddr_storage sas = {};
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
-	ssize_t result = ::recvfrom(fd, buf, NRG_MAX_PACKET_SIZE, 0, (struct sockaddr*)&sas, &len);
+	socklen_t len = sizeof(sas);
+
+#ifdef NRG_USE_SO_TIMESTAMP
+	struct msghdr msg = {};
+    struct iovec iov = {};
+
+	char cbuf[CMSG_SPACE(sizeof(struct timeval))];
+	struct cmsghdr* cmsg = (struct cmsghdr*)cbuf;
+
+	iov.iov_base = buf;
+	iov.iov_len = sizeof(buf);
+
+	msg.msg_name = &sas;
+	msg.msg_namelen = len;
+	msg.msg_iov = &iov;
+	msg.msg_iovlen = 1;
+	msg.msg_control = cmsg;
+	msg.msg_controllen = sizeof(cbuf);
+
+	ssize_t result = ::recvmsg(fd, &msg, 0);
+#else
+	ssize_t result = ::recvfrom(fd, buf, sizeof(buf), 0, (sockaddr*)&sas, &len);
+#endif
 	if(result > 0){
+		last_timestamp = os::microseconds();
 		p.writeArray(buf, result);
+#ifdef NRG_USE_SO_TIMESTAMP
+		for(cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)){
+			if(cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SO_TIMESTAMP){
+				struct timeval *tv1 = (struct timeval*)CMSG_DATA(cmsg), tv2, tv3;
+				gettimeofday(&tv2, 0);
+				timersub(&tv2, tv1, &tv3);
+				last_timestamp -= tv3.tv_usec;
+			}
+		}
+#endif
 	}
-	addr.set(sas, len);
+	addr.set(sas, family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6));
 	return result;
 }
 

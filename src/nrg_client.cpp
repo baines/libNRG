@@ -3,8 +3,9 @@
 
 nrg::Client::Client(const NetAddress& addr) : sock(), buffer(NRG_MAX_PACKET_SIZE), 
 serv_addr(addr), in(serv_addr), out(serv_addr, sock), eventq(), states(), handshake(),
-game_state(eventq), dc_reason() {
+game_state(eventq, sock), dc_reason() {
 	sock.setNonBlocking(true);
+	sock.setOption(SOL_SOCKET, SO_TIMESTAMP, 1);
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }
@@ -18,12 +19,10 @@ nrg::status_t nrg::Client::update(){
 
 	while(sock.dataPending()){
 		NetAddress addr;
-		buffer.reset();
-		sock.recvPacket(buffer, addr);
+		sock.recvPacket(buffer.reset(), addr);
 		//if(addr != serv_addr) continue;
 		if(in.addPacket(buffer) && in.hasNewPacket()){
-			buffer.reset();
-			in.getLatestPacket(buffer);
+			in.getLatestPacket(buffer.reset());
 
 			if(in.isLatestPacketFinal()){
 				size_t sz = std::min(sizeof(dc_reason)-1, buffer.remaining());
@@ -63,6 +62,5 @@ bool nrg::Client::pollEvent(Event& e){
 }
 
 nrg::Client::~Client(){
-	buffer.reset();
-	out.sendDisconnect(buffer);
+	out.sendDisconnect(buffer.reset());
 }

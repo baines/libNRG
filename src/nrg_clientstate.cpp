@@ -1,7 +1,11 @@
 #include "nrg_state.h"
 #include "nrg_config.h"
+#include "nrg_os.h"
 #include "nrg_field_impl.h"
 #include <climits>
+
+#include <sys/ioctl.h>
+#include <sys/time.h>
 
 using namespace nrg;
 
@@ -39,12 +43,13 @@ ClientHandshakeState::~ClientHandshakeState(){
 
 }
 
-ClientGameState::ClientGameState(EventQueue& eq) : entities(), updated_entities(),
-entity_types(), client_eventq(eq), state_id(-1), snapshot(){
+ClientGameState::ClientGameState(EventQueue& eq, const Socket& s) : entities(), 
+updated_entities(), entity_types(), client_eventq(eq), state_id(-1), 
+s_time_ms(0), c_time_ms(0), snapshot(), buffer(), sock(s) {
 
 }
 
-static const size_t NRG_CGS_HEADER_SIZE = 4;
+static const size_t NRG_CGS_HEADER_SIZE = 8;
 typedef std::vector<Entity*>::iterator e_it;
 typedef std::vector<FieldBase*>::iterator f_it;
 typedef std::map<uint16_t, Entity*>::iterator et_it;
@@ -53,6 +58,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
 
 	bool valid = false;
+
 	uint16_t new_state_id = 0;
 	p.read16(new_state_id);
 
@@ -68,6 +74,9 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		}
 	}
 	if(!valid) return false;
+
+	p.read32(s_time_ms);
+	c_time_ms = sock.getLastTimestamp() / 1000;
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
@@ -114,13 +123,19 @@ bool ClientGameState::needsUpdate() const {
 	
 StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
 	//TODO collect and send input to server w/ last recieved snapshot id
-	buffer.reset().write16(state_id);
-	out.sendPacket(buffer);
+	uint32_t s_time_est = s_time_ms + ((os::microseconds() / 1000) - c_time_ms);
+	out.sendPacket(buffer.reset().write16(state_id).write32(s_time_est));
 	return STATE_CONTINUE;
 }
 
 void ClientGameState::registerEntity(Entity* e){
+	e->nrg_cgs_ptr = this;
 	entity_types.insert(std::make_pair(e->getType(), e));
+}
+
+double ClientGameState::getSnapshotTiming() const {
+	//FIXME: hardcoded 50ms interval assumption, get it during handshake instead?
+	return ((os::microseconds() / 1000) - c_time_ms) / 50.0;
 }
 
 ClientGameState::~ClientGameState(){

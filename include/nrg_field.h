@@ -19,7 +19,7 @@ public:
 
 	virtual bool wasUpdated() const;
 	virtual void setUpdated(bool updated);
-private:
+protected:
 	FieldContainer* container;
 	bool updated;
 };
@@ -32,6 +32,7 @@ struct NRG_LIB FieldList {
 
 struct NRG_LIB FieldContainer {
 	virtual void markUpdated() = 0;
+	virtual double getClientSnapshotTiming() const { return 0.0; }
 	virtual void getFields(FieldList& list) = 0;
 };
 
@@ -42,7 +43,8 @@ public:
 	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t){};
 
 	virtual size_t readFromPacket(Packet& p){
-		return Cdc().decode(p, data);
+		data = data_next;
+		return Cdc().decode(p, data_next);
 	}
 
 	virtual size_t writeToPacket(Packet& p) const {
@@ -64,8 +66,13 @@ public:
 	T get() const {
 		return data;
 	}
+
+	template<class F>
+	T getInterp(const F& func) const {
+		return func(data, data_next, this->container->getClientSnapshotTiming());
+	}
 private:
-	T data;
+	T data, data_next;
 };
 
 template<typename T, size_t N>

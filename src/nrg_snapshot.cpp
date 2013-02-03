@@ -151,9 +151,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		uint16_t eid = 0, etype = 0;
 		uint8_t delete_test = 0;
 
-		data.read16(eid);
-		data.read16(etype);
-		data.read8(delete_test);
+		data.read16(eid).read16(etype).read8(delete_test);
 
 		if(delete_test == 0){
 			// special case - delete entity

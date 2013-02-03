@@ -14,8 +14,7 @@ bool PlayerImpl::addPacket(Packet& p){
 	bool valid = false;
 	if(!states.empty() && in.addPacket(p)){
 		if(in.hasNewPacket()){
-			buffer.reset();
-			in.getLatestPacket(buffer);
+			in.getLatestPacket(buffer.reset());
 			if(in.isLatestPacketFinal()){
 				valid = true;				
 				connected = false;
