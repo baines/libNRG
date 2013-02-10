@@ -9,6 +9,7 @@ struct NRG_LIB Player {
 	virtual void kick(const char* reason) = 0;
 	virtual bool isConnected() const = 0;
 	virtual int getPing() const = 0;
+	virtual ~Player(){}
 };
 
 }

@@ -4,6 +4,7 @@
 #include "nrg_packet.h"
 #include "nrg_codec.h"
 #include "nrg_util.h"
+#include "nrg_interp.h"
 #include <bitset>
 
 namespace nrg {
@@ -70,6 +71,10 @@ public:
 	template<class F>
 	T getInterp(const F& func) const {
 		return func(data, data_next, this->container->getClientSnapshotTiming());
+	}
+
+	T getInterp() const {
+		return lerp<T>()(data, data_next, this->container->getClientSnapshotTiming());
 	}
 private:
 	T data, data_next;

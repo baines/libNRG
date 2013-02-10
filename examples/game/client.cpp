@@ -37,11 +37,7 @@ void checkNRGEvents(nrg::Client& c){
 }
 
 void updateText(){
-	if(interp){
-		interp_str.SetText("Interpolation: On.");
-	} else {
-		interp_str.SetText("Interpolation: Off.");
-	}
+	interp_str.SetText(interp ? "Interpolation: On." : "Interpolation: Off.");
 }
 
 void handleSFMLKeyPress(const sf::Key::Code key){

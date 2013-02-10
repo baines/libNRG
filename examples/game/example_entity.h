@@ -23,12 +23,12 @@ public:
 	}
 	
 	uint16_t getX(bool interp) const {
-		if(interp) return xpos.getInterp(nrg::lerp<uint16_t>());
+		if(interp) return xpos.getInterp();
 		else return xpos.get();
 	}
 
 	uint16_t getY(bool interp) const {
-		if(interp) return ypos.getInterp(nrg::lerp<uint16_t>());
+		if(interp) return ypos.getInterp();
 		else return ypos.get();
 	}
 	
