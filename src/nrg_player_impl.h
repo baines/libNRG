@@ -28,6 +28,7 @@ protected:
 	ServerPlayerGameState game_state;
 	uint16_t id;
 	bool connected;
+	int latency;
 };
 
 }

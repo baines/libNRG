@@ -15,12 +15,15 @@ void Snapshot::addEntity(Entity* e, FieldList& fl){
 	bool merge = edata.find(e->getID()) != edata.end();
 
 	EntityData& ed = edata[e->getID()];
+	ed.id = e->getID();
+	ed.type = e->getType();
+
 	if(merge){
 		buffer.reset().writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
 		ed.field_data.reset();
 	}
 	
-	if(ed.field_sizes.size() != fl.size()) ed.field_sizes.resize(fl.size());
+	if(ed.field_sizes.size() != fl.size()) ed.field_sizes.resize(fl.size(), 0);
 
 	for(size_t i = 0; i < fl.size(); ++i){
 		if(fl.get(i)->wasUpdated()){
@@ -135,7 +138,7 @@ bool ClientSnapshot::readFromPacket(Packet& p){
 	p.read32(num_bytes);
 
 	if(p.remaining() >= num_bytes){
-		data.writeArray(p.getPointer(), num_bytes);
+		if(num_bytes > 0) data.writeArray(p.getPointer(), num_bytes);
 		return true;
 	} else {
 		return false;
@@ -152,7 +155,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		uint8_t delete_test = 0;
 
 		data.read16(eid).read16(etype).read8(delete_test);
-
+		
 		if(delete_test == 0){
 			// special case - delete entity
 			if(entities.size() > eid && entities[eid] != NULL){
@@ -169,11 +172,11 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		}
 
 		if(entities.size() <= eid){
-			entities.resize(eid+1);
+			entities.resize(eid+1, NULL);
 		}
 
 		if(entities[eid] == NULL){
-			std::map<uint16_t, Entity*>::const_iterator i = entity_types.find(eid);
+			std::map<uint16_t, Entity*>::const_iterator i = entity_types.find(etype);
 			assert(i != entity_types.end() && "Entity type not registered");
 			entities[eid] = i->second->clone();
 			EntityEvent e = { ENTITY_CREATED, eid, etype, entities[eid] };
@@ -198,6 +201,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 
 		for(unsigned int i = 0; i < num_fields; ++i){
 			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
+				fl.vec[i]->shiftData();
 				fl.vec[i]->readFromPacket(data);
 				fl.vec[i]->setUpdated(true);
 			}

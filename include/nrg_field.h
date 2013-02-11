@@ -16,6 +16,7 @@ public:
 	FieldBase(FieldContainer* container);
 	virtual size_t readFromPacket(Packet& p) = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
+	virtual void shiftData() = 0;
 	virtual ~FieldBase(){};
 
 	virtual bool wasUpdated() const;
@@ -44,12 +45,15 @@ public:
 	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t){};
 
 	virtual size_t readFromPacket(Packet& p){
-		data = data_next;
 		return Cdc().decode(p, data_next);
 	}
 
 	virtual size_t writeToPacket(Packet& p) const {
 		return Cdc().encode(p, data);
+	}
+
+	virtual void shiftData(){
+		data = data_next;
 	}
 
 	void set(const T& other){
@@ -65,7 +69,7 @@ public:
 	}
 	
 	T get() const {
-		return data;
+		return data_next;
 	}
 
 	template<class F>

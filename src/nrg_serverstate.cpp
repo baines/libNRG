@@ -1,10 +1,9 @@
 #include "nrg_state.h"
+#include "nrg_input.h"
 #include "nrg_os.h"
 #include <climits>
 
 using namespace nrg;
-
-//TODO
 
 ServerHandshakeState::ServerHandshakeState() : send_response(false){};
 
@@ -32,13 +31,15 @@ StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
 }
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
-const DeltaSnapshotBuffer& dsb) : snapshot(), master_ss(master), snaps(dsb), 
-ackd_id(-1), latency(0), buffer() {
+const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l) : snapshot(), 
+master_ss(master), snaps(dsb), ackd_id(-1), latency(l), buffer(), input(i), player(p) {
 
 }
 
+static const size_t NRG_MIN_SPGS_PACKET_LEN = 6;
+
 bool ServerPlayerGameState::addIncomingPacket(Packet& p){
-	if(p.remaining() != 6) return false;
+	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
 	uint16_t new_ackd_id = 0;
 	uint32_t c_time = 0;
 
@@ -46,7 +47,10 @@ bool ServerPlayerGameState::addIncomingPacket(Packet& p){
 	ackd_id = new_ackd_id;
 
 	latency = (os::microseconds() / 1000) - c_time;
-	printf("%p latency: %dms\n", this, latency);
+
+	if(!input.readFromPacket(p)) return false;
+	input.onUpdateNRG(player);
+
 	return true;
 }
 

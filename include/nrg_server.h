@@ -7,6 +7,7 @@
 #include "nrg_snapshot.h"
 #include "nrg_event.h"
 #include "nrg_player.h"
+#include "nrg_input.h"
 #include <map>
 #include <set>
 #include <vector>
@@ -15,8 +16,8 @@ namespace nrg {
 
 class NRG_LIB Server {
 public:
-	Server();
-	Server(const NetAddress& bind_addr);
+	Server(Input& input = null_input);
+	Server(const NetAddress& bind_addr, Input& input = null_input);
 	void bind(const NetAddress& addr);
 	bool isBound();
 	size_t playerCount() const;
@@ -32,10 +33,12 @@ public:
 	const UDPSocket& getSocket() const { return sock; }
 	const Snapshot& getSnapshot() const { return master_snapshot; }
 	const DeltaSnapshotBuffer& getDeltaSnapshots() const { return snaps; }
+	Input& getInput() const { return input; }
 protected:
 	void clearEntityUpdated(Entity* e, FieldList& fl);
 	UDPSocket sock;
 	Packet buffer;
+	Input& input;
 	EventQueue eventq;
 	typedef std::map<NetAddress, Player*> ClientMap;
 	ClientMap clients;

@@ -42,10 +42,11 @@ private:
 };
 
 class Entity;
+class Input;
 
 class NRG_LIB ClientGameState : public State {
 public:
-	ClientGameState(EventQueue& eq, const Socket& s);
+	ClientGameState(EventQueue& eq, const Socket& s, Input& i);
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
@@ -62,6 +63,7 @@ private:
 	ClientSnapshot snapshot, next_snapshot;
 	Packet buffer;
 	const Socket& sock;
+	Input& input;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {
@@ -75,7 +77,8 @@ private:
 
 class NRG_LIB ServerPlayerGameState : public State {
 public:
-	ServerPlayerGameState(const Snapshot& master_ss, const DeltaSnapshotBuffer& dsb);
+	ServerPlayerGameState(const Snapshot& master_ss, 
+		const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& latency);
 	bool addIncomingPacket(Packet& p);
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
@@ -84,8 +87,10 @@ private:
 	const Snapshot& master_ss;
 	const DeltaSnapshotBuffer& snaps;
 	int ackd_id;
-	int latency;
+	int& latency;
 	Packet buffer;
+	Input& input;
+	Player& player;
 };
 
 };

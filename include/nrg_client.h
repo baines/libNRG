@@ -5,14 +5,15 @@
 #include "nrg_netaddress.h"
 #include "nrg_state.h"
 #include "nrg_event.h"
+#include "nrg_input.h"
 #include <vector>
 
 namespace nrg {
 
 class NRG_LIB Client {
 public:
-	Client();
-	Client(const NetAddress& server_addr);
+	Client(Input& input = null_input);
+	Client(const NetAddress& server_addr, Input& input = null_input);
 	~Client();
 	status_t connect(const NetAddress& server_addr);
 	bool isConnected() const;
@@ -23,6 +24,7 @@ public:
 	bool pollEvent(Event& e);
 protected:
 	UDPSocket sock;
+	Input& input;
 	Packet buffer;
 	NetAddress serv_addr;
 	ConnectionIncoming in;

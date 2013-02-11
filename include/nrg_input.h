@@ -15,6 +15,12 @@ struct NRG_LIB Input : public FieldContainer {
 	void writeToPacket(Packet& p);
 };
 
+struct NRG_LIB NullInput : public Input {
+	void getFields(FieldList& fl){}
+};
+
+extern NullInput null_input;
+
 }
 
 #endif

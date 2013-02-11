@@ -1,9 +1,9 @@
 #include "nrg_client.h"
 #include "nrg_config.h"
 
-nrg::Client::Client(const NetAddress& addr) : sock(), buffer(NRG_MAX_PACKET_SIZE), 
+nrg::Client::Client(const NetAddress& addr, Input& input) : sock(), input(input), buffer(), 
 serv_addr(addr), in(serv_addr), out(serv_addr, sock), eventq(), states(), handshake(),
-game_state(eventq, sock), dc_reason() {
+game_state(eventq, sock, input), dc_reason() {
 	sock.setNonBlocking(true);
 #ifdef NRG_USE_SO_TIMESTAMP
 	sock.setOption(SOL_SOCKET, SO_TIMESTAMP, 1);

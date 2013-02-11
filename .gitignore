@@ -5,4 +5,6 @@
 /examples/t2
 /examples/game/game_server
 /examples/game/game_client
+/examples/ballduel/game_server
+/examples/ballduel/game_client
 /libnrg.a

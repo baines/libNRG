@@ -5,7 +5,7 @@ using namespace nrg;
 PlayerImpl::PlayerImpl(uint16_t id, const Server& s, const NetAddress& addr) 
 : server(s), addr(addr), sock(s.getSocket()), in(addr), out(addr, sock), 
 buffer(NRG_MAX_PACKET_SIZE), states(), handshake(), game_state(s.getSnapshot(), 
-s.getDeltaSnapshots()), id(id), connected(true) {
+s.getDeltaSnapshots(), s.getInput(), *this, latency), id(id), connected(true), latency(0) {
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }
@@ -54,6 +54,5 @@ bool PlayerImpl::isConnected() const {
 }
 
 int PlayerImpl::getPing() const {
-	//TODO
-	return 0;
+	return latency;
 }

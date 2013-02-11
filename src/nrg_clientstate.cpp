@@ -1,4 +1,5 @@
 #include "nrg_state.h"
+#include "nrg_input.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
 #include "nrg_field_impl.h"
@@ -43,9 +44,9 @@ ClientHandshakeState::~ClientHandshakeState(){
 
 }
 
-ClientGameState::ClientGameState(EventQueue& eq, const Socket& s) : entities(), 
-updated_entities(), entity_types(), client_eventq(eq), state_id(-1), 
-s_time_ms(0), c_time_ms(0), snapshot(), buffer(), sock(s) {
+ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i) 
+: entities(), updated_entities(), entity_types(), client_eventq(eq), state_id(-1), 
+s_time_ms(0), c_time_ms(0), snapshot(), buffer(), sock(s), input(i) {
 
 }
 
@@ -122,9 +123,11 @@ bool ClientGameState::needsUpdate() const {
 }
 	
 StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
-	//TODO collect and send input to server w/ last recieved snapshot id
 	uint32_t s_time_est = s_time_ms + ((os::microseconds() / 1000) - c_time_ms);
-	out.sendPacket(buffer.reset().write16(state_id).write32(s_time_est));
+	buffer.reset().write16(state_id).write32(s_time_est);
+	input.writeToPacket(buffer);
+	out.sendPacket(buffer);
+
 	return STATE_CONTINUE;
 }
 
@@ -135,7 +138,7 @@ void ClientGameState::registerEntity(Entity* e){
 
 double ClientGameState::getSnapshotTiming() const {
 	//FIXME: hardcoded 50ms interval assumption, get it during handshake instead?
-	return ((os::microseconds() / 1000) - c_time_ms) / 50.0;
+	return ((os::microseconds() / 1000) - c_time_ms) / 25.0;
 }
 
 ClientGameState::~ClientGameState(){

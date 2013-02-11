@@ -4,9 +4,9 @@
 #include "nrg_player_impl.h"
 #include "nrg_os.h"
 
-nrg::Server::Server(const NetAddress& bind_addr) 
-: sock(), buffer(NRG_MAX_PACKET_SIZE), eventq(), clients(), 
-timer(nrg::os::microseconds()), interval(50000) {
+nrg::Server::Server(const NetAddress& bind_addr, Input& input) 
+: sock(), buffer(), input(input), eventq(), clients(), 
+timer(nrg::os::microseconds()), interval(25000) {
 	sock.setNonBlocking(true);
 	sock.bind(bind_addr);
 }
@@ -94,6 +94,7 @@ nrg::status_t nrg::Server::update(){
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; /**/){
 		if(!i->second->isConnected()){
 			printf("client quit: %s:%d\n", i->first.name(), i->first.port());
+			player_ids.release(i->second->getID());
 			PlayerEvent e = { PLAYER_LEAVE, i->second->getID(), i->second };
 			eventq.pushEvent(e);
 
