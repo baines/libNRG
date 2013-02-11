@@ -7,19 +7,14 @@
 namespace nrg {
 
 struct NRG_LIB Input : public FieldContainer {
-	virtual void getFields(FieldList& list) = 0;
 	virtual void onUpdateNRG(Player& player){}
 
 	void markUpdated();
 	bool readFromPacket(Packet& p);
-	void writeToPacket(Packet& p);
+	void writeToPacket(Packet& p) const;
 };
 
-struct NRG_LIB NullInput : public Input {
-	void getFields(FieldList& fl){}
-};
-
-extern NullInput null_input;
+extern Input null_input;
 
 }
 

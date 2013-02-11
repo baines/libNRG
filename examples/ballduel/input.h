@@ -6,9 +6,6 @@
 class MyInput : public nrg::Input {
 public:
 	MyInput() : ypos(this) {}
-	void getFields(nrg::FieldList& fl){
-		fl.add(ypos);
-	}
 	void setGameState(ServerGameState* gs){
 		this->gs = gs;
 	}

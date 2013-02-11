@@ -35,7 +35,7 @@ public:
 	const DeltaSnapshotBuffer& getDeltaSnapshots() const { return snaps; }
 	Input& getInput() const { return input; }
 protected:
-	void clearEntityUpdated(Entity* e, FieldList& fl);
+	void clearEntityUpdated(Entity* e);
 	UDPSocket sock;
 	Packet buffer;
 	Input& input;

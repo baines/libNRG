@@ -14,7 +14,7 @@ public:
 	Snapshot(uint16_t id);
 	int getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
-	void addEntity(Entity* e, FieldList& fl);
+	void addEntity(Entity* e);
 	virtual void removeEntityById(uint16_t id);
 	bool mergeWithNext(const Snapshot& next);
 	void writeToPacket(Packet& p) const;

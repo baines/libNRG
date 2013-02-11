@@ -1,5 +1,4 @@
 #include "nrg_snapshot.h"
-#include "nrg_field_impl.h"
 #include <climits>
 #include <cassert>
 #include <numeric>
@@ -11,7 +10,7 @@ Snapshot::Snapshot() : id(-1), edata(){ }
 
 Snapshot::Snapshot(uint16_t id) : id(id), edata(){ }
 
-void Snapshot::addEntity(Entity* e, FieldList& fl){
+void Snapshot::addEntity(Entity* e){
 	bool merge = edata.find(e->getID()) != edata.end();
 
 	EntityData& ed = edata[e->getID()];
@@ -23,16 +22,19 @@ void Snapshot::addEntity(Entity* e, FieldList& fl){
 		ed.field_data.reset();
 	}
 	
-	if(ed.field_sizes.size() != fl.size()) ed.field_sizes.resize(fl.size(), 0);
+	size_t s = e->getNumFields();
+	if(ed.field_sizes.size() != s) ed.field_sizes.resize(s);
 
-	for(size_t i = 0; i < fl.size(); ++i){
-		if(fl.get(i)->wasUpdated()){
-			ed.field_sizes[i] = fl.get(i)->writeToPacket(ed.field_data);
+	FieldBase* f = e->getFirstField();
+	for(size_t i = 0; i < s; ++i){
+		if(f->wasUpdated()){
+			ed.field_sizes[i] = f->writeToPacket(ed.field_data);
 		} else if(merge && ed.field_sizes[i] != 0){
 			ed.field_data.writeArray(
 				buffer.getBasePointer() + ed.getFieldOffset(i), ed.field_sizes[i]
 			);
 		}
+		f = f->getNext();
 	}
 }
 
@@ -183,10 +185,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 			eq.pushEvent(e);
 		}
 		
-		FieldListImpl fl;
-		entities[eid]->getFields(fl);
-
-		size_t num_fields = fl.vec.size();
+		size_t num_fields = entities[eid]->getNumFields();
 		int num_field_bytes = ((num_fields-1)/8)+1;
 		uint8_t* bytes = new uint8_t[num_field_bytes]();
 		
@@ -199,11 +198,13 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 
 		entities[eid]->markUpdated();
 
+		FieldBase* f = entities[eid]->getFirstField();
 		for(unsigned int i = 0; i < num_fields; ++i){
 			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
-				fl.vec[i]->readFromPacket(data);
-				fl.vec[i]->setUpdated(true);
+				f->readFromPacket(data);
+				f->setUpdated(true);
 			}
+			f = f->getNext();
 		}
 
 		delete [] bytes;

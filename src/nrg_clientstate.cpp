@@ -2,11 +2,7 @@
 #include "nrg_input.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
-#include "nrg_field_impl.h"
 #include <climits>
-
-#include <sys/ioctl.h>
-#include <sys/time.h>
 
 using namespace nrg;
 
@@ -89,17 +85,12 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 
 	// Mark all previously updated entities as no longer updated
 	// Could maybe store fields instead of entities for better efficiency
-	FieldListImpl fl;
 	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
-		if(*i){
-			(*i)->getFields(fl);
-			(*i)->nrg_updated = false;
+		(*i)->nrg_updated = false;
+		for(FieldBase* f = (*i)->getFirstField(); f; f = f->getNext()){
+			f->shiftData();			
+			f->setUpdated(false);
 		}
-	}
-
-	for(size_t i = 0; i < fl.size(); ++i){
-		fl.vec[i]->shiftData();
-		fl.vec[i]->setUpdated(false);
 	}
 
 	// TODO timing of applying new snapshot
@@ -114,11 +105,11 @@ bool ClientGameState::needsUpdate() const {
 }
 	
 StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
+	//TODO collect and send input to server w/ last recieved snapshot id
 	uint32_t s_time_est = s_time_ms + ((os::microseconds() / 1000) - c_time_ms);
 	buffer.reset().write16(state_id).write32(s_time_est);
 	input.writeToPacket(buffer);
 	out.sendPacket(buffer);
-
 	return STATE_CONTINUE;
 }
 

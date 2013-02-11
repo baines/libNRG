@@ -14,7 +14,6 @@ public:
 	Entity();
 	virtual Entity* clone() = 0;
 	virtual uint16_t getType() const = 0;
-	virtual void getFields(FieldList& list) = 0;
 	virtual ~Entity();
 	void markUpdated();
 	double getClientSnapshotTiming() const;

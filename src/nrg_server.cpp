@@ -1,6 +1,5 @@
 #include "nrg_server.h"
 #include "nrg_config.h"
-#include "nrg_field_impl.h"
 #include "nrg_player_impl.h"
 #include "nrg_os.h"
 
@@ -23,11 +22,11 @@ size_t nrg::Server::playerCount() const {
 	return clients.size();
 }
 
-void nrg::Server::clearEntityUpdated(Entity* e, FieldList& fl){
+void nrg::Server::clearEntityUpdated(Entity* e){
 	e->nrg_updated = false;
 	
-	for(size_t i = 0; i < fl.size(); ++i){
-		fl.get(i)->setUpdated(false);
+	for(FieldBase* f = e->getFirstField(); f; f = f->getNext()){
+		f->setUpdated(false);
 	}
 }
 
@@ -72,17 +71,13 @@ nrg::status_t nrg::Server::update(){
 	DeltaSnapshot& delta_ss = snaps.next();
 	master_snapshot.setID(delta_ss.getID());
 	
-	FieldListImpl fl;
-
 	for(std::set<uint16_t>::iterator i = updated_entities.begin(),
 	j = updated_entities.end(); i != j; ++i){
 		if(entities.size() > *i){
 			if(entities[*i] != NULL){
-				fl.vec.clear();
-				entities[*i]->getFields(fl);
-				master_snapshot.addEntity(entities[*i], fl);
-				delta_ss.addEntity(entities[*i], fl);
-				clearEntityUpdated(entities[*i], fl);
+				master_snapshot.addEntity(entities[*i]);
+				delta_ss.addEntity(entities[*i]);
+				clearEntityUpdated(entities[*i]);
 			} else {
 				master_snapshot.removeEntityById(*i);
 				delta_ss.removeEntityById(*i);

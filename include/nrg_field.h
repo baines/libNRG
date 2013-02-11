@@ -14,6 +14,7 @@ class NRG_LIB FieldContainer;
 class NRG_LIB FieldBase {
 public:
 	FieldBase(FieldContainer* container);
+	FieldBase(const FieldBase& copy);
 	virtual size_t readFromPacket(Packet& p) = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
 	virtual void shiftData() = 0;
@@ -21,21 +22,25 @@ public:
 
 	virtual bool wasUpdated() const;
 	virtual void setUpdated(bool updated);
+	FieldBase* getNext() const;
+	void setNext(FieldBase* f);
 protected:
 	FieldContainer* container;
+	FieldBase* next;
 	bool updated;
 };
 
-struct NRG_LIB FieldList {
-	virtual FieldList& add(FieldBase& f) = 0;
-	virtual size_t size() const = 0;
-	virtual FieldBase* get(size_t index) = 0;
-};
-
 struct NRG_LIB FieldContainer {
+	FieldContainer();
+	FieldContainer(const FieldContainer& copy);
 	virtual void markUpdated() = 0;
 	virtual double getClientSnapshotTiming() const { return 0.0; }
-	virtual void getFields(FieldList& list) = 0;
+	FieldBase* getFirstField() const;
+	size_t getNumFields() const;
+	void addField(FieldBase* f);
+private:
+	FieldBase* field_head;
+	size_t num_fields;
 };
 
 template<typename T, class Cdc = nrg::Codec<T> >

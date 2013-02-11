@@ -23,14 +23,11 @@ protected:
 	nrg::Entity* e;
 };
 
-class PlayerEntity : public EntityBase, public nrg::EntityHelper<PlayerEntity, PLAYER> {
+class PlayerEntity : public nrg::EntityHelper<PlayerEntity, PLAYER>, public EntityBase {
 public:	
 	PlayerEntity(int x) : EntityBase(this), score(this, 0){
 		xpos = x;
 		ypos = 240;
-	}
-	void getFields(nrg::FieldList& fl){
-		fl.add(xpos).add(ypos).add(score);
 	}
 	void incScore(){
 		score = score.get()+1;
@@ -40,7 +37,7 @@ private:
 	nrg::Field<uint16_t> score;
 };
 
-class BallEntity : public EntityBase, public nrg::EntityHelper<BallEntity, BALL> {
+class BallEntity : public nrg::EntityHelper<BallEntity, BALL>, public EntityBase {
 public:
 	BallEntity() : EntityBase(this), xv(-10.0f), yv(10.0f), speed(2.0f) {
 		reset();
@@ -50,9 +47,6 @@ public:
 		ypos = 240;
 		speed = 1.0f;
 		xv *= -1.0f;
-	}
-	void getFields(nrg::FieldList& fl){
-		fl.add(xpos).add(ypos);
 	}
 	void update(){
 		xpos = xpos.get() + xv * speed;
