@@ -69,7 +69,7 @@ public:
 	}
 	
 	T get() const {
-		return data_next;
+		return data;
 	}
 
 	template<class F>

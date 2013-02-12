@@ -6,7 +6,7 @@
 
 nrg::Server::Server(const NetAddress& bind_addr, Input& input) 
 : sock(), buffer(), input(input), eventq(), clients(), 
-timer(nrg::os::microseconds()), interval(25000) {
+timer(nrg::os::microseconds()), interval(50000) {
 	sock.setNonBlocking(true);
 	sock.bind(bind_addr);
 }

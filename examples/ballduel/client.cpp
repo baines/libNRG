@@ -10,9 +10,18 @@ bool running = true;
 bool interp = true;
 typedef std::vector<Sprite>::iterator s_it;
 MyInput input;
+int score1 = 0, score2 = 0;
+sf::String score_str;
 
 bool findSprite(nrg::Entity* e, s_it& i){
 	return (i = std::find(sprites.begin(), sprites.end(), e)) != sprites.end();
+}
+
+
+void updateScore(){
+	char buf[256];
+	snprintf(buf, 256, "%2d  - %2d", score1, score2);
+	score_str.SetText(buf);
 }
 
 void checkNRGEvents(nrg::Client& c){
@@ -30,6 +39,18 @@ void checkNRGEvents(nrg::Client& c){
 			break;
 		case nrg::ENTITY_DESTROYED:
 			if(findSprite(e.entity.pointer, i)) sprites.erase(i);
+			break;
+		case nrg::ENTITY_UPDATED:
+			if(e.entity.etype == PLAYER){
+				PlayerEntity* p = static_cast<PlayerEntity*>(e.entity.pointer);
+				printf("score %d\n", p->getScore());
+				if(p->getX() < 320){
+					score1 = p->getScore();
+				} else {	
+					score2 = p->getScore();
+				}
+				updateScore();
+			}
 			break;
 		case nrg::DISCONNECTED:
 			printf("Disconnected. (%s)\n", e.dc.reason);
@@ -65,20 +86,20 @@ int main(int argc, char** argv){
 	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
 	window.UseVerticalSync(true);
 	img.Create(16, 16, sf::Color::White);
+	score_str.SetX(275);
 
 	while(running){
 		if(client.update() != nrg::status::OK) running = false;
 		
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
-
-		printf("%lu\n", sprites.size());
 		
 		window.Clear();
 		for(s_it i = sprites.begin(), j = sprites.end(); i!=j; ++i){
 			i->update();	
 			i->draw(window);
 		}
+		window.Draw(score_str);
 		window.Display();
 	}
 

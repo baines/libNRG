@@ -9,8 +9,32 @@ public:
 		server.registerEntity(&ball);
 	}
 	void update(){
-		if(server.playerCount() < 2) return;
-		
+		if(server.playerCount() < 2){
+			ball.reset();
+		} else {
+			ball.update();
+			if(ball.getX() <= 16){
+				if(ball.getY() > p1.getY() && ball.getY() < p1.getY() + 64){
+					ball.setX(17);
+					ball.xv *= -1;
+					ball.speed += 0.1f;
+				} else if(ball.getX() <= -16) {
+					p2.incScore();
+					ball.reset();
+				}
+			}
+			if(ball.getX() >= 608){
+				if(ball.getY() > p2.getY() && ball.getY() < p2.getY() + 64){
+					ball.setX(607);
+					ball.xv *= -1;
+					ball.speed += 0.1f;
+				} else if(ball.getX() >= 640) {
+					p1.incScore();
+					ball.reset();
+				}
+			}
+			if(ball.getY() <= 0 || ball.getY() >= 466) ball.yv *= -1;
+		}
 	}
 	PlayerEntity& getPlayer1() { return p1; }
 	PlayerEntity& getPlayer2() { return p2; }

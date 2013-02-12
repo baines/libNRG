@@ -90,6 +90,14 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	// Mark all previously updated entities as no longer updated
 	// Could maybe store fields instead of entities for better efficiency
 	FieldListImpl fl;
+	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
+		if(*i) (*i)->getFields(fl);
+	}
+
+	for(size_t i = 0; i < fl.size(); ++i){
+		fl.vec[i]->shiftData();
+	}
+
 	for(e_it i = updated_entities.begin(), j = updated_entities.end(); i != j; ++i){
 		fl.vec.clear();
 		(*i)->nrg_updated = false;
@@ -102,7 +110,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 
 	// TODO timing of applying new snapshot
 	EventQueue eq;
-	snapshot.applyUpdate(entities, entity_types, eq);
+	next_snapshot.applyUpdate(entities, entity_types, eq);
 
 	Event e;
 	while(eq.pollEvent(e)){
@@ -112,7 +120,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		client_eventq.pushEvent(e);
 	}
 
-	snapshot = next_snapshot;
+	//snapshot = next_snapshot;
 
 	return true;
 }
@@ -138,7 +146,7 @@ void ClientGameState::registerEntity(Entity* e){
 
 double ClientGameState::getSnapshotTiming() const {
 	//FIXME: hardcoded 50ms interval assumption, get it during handshake instead?
-	return ((os::microseconds() / 1000) - c_time_ms) / 25.0;
+	return ((os::microseconds() / 1000) - c_time_ms) / 50.0;
 }
 
 ClientGameState::~ClientGameState(){

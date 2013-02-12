@@ -12,7 +12,7 @@ public:
 		win.Draw(s);
 	}
 	void update(){
-		s.SetPosition(entity->getX(), entity->getY());
+		s.SetPosition(entity->getXI(), entity->getYI());
 	}
 	bool operator==(nrg::Entity* e){
 		return e->getID() == entity->getID();

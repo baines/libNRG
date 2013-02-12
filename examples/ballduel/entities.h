@@ -11,11 +11,15 @@ enum MyEntities {
 class EntityBase {
 public:
 	EntityBase(nrg::Entity* e) : xpos(e), ypos(e), e(e) {}
-	uint16_t getX() const { return xpos.get(); }
-	uint16_t getY() const { return ypos.get(); }
+	short getX() const { return xpos.get(); }
+	short getY() const { return ypos.get(); }
+	short getXI() const { return xpos.getInterp(); }
+	short getYI() const { return ypos.getInterp(); }
+	void setX(int x){ xpos = x; }
+	void setY(int y){ ypos = y; }
 	uint16_t getID() const { return e->getID(); }
 protected:
-	nrg::Field<uint16_t> xpos, ypos;
+	nrg::Field<short> xpos, ypos;
 	nrg::Entity* e;
 };
 
@@ -28,28 +32,33 @@ public:
 	void getFields(nrg::FieldList& fl){
 		fl.add(xpos).add(ypos).add(score);
 	}
-	void setY(int y){
-		ypos = y;
+	void incScore(){
+		score = score.get()+1;
 	}
+	uint16_t getScore(){ return score.get(); }
 private:
 	nrg::Field<uint16_t> score;
 };
 
 class BallEntity : public EntityBase, public nrg::EntityHelper<BallEntity, BALL> {
 public:
-	BallEntity() : EntityBase(this), xv(1.0f), yv(1.0f) {
+	BallEntity() : EntityBase(this), xv(-5.0f), yv(5.0f), speed(2.0f) {
+		reset();
+	}
+	void reset(){
 		xpos = 320;
 		ypos = 240;
+		speed = 1.0f;
+		xv *= -1.0f;
 	}
 	void getFields(nrg::FieldList& fl){
 		fl.add(xpos).add(ypos);
 	}
 	void update(){
-		xpos = xpos.get() + xv;
-		ypos = ypos.get() + yv;
-	}		
-private:
-	float xv, yv;
+		xpos = xpos.get() + xv * speed;
+		ypos = ypos.get() + yv * speed;
+	}
+	float xv, yv, speed;
 };
 
 #endif

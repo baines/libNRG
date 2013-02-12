@@ -23,7 +23,7 @@ public:
 		}
 	}
 private:
-	nrg::Field<uint16_t> ypos;
+	nrg::Field<short> ypos;
 	ServerGameState* gs;
 };
 
