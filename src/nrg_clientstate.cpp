@@ -45,7 +45,7 @@ ClientHandshakeState::~ClientHandshakeState(){
 }
 
 ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i) 
-: entities(), updated_entities(), entity_types(), client_eventq(eq), state_id(-1), 
+: entities(), entity_types(), client_eventq(eq), state_id(-1), 
 s_time_ms(0), c_time_ms(0), snapshot(), buffer(), sock(s), input(i) {
 
 }
@@ -83,44 +83,27 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	p.read16(ackd_input_id);
 	// TODO: acknowledge input
 
-	next_snapshot.reset();
-	if(!next_snapshot.readFromPacket(p)) return false;
+	snapshot.reset();
+	if(!snapshot.readFromPacket(p)) return false;
 	state_id = new_state_id;
 
 	// Mark all previously updated entities as no longer updated
 	// Could maybe store fields instead of entities for better efficiency
 	FieldListImpl fl;
 	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
-		if(*i) (*i)->getFields(fl);
+		if(*i){
+			(*i)->getFields(fl);
+			(*i)->nrg_updated = false;
+		}
 	}
 
 	for(size_t i = 0; i < fl.size(); ++i){
 		fl.vec[i]->shiftData();
+		fl.vec[i]->setUpdated(false);
 	}
-
-	for(e_it i = updated_entities.begin(), j = updated_entities.end(); i != j; ++i){
-		fl.vec.clear();
-		(*i)->nrg_updated = false;
-		(*i)->getFields(fl);
-		for(f_it k = fl.vec.begin(), l = fl.vec.end(); k != l; ++k){
-			(*k)->setUpdated(false);
-		}
-	}
-	updated_entities.clear();
 
 	// TODO timing of applying new snapshot
-	EventQueue eq;
-	next_snapshot.applyUpdate(entities, entity_types, eq);
-
-	Event e;
-	while(eq.pollEvent(e)){
-		if(e.type == ENTITY_UPDATED){
-			updated_entities.push_back(e.entity.pointer);
-		}
-		client_eventq.pushEvent(e);
-	}
-
-	//snapshot = next_snapshot;
+	snapshot.applyUpdate(entities, entity_types, client_eventq);
 
 	return true;
 }

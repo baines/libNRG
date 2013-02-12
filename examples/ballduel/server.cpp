@@ -14,7 +14,7 @@ int main(int argc, char** argv){
 	signal(SIGINT, &sig);
 
 	MyInput input;
-	nrg::Server server(nrg::NetAddress("127.0.0.1", "4000"), input);
+	nrg::Server server(nrg::NetAddress("0.0.0.0", "4000"), input);
 	ServerGameState gs(server);
 	input.setGameState(&gs);
 

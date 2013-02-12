@@ -201,7 +201,6 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 
 		for(unsigned int i = 0; i < num_fields; ++i){
 			if(bytes[i/8] & (1 << (MAX_BYTE_SHIFTS - (i & MAX_BYTE_SHIFTS)))){
-				fl.vec[i]->shiftData();
 				fl.vec[i]->readFromPacket(data);
 				fl.vec[i]->setUpdated(true);
 			}

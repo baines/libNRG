@@ -14,7 +14,7 @@ public:
 		} else {
 			ball.update();
 			if(ball.getX() <= 16){
-				if(ball.getY() > p1.getY() && ball.getY() < p1.getY() + 64){
+				if(ball.getY() + 16 > p1.getY() && ball.getY() < p1.getY() + 64){
 					ball.setX(17);
 					ball.xv *= -1;
 					ball.speed += 0.1f;
@@ -24,7 +24,7 @@ public:
 				}
 			}
 			if(ball.getX() >= 608){
-				if(ball.getY() > p2.getY() && ball.getY() < p2.getY() + 64){
+				if(ball.getY() + 16 > p2.getY() && ball.getY() < p2.getY() + 64){
 					ball.setX(607);
 					ball.xv *= -1;
 					ball.speed += 0.1f;

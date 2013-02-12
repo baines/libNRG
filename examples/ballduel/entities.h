@@ -42,7 +42,7 @@ private:
 
 class BallEntity : public EntityBase, public nrg::EntityHelper<BallEntity, BALL> {
 public:
-	BallEntity() : EntityBase(this), xv(-5.0f), yv(5.0f), speed(2.0f) {
+	BallEntity() : EntityBase(this), xv(-10.0f), yv(10.0f), speed(2.0f) {
 		reset();
 	}
 	void reset(){

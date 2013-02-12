@@ -43,7 +43,6 @@ void checkNRGEvents(nrg::Client& c){
 		case nrg::ENTITY_UPDATED:
 			if(e.entity.etype == PLAYER){
 				PlayerEntity* p = static_cast<PlayerEntity*>(e.entity.pointer);
-				printf("score %d\n", p->getScore());
 				if(p->getX() < 320){
 					score1 = p->getScore();
 				} else {	
@@ -86,7 +85,7 @@ int main(int argc, char** argv){
 	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
 	window.UseVerticalSync(true);
 	img.Create(16, 16, sf::Color::White);
-	score_str.SetX(275);
+	score_str.SetX(278);
 
 	while(running){
 		if(client.update() != nrg::status::OK) running = false;

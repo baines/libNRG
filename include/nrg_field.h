@@ -41,8 +41,8 @@ struct NRG_LIB FieldContainer {
 template<typename T, class Cdc = nrg::Codec<T> >
 class Field : public FieldBase {
 public:
-	Field(FieldContainer* c) : FieldBase(c), data(){};
-	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t){};
+	Field(FieldContainer* c) : FieldBase(c), data(), data_next(){};
+	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t), data_next(t){};
 
 	virtual size_t readFromPacket(Packet& p){
 		return Cdc().decode(p, data_next);
@@ -62,14 +62,14 @@ public:
 
 	Field& operator=(const T& other){
 		if(data != other){
-			data = other;
+			data = data_next = other;
 			this->setUpdated(true);
 		}
 		return *this;
 	}
 	
 	T get() const {
-		return data;
+		return data_next;
 	}
 
 	template<class F>

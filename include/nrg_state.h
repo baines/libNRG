@@ -55,12 +55,12 @@ public:
 	void registerEntity(Entity* e);
 	double getSnapshotTiming() const;
 private:
-	std::vector<Entity*> entities, updated_entities;
+	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
 	EventQueue& client_eventq;
 	int state_id;
 	uint32_t s_time_ms, c_time_ms;
-	ClientSnapshot snapshot, next_snapshot;
+	ClientSnapshot snapshot;
 	Packet buffer;
 	const Socket& sock;
 	Input& input;
