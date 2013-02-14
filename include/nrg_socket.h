@@ -27,6 +27,7 @@ public:
 	bool dataPending(int usToBlock = 0) const;
 	void setNonBlocking(bool nonblock);
 	const NetAddress* getBoundAddress();
+	const NetAddress* getBoundAddress() const;
 	const NetAddress* getConnectedAddress() const {
 		return connected_addr.get();
 	}

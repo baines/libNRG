@@ -19,9 +19,10 @@ bool findSprite(nrg::Entity* e, s_it& i){
 
 
 void updateScore(){
-	char buf[256];
-	snprintf(buf, 256, "%2d  - %2d", score1, score2);
+	char buf[32];
+	snprintf(buf, 32, "%3d  -  %-3d", score1, score2);
 	score_str.SetText(buf);
+	score_str.SetCenter(score_str.GetRect().GetWidth()/2, 0);
 }
 
 void checkNRGEvents(nrg::Client& c){
@@ -85,7 +86,7 @@ int main(int argc, char** argv){
 	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
 	window.UseVerticalSync(true);
 	img.Create(16, 16, sf::Color::White);
-	score_str.SetX(278);
+	score_str.SetX(320);
 
 	while(running){
 		if(client.update() != nrg::status::OK) running = false;

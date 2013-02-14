@@ -15,12 +15,15 @@ int main(int argc, char** argv){
 
 	MyInput input;
 	nrg::Server server(nrg::NetAddress("0.0.0.0", "4000"), input);
-	ServerGameState gs(server);
-	input.setGameState(&gs);
+	if(server.isBound()){
+		printf("bound to %s\n", server.getSocket().getBoundAddress()->name());
+		ServerGameState gs(server);
+		input.setGameState(&gs);
 
-	while(running){
-		gs.update();
-		server.update();
+		while(running){
+			gs.update();
+			server.update();
+		}
 	}
 
 	return 0;

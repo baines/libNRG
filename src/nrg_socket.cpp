@@ -115,6 +115,10 @@ bool nrg::Socket::dataPending(int usToBlock) const {
 	}
 }
 
+const nrg::NetAddress* nrg::Socket::getBoundAddress() const {
+	return bound_addr.get();
+}
+
 const nrg::NetAddress* nrg::Socket::getBoundAddress(){
 	if(bound_addr.get() == NULL){
 		struct sockaddr_storage sas;
