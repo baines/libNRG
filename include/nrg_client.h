@@ -22,6 +22,7 @@ public:
 	void registerEntity(Entity* e);
 	status_t update();
 	bool pollEvent(Event& e);
+	const ClientStats& getStats() const;
 protected:
 	UDPSocket sock;
 	Input& input;

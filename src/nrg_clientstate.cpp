@@ -2,6 +2,7 @@
 #include "nrg_input.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
+#include "nrg_clientstats_impl.h"
 #include <climits>
 
 using namespace nrg;
@@ -41,8 +42,9 @@ ClientHandshakeState::~ClientHandshakeState(){
 }
 
 ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i) 
-: entities(), entity_types(), client_eventq(eq), state_id(-1), 
-s_time_ms(0), c_time_ms(0), snapshot(), buffer(), sock(s), input(i) {
+: entities(), entity_types(), client_eventq(eq), stats(new ClientStatsImpl()), 
+state_id(-1), ss_timer(0.0), s_time_ms(0), c_time0_ms(0), c_time_ms(0), snapshot(), 
+buffer(), sock(s), input(i) {
 
 }
 
@@ -51,9 +53,19 @@ typedef std::vector<Entity*>::iterator e_it;
 typedef std::vector<FieldBase*>::iterator f_it;
 typedef std::map<uint16_t, Entity*>::iterator et_it;
 
-bool ClientGameState::addIncomingPacket(Packet& p){
-	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
+#define STATS() (*static_cast<ClientStatsImpl*>(stats))
 
+bool ClientGameState::addIncomingPacket(Packet& p){
+#ifdef NRG_TEST_PACKET_DROP
+	static bool drop = true;
+	drop = rand()%4 == 0;
+	if(drop){
+		puts("dropping this packet.");		
+		return true;
+	}
+#endif
+	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
+	//if(rand()%2) return true;
 	bool valid = false;
 
 	uint16_t new_state_id = 0;
@@ -65,6 +77,8 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
 			uint16_t id = (state_id + i) & USHRT_MAX;
 			if(id == new_state_id){
+				while(--i) STATS().addSnapshotStat(0);
+				STATS().addSnapshotStat(1);
 				valid = true;
 				break;
 			}
@@ -73,6 +87,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	if(!valid) return false;
 
 	p.read32(s_time_ms);
+	c_time0_ms = c_time_ms;
 	c_time_ms = sock.getLastTimestamp() / 1000;
 
 	uint16_t ackd_input_id = 0;
@@ -105,11 +120,15 @@ bool ClientGameState::needsUpdate() const {
 }
 	
 StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
-	//TODO collect and send input to server w/ last recieved snapshot id
+	ss_timer = (((os::microseconds() / 1000)-50)-c_time0_ms) / double(c_time_ms - c_time0_ms);
 	uint32_t s_time_est = s_time_ms + ((os::microseconds() / 1000) - c_time_ms);
+
+	STATS().addInterpStat(ss_timer < 1.0 ? 1 : (2.0f*ss_timer));
+
 	buffer.reset().write16(state_id).write32(s_time_est);
 	input.writeToPacket(buffer);
 	out.sendPacket(buffer);
+
 	return STATE_CONTINUE;
 }
 
@@ -119,11 +138,15 @@ void ClientGameState::registerEntity(Entity* e){
 }
 
 double ClientGameState::getSnapshotTiming() const {
-	//FIXME: hardcoded 50ms interval assumption, get it during handshake instead?
-	return ((os::microseconds() / 1000) - c_time_ms) / 50.0;
+	return ss_timer;
+}
+
+const ClientStats& ClientGameState::getClientStats() const {
+	return *stats;
 }
 
 ClientGameState::~ClientGameState(){
+	delete stats;
 	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
 		if(*i){
 			delete *i;

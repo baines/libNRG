@@ -27,6 +27,18 @@ private:
 	ID max_id;
 };
 
+struct ClientStats {
+	virtual size_t getNumSnapshotStats() const = 0;
+	virtual int getSnapshotStat(size_t index) const = 0;
+	
+	virtual size_t getNumInterpStats() const = 0;
+	virtual int getInterpStat(size_t index) const = 0;
+	
+	virtual void toRGBATexture(uint32_t (&tex)[32*32]) const = 0;
+
+	virtual ~ClientStats(){}
+};
+
 template<size_t N>
 struct min_sizeof {
 	static const size_t val 

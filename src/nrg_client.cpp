@@ -63,6 +63,10 @@ bool nrg::Client::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }
 
+const nrg::ClientStats& nrg::Client::getStats() const {
+	return game_state.getClientStats();
+}
+
 nrg::Client::~Client(){
 	out.sendDisconnect(buffer.reset());
 }

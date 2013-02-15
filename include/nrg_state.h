@@ -54,12 +54,15 @@ public:
 
 	void registerEntity(Entity* e);
 	double getSnapshotTiming() const;
+	const ClientStats& getClientStats() const;
 private:
 	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
 	EventQueue& client_eventq;
+	ClientStats* stats;
 	int state_id;
-	uint32_t s_time_ms, c_time_ms;
+	double ss_timer;
+	uint32_t s_time_ms, c_time0_ms, c_time_ms;
 	ClientSnapshot snapshot;
 	Packet buffer;
 	const Socket& sock;

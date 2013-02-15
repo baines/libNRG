@@ -14,6 +14,7 @@ void Input::markUpdated(){
 
 bool Input::readFromPacket(Packet& p){
 	for(FieldBase* f = getFirstField(); f; f = f->getNext()){
+		f->shiftData();
 		if(f->readFromPacket(p) == 0) return false;
 	}
 	return true;

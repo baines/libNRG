@@ -88,9 +88,22 @@ int main(int argc, char** argv){
 	img.Create(16, 16, sf::Color::White);
 	score_str.SetX(320);
 
+	uint32_t tex[32*32];
+
+	sf::Image lagometer;
+	lagometer.SetSmooth(false);
+	client.getStats().toRGBATexture(tex);
+	lagometer.LoadFromPixels(32, 32, reinterpret_cast<uint8_t*>(tex));
+	sf::Sprite lsprite(lagometer);
+	lsprite.SetScale(4.0f, 4.0f);
+	lsprite.SetCenter(16, 32);
+	lsprite.SetPosition(320, 480);
+
 	while(running){
 		if(client.update() != nrg::status::OK) running = false;
 		
+		client.getStats().toRGBATexture(tex);
+		lagometer.LoadFromPixels(32, 32, reinterpret_cast<uint8_t*>(tex));
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
 		
@@ -99,6 +112,7 @@ int main(int argc, char** argv){
 			i->update();	
 			i->draw(window);
 		}
+		window.Draw(lsprite);
 		window.Draw(score_str);
 		window.Display();
 	}
