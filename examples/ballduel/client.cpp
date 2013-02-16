@@ -97,8 +97,8 @@ int main(int argc, char** argv){
 	sf::Sprite lsprite(lagometer);
 	lsprite.SetColor(sf::Color(0xff, 0xff, 0xff, 0xcc));
 	lsprite.SetScale(4.0f, 4.0f);
-	lsprite.SetCenter(16, 32);
-	lsprite.SetPosition(320, 480);
+	lsprite.SetCenter(32, 32);
+	lsprite.SetPosition(640, 480);
 
 	while(running){
 		if(client.update() != nrg::status::OK) running = false;

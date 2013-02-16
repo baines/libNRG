@@ -137,7 +137,7 @@ void nrg::Server::markEntityUpdated(Entity* e){
 
 nrg::Player* nrg::Server::getPlayerByID(uint16_t id) const {
 	for(ClientMap::const_iterator i = clients.begin(), j = clients.end(); i != j; ++i){
-		if(IMPL(i->second)->getID() == id){
+		if(i->second->getID() == id){
 			return i->second;		
 		}
 	}

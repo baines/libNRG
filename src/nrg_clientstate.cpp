@@ -86,9 +86,17 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	}
 	if(!valid) return false;
 
-	p.read32(s_time_ms);
+	uint32_t s_newtime_ms = 0;
+	p.read32(s_newtime_ms);
 	c_time0_ms = c_time_ms;
-	c_time_ms = sock.getLastTimestamp() / 1000;
+	if(state_id == -1){
+		c_time_ms = sock.getLastTimestamp() / 1000;
+	} else {
+		c_time_ms = std::min<uint32_t>(
+			sock.getLastTimestamp() / 1000, c_time0_ms + (s_newtime_ms - s_time_ms)
+		);
+	}
+	s_time_ms = s_newtime_ms;
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
@@ -123,7 +131,7 @@ StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
 	ss_timer = (((os::microseconds() / 1000)-50)-c_time0_ms) / double(c_time_ms - c_time0_ms);
 	uint32_t s_time_est = s_time_ms + ((os::microseconds() / 1000) - c_time_ms);
 
-	STATS().addInterpStat(ss_timer < 1.0 ? 1 : (2.0f*ss_timer));
+	STATS().addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
 
 	buffer.reset().write16(state_id).write32(s_time_est);
 	input.writeToPacket(buffer);
