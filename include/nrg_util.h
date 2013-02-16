@@ -36,7 +36,7 @@ struct ClientStats {
 	virtual size_t getNumInterpStats() const = 0;
 	virtual int getInterpStat(size_t index) const = 0;
 	
-	virtual void toRGBATexture(uint32_t (&tex)[32*32]) const = 0;
+	virtual uint8_t* toRGBATexture(uint32_t (&tex)[32*32]) const = 0;
 
 	virtual ~ClientStats(){}
 };

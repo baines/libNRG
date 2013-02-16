@@ -34,7 +34,7 @@ static const uint32_t YLW = ntoh(0xffff00ff);
 static const uint32_t BG1 = ntoh(0x111111ff);
 static const uint32_t BG2 = ntoh(0x222222ff);
 
-void ClientStatsImpl::toRGBATexture(uint32_t (&tex)[32*32]) const {		
+uint8_t* ClientStatsImpl::toRGBATexture(uint32_t (&tex)[32*32]) const {		
 	for(int h = 0; h < 16; ++h){
 		for(int w = 0; w < 32; ++w){
 			if(getInterpStat(w) >= (16-h)){
@@ -57,4 +57,5 @@ void ClientStatsImpl::toRGBATexture(uint32_t (&tex)[32*32]) const {
 			}
 		}
 	}
+	return reinterpret_cast<uint8_t*>(tex);
 }

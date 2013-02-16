@@ -17,7 +17,7 @@ struct ClientStatsImpl : public ClientStats {
 	void addSnapshotStat(int stat);
 	void addInterpStat(int stat);
 
-	void toRGBATexture(uint32_t (&tex)[32*32]) const;
+	uint8_t* toRGBATexture(uint32_t (&tex)[32*32]) const;
 private:
 	static const int NUM_STATS = 32;
 	int s_stats[NUM_STATS];

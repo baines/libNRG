@@ -79,12 +79,13 @@ void checkSFMLEvents(sf::RenderWindow& win){
 
 int main(int argc, char** argv){
 
-	nrg::Client client(nrg::NetAddress("127.0.0.1", "4000"), input);
+	nrg::Client client(nrg::NetAddress(argc < 2 ? "127.0.0.1" : argv[1], "4000"), input);
 	client.registerEntity(new PlayerEntity(0));
 	client.registerEntity(new BallEntity());
 
 	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
 	window.UseVerticalSync(true);
+	window.SetFramerateLimit(60);
 	img.Create(16, 16, sf::Color::White);
 	score_str.SetX(320);
 
@@ -92,8 +93,7 @@ int main(int argc, char** argv){
 
 	sf::Image lagometer;
 	lagometer.SetSmooth(false);
-	client.getStats().toRGBATexture(tex);
-	lagometer.LoadFromPixels(32, 32, reinterpret_cast<uint8_t*>(tex));
+	lagometer.LoadFromPixels(32, 32, client.getStats().toRGBATexture(tex));
 	sf::Sprite lsprite(lagometer);
 	lsprite.SetColor(sf::Color(0xff, 0xff, 0xff, 0xaa));
 	lsprite.SetScale(4.0f, 4.0f);
@@ -103,8 +103,7 @@ int main(int argc, char** argv){
 	while(running){
 		if(client.update() != nrg::status::OK) running = false;
 		
-		client.getStats().toRGBATexture(tex);
-		lagometer.LoadFromPixels(32, 32, reinterpret_cast<uint8_t*>(tex));
+		lagometer.LoadFromPixels(32, 32, client.getStats().toRGBATexture(tex));
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
 		
