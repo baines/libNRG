@@ -2,6 +2,8 @@
 #define NRG_UTIL_H
 #include "nrg_core.h"
 #include <vector>
+#include <algorithm>
+#include <functional>
 
 namespace nrg {
 
