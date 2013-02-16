@@ -95,7 +95,7 @@ int main(int argc, char** argv){
 	lagometer.SetSmooth(false);
 	lagometer.LoadFromPixels(32, 32, client.getStats().toRGBATexture(tex));
 	sf::Sprite lsprite(lagometer);
-	lsprite.SetColor(sf::Color(0xff, 0xff, 0xff, 0xaa));
+	lsprite.SetColor(sf::Color(0xff, 0xff, 0xff, 0xcc));
 	lsprite.SetScale(4.0f, 4.0f);
 	lsprite.SetCenter(16, 32);
 	lsprite.SetPosition(320, 480);

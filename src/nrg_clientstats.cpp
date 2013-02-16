@@ -7,14 +7,14 @@ size_t ClientStatsImpl::getNumSnapshotStats() const {
 	return NUM_STATS;
 }
 int ClientStatsImpl::getSnapshotStat(size_t index) const {
-	return s_stats[(s_index + (NUM_STATS-1) + index) % NUM_STATS];
+	return s_stats[(s_index + 1 + index) % NUM_STATS];
 }
 
 size_t ClientStatsImpl::getNumInterpStats() const {
 	return NUM_STATS;
 }
 int ClientStatsImpl::getInterpStat(size_t index) const {
-	return i_stats[(i_index + (NUM_STATS-1) + index) % NUM_STATS];
+	return i_stats[(i_index + 1 + index) % NUM_STATS];
 }
 
 void ClientStatsImpl::addSnapshotStat(int stat) {
@@ -37,23 +37,25 @@ static const uint32_t BG2 = ntoh(0x222222ff);
 uint8_t* ClientStatsImpl::toRGBATexture(uint32_t (&tex)[32*32]) const {		
 	for(int h = 0; h < 16; ++h){
 		for(int w = 0; w < 32; ++w){
+			uint32_t& p = tex[h*32+w];
 			if(getInterpStat(w) >= (16-h)){
-				tex[h*32+w] = h == 15 ? BLU : YLW;
+				p = h == 15 ? BLU : YLW;
 			} else {
-				int x = (i_index + (NUM_STATS-1) + w) % NUM_STATS;
-				tex[h*32+w] = x > 15 ? BG1 : BG2;
+				int x = (i_index + w) % NUM_STATS;
+				p = x > 15 ? BG1 : BG2;
 			}
 		}
 	}
 	for(int h = 16; h < 32; ++h){
 		for(int w = 0; w < 32; ++w){
+			uint32_t& p = tex[h*32+w];
 			if(getSnapshotStat(w) == 0){
-				tex[h*32+w] = RED;
+				p = RED;
 			} else if(getSnapshotStat(w) >= (32-h)){
-				tex[h*32+w] = GRN;
+				p = GRN;
 			} else {
-				int x = (s_index + (NUM_STATS-1) + w) % NUM_STATS;
-				tex[h*32+w] = x > 15 ? BG1 : BG2;
+				int x = (s_index + w) % NUM_STATS;
+				p = x > 15 ? BG1 : BG2;
 			}
 		}
 	}
