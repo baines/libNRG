@@ -65,7 +65,6 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	}
 #endif
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
-	//if(rand()%2) return true;
 	bool valid = false;
 
 	uint16_t new_state_id = 0;
@@ -77,8 +76,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
 			uint16_t id = (state_id + i) & USHRT_MAX;
 			if(id == new_state_id){
-				while(--i) STATS().addSnapshotStat(0);
-				STATS().addSnapshotStat(1);
+				while(--i) STATS().addSnapshotStat(-1);
 				valid = true;
 				break;
 			}
@@ -89,14 +87,16 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	uint32_t s_newtime_ms = 0;
 	p.read32(s_newtime_ms);
 	c_time0_ms = c_time_ms;
-	if(state_id == -1){
-		c_time_ms = sock.getLastTimestamp() / 1000;
-	} else {
-		c_time_ms = std::min<uint32_t>(
-			sock.getLastTimestamp() / 1000, c_time0_ms + (s_newtime_ms - s_time_ms)
-		);
+	c_time_ms = sock.getLastTimestamp() / 1000;
+
+	if(state_id != -1){
+		c_time_ms = std::min(c_time_ms, c_time0_ms + (s_newtime_ms - s_time_ms));
 	}
 	s_time_ms = s_newtime_ms;
+
+	uint16_t ping = 0;
+	p.read16(ping);
+	STATS().addSnapshotStat(ping);
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);

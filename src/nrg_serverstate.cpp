@@ -32,7 +32,7 @@ StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
 const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l) : snapshot(), 
-master_ss(master), snaps(dsb), ackd_id(-1), latency(l), buffer(), input(i), player(p) {
+master_ss(master), snaps(dsb), ackd_id(-1), ping(l), buffer(), input(i), player(p) {
 
 }
 
@@ -46,7 +46,7 @@ bool ServerPlayerGameState::addIncomingPacket(Packet& p){
 	p.read16(new_ackd_id).read32(c_time);
 	ackd_id = new_ackd_id;
 
-	latency = (os::microseconds() / 1000) - c_time;
+	ping = (os::microseconds() / 1000) - c_time;
 
 	if(!input.readFromPacket(p)) return false;
 	input.onUpdateNRG(player);
@@ -59,10 +59,10 @@ bool ServerPlayerGameState::needsUpdate() const {
 }
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
-	//printf("%p latency: %dms\n", this, latency);
 	if(ackd_id == -1){
 		//TODO: input id
-		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000).write16(0);
+		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000)
+			.write16(ping).write16(ping);
 		master_ss.writeToPacket(buffer);
 		out.sendPacket(buffer);
 	} else {
@@ -72,7 +72,8 @@ StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 			for(uint16_t i = ackd_id + 1; i != snaps.getCurrentID(); ++i){
 				snapshot.mergeWithNext(*snaps.find(i));
 			}
-			buffer.reset().write16(snapshot.getID()).write32(os::microseconds()/1000).write16(0);
+			buffer.reset().write16(snapshot.getID()).write32(os::microseconds()/1000).
+				write16(ping).write16(0);
 			snapshot.writeToPacket(buffer);
 			out.sendPacket(buffer);
 		} else {

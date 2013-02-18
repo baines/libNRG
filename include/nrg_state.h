@@ -90,7 +90,7 @@ private:
 	const Snapshot& master_ss;
 	const DeltaSnapshotBuffer& snaps;
 	int ackd_id;
-	int& latency;
+	int& ping;
 	Packet buffer;
 	Input& input;
 	Player& player;
