@@ -19,12 +19,13 @@ static inline T swapbytes(const T& data){
 
 template<typename T>
 static inline T ntoh(const T& data){
-#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 	return data;
-#elif __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	return swapbytes(data);
 #else
-	#error BYTE_ORDER is not defined!
+	#ifndef __BYTE_ORDER__
+		#warning BYTE_ORDER not declared, assuming little endian.
+	#endif
+	return swapbytes(data);
 #endif
 }
 

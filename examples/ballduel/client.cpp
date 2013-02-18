@@ -83,7 +83,7 @@ int main(int argc, char** argv){
 	client.registerEntity(new PlayerEntity(0));
 	client.registerEntity(new BallEntity());
 
-	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
+	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client", sf::Style::Close);
 	window.UseVerticalSync(true);
 	window.SetFramerateLimit(60);
 	img.Create(16, 16, sf::Color::White);

@@ -27,7 +27,7 @@ class PlayerEntity : public nrg::EntityHelper<PlayerEntity, PLAYER>, public Enti
 public:	
 	PlayerEntity(int x) : EntityBase(this), score(this, 0){
 		xpos = x;
-		ypos = 240;
+		ypos = 232;
 	}
 	void incScore(){
 		score = score.get()+1;
@@ -43,8 +43,8 @@ public:
 		reset();
 	}
 	void reset(){
-		xpos = 320;
-		ypos = 240;
+		xpos = 312;
+		ypos = 232;
 		speed = 1.0f;
 		xv *= -1.0f;
 	}

@@ -33,7 +33,7 @@ public:
 					ball.reset();
 				}
 			}
-			if(ball.getY() <= 0 || ball.getY() >= 466) ball.yv *= -1;
+			if(ball.getY() <= 0 || ball.getY() >= 464) ball.yv *= -1;
 		}
 	}
 	PlayerEntity& getPlayer1() { return p1; }
