@@ -24,23 +24,29 @@ nrg::NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in
 	inet_ntop(AF_INET6, (char*)&addr + addr6_off, text, INET6_ADDRSTRLEN);
 }
 
-nrg::NetAddress::NetAddress(const struct sockaddr_storage& s, const socklen_t len){
-	set(s, len);
+nrg::NetAddress& nrg::NetAddress::operator=(const struct sockaddr_storage& s){
+	set(s);
+	return *this;
 }
 
-nrg::status_t nrg::NetAddress::set(const struct sockaddr_storage& s, const socklen_t len) {
+nrg::NetAddress::NetAddress(const struct sockaddr_storage& s){
+	set(s);
+}
+
+bool nrg::NetAddress::set(const struct sockaddr_storage& s) {
 	off_t o = 0;
 	if(s.ss_family == AF_INET){
 		o = addr_off;
+		addr_len = sizeof(struct sockaddr_in);
 	} else if(s.ss_family == AF_INET6){
 		o = addr6_off;
+		addr_len = sizeof(struct sockaddr_in6);
 	} else {
-		return status::ERROR;
+		return false;
 	}
-	addr_len = len;
 	addr = s;
 	inet_ntop(s.ss_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
-	return status::OK;
+	return true;
 }
 
 bool nrg::NetAddress::resolve(const char* name, const char* port){

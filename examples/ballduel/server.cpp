@@ -16,7 +16,8 @@ int main(int argc, char** argv){
 	MyInput input;
 	nrg::Server server(nrg::NetAddress("0.0.0.0", "4000"), input);
 	if(server.isBound()){
-		printf("bound to %s\n", server.getSocket().getBoundAddress()->name());
+		const nrg::NetAddress* addr = server.getSocket().getBoundAddress();
+		printf("bound to %s:%hu\n", addr->name(), addr->port());
 		ServerGameState gs(server);
 		input.setGameState(&gs);
 
@@ -24,6 +25,8 @@ int main(int argc, char** argv){
 			gs.update();
 			server.update();
 		}
+	} else {
+		puts("Couldn't bind to port.");
 	}
 
 	return 0;

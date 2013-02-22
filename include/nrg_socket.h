@@ -10,35 +10,33 @@ namespace nrg {
 class NRG_LIB Socket {
 public:
 	Socket(int family, int type);
-	status_t bind(const NetAddress& addr);
-	status_t connect(const NetAddress& addr);
+	bool bind(const NetAddress& addr);
+	bool connect(const NetAddress& addr);
 	ssize_t sendPacket(const Packet& p) const;
 	ssize_t sendPacket(const Packet& p, const NetAddress& addr) const;
 	ssize_t recvPacket(Packet& p) const;
 	ssize_t recvPacket(Packet& p, NetAddress& addr);
 	template<typename T>
-	status_t setOption(int level, int name, const T& opt){
-		if(setsockopt(fd, level, name, &opt, sizeof(T)) == 0){
-			return status::OK;
-		} else {
-			return status::ERROR;
-		}
+	bool setOption(int level, int name, const T& opt){
+		 return setsockopt(fd, level, name, &opt, sizeof(T)) == 0;
 	}
 	bool dataPending(int usToBlock = 0) const;
 	void setNonBlocking(bool nonblock);
+	void enableTimestamps(bool enable);
+	
 	const NetAddress* getBoundAddress();
 	const NetAddress* getBoundAddress() const;
 	const NetAddress* getConnectedAddress() const {
-		return connected_addr.get();
+		return connected_addr;
 	}
 	uint64_t getLastTimestamp() const {
 		return last_timestamp;
 	}
 	~Socket();
 protected:
-	std::auto_ptr<NetAddress> bound_addr, connected_addr;
+	NetAddress *bound_addr, *connected_addr;
 	int fd, family, type;
-	bool error;
+	bool do_timestamp;
 	uint64_t last_timestamp;
 };
 

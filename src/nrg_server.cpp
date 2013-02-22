@@ -7,11 +7,11 @@ nrg::Server::Server(const NetAddress& bind_addr, Input& input)
 : sock(), buffer(), input(input), eventq(), clients(), 
 timer(nrg::os::microseconds()), interval(50000) {
 	sock.setNonBlocking(true);
-	sock.bind(bind_addr);
+	bind(bind_addr);
 }
 
-void nrg::Server::bind(const NetAddress& addr){
-	sock.bind(addr);
+bool nrg::Server::bind(const NetAddress& addr){
+	return sock.bind(addr) == status::OK;
 }
 
 bool nrg::Server::isBound() {
@@ -34,7 +34,7 @@ static inline nrg::PlayerImpl* IMPL(nrg::Player* p){
 	return static_cast<nrg::PlayerImpl*>(p);
 }
 
-nrg::status_t nrg::Server::update(){
+bool nrg::Server::update(){
 	eventq.clear();
 
 	uint64_t blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
@@ -105,7 +105,7 @@ nrg::status_t nrg::Server::update(){
 			i->second->kick("Client update failed.");
 		}
 	}
-	return status::OK;
+	return true;
 }
 
 bool nrg::Server::pollEvent(Event& e){

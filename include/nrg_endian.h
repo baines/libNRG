@@ -1,6 +1,19 @@
 #ifndef NRG_ENDIAN_H
 #define NRG_ENDIAN_H
+#include <endian.h>
 /* adapted from http://stackoverflow.com/questions/809902/64-bit-ntohl-in-c */
+
+#if defined(__BYTE_ORDER__)
+	#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN
+		#define NRG_BIG_ENDIAN 1
+	#endif
+#elif defined(BYTE_ORDER)
+	#if BYTE_ORDER == BIG_ENDIAN
+		#define NRG_BIG_ENDIAN 1
+	#endif
+#else
+	#warning Assuming host is little endian.
+#endif
 
 namespace nrg {
 
@@ -19,12 +32,9 @@ static inline T swapbytes(const T& data){
 
 template<typename T>
 static inline T ntoh(const T& data){
-#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#ifdef NRG_BIG_ENDIAN
 	return data;
 #else
-	#ifndef __BYTE_ORDER__
-		#warning BYTE_ORDER not declared, assuming little endian.
-	#endif
 	return swapbytes(data);
 #endif
 }

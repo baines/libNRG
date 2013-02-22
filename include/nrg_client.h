@@ -15,12 +15,12 @@ public:
 	Client(Input& input = null_input);
 	Client(const NetAddress& server_addr, Input& input = null_input);
 	~Client();
-	status_t connect(const NetAddress& server_addr);
+	bool connect(const NetAddress& server_addr);
 	bool isConnected() const;
 	const NetAddress& getAddress() const;
 
 	void registerEntity(Entity* e);
-	status_t update();
+	bool update();
 	bool pollEvent(Event& e);
 	const ClientStats& getStats() const;
 protected:

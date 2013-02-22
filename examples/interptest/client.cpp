@@ -71,7 +71,7 @@ int main(int argc, char** argv){
 	updateText();
 
 	while(running){
-		if(client.update() != nrg::status::OK) running = false;
+		running = client.update();
 		
 		checkNRGEvents(client);
 		checkSFMLEvents(window);

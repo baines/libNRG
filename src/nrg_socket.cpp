@@ -3,39 +3,40 @@
 #include "nrg_os.h"
 #include <unistd.h>
 #include <sys/time.h>
-#include <iostream>
 
-using nrg::status_t;
-
-nrg::Socket::Socket(int family, int type) : bound_addr(), connected_addr(), 
-fd(0), family(family), type(type), error(false), last_timestamp(0) {
+nrg::Socket::Socket(int family, int type) : bound_addr(NULL), connected_addr(NULL), 
+fd(0), family(family), type(type), do_timestamp(false), last_timestamp(0) {
 	fd = socket(family, type, 0);
-	if(fd == -1) error = true;
 }
 
-status_t nrg::Socket::bind(const NetAddress& addr){
+static inline void addrAssign(nrg::NetAddress* oldaddr, nrg::NetAddress* newaddr){
+	if(oldaddr != NULL)	delete oldaddr;
+	oldaddr = newaddr;
+}
+
+bool nrg::Socket::bind(const NetAddress& addr){
 	if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
 
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::bind(fd, sa, len) == 0){
-		bound_addr = std::auto_ptr<NetAddress>(new NetAddress(addr));
-		return status::OK;
+		addrAssign(bound_addr, new NetAddress(addr));
+		return true;
 	} else {
-		return status::ERROR;
+		return false;
 	}
 }
 
-status_t nrg::Socket::connect(const NetAddress& addr){
+bool nrg::Socket::connect(const NetAddress& addr){
 	if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
 
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::connect(fd, sa, len) == 0){
-		connected_addr = std::auto_ptr<NetAddress>(new NetAddress(addr));
-		return status::OK;
+		addrAssign(connected_addr, new NetAddress(addr));
+		return true;
 	} else {
-		return status::ERROR;
+		return false;
 	}
 }
 
@@ -85,20 +86,22 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) {
 	ssize_t result = ::recvfrom(fd, buf, sizeof(buf), 0, (sockaddr*)&sas, &len);
 #endif
 	if(result > 0){
-		last_timestamp = os::microseconds();
 		p.writeArray(buf, result);
+		if(do_timestamp){ 
+			last_timestamp = os::microseconds();
 #ifdef NRG_USE_SO_TIMESTAMP
-		for(cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)){
-			if(cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SO_TIMESTAMP){
-				struct timeval *tv1 = (struct timeval*)CMSG_DATA(cmsg), tv2, tv3;
-				gettimeofday(&tv2, 0);
-				timersub(&tv2, tv1, &tv3);
-				last_timestamp -= tv3.tv_usec;
+			for(cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)){
+				if(cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SO_TIMESTAMP){
+					struct timeval *tv1 = (struct timeval*)CMSG_DATA(cmsg), tv2, tv3;
+					gettimeofday(&tv2, 0);
+					timersub(&tv2, tv1, &tv3);
+					last_timestamp -= tv3.tv_usec;
+				}
 			}
-		}
 #endif
+		}
+		addr.set(sas);
 	}
-	addr.set(sas, family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6));
 	return result;
 }
 
@@ -116,22 +119,25 @@ bool nrg::Socket::dataPending(int usToBlock) const {
 }
 
 const nrg::NetAddress* nrg::Socket::getBoundAddress() const {
-	return bound_addr.get();
+	return bound_addr;
 }
 
 const nrg::NetAddress* nrg::Socket::getBoundAddress(){
-	if(bound_addr.get() == NULL){
-		struct sockaddr_storage sas;
+	if(bound_addr == NULL){
+		struct sockaddr_storage sas = {}, sas_zero = {};
 		socklen_t len = sizeof(sas);
 		if(getsockname(fd, (struct sockaddr*)&sas, &len) == 0){
-			bound_addr = std::auto_ptr<NetAddress>(new NetAddress(sas, len));
+			sas_zero.ss_family = sas.ss_family;
+			if(memcmp(&sas, &sas_zero, sizeof(sas)) != 0){
+				bound_addr = new NetAddress(sas);
+			}
 		}
 	}
-	return bound_addr.get();
+	return bound_addr;
 }
 
 nrg::Socket::~Socket(){
-	if(fd) close(fd);
+	if(fd >= 0) close(fd);
 }
 
 #if defined __WIN32
@@ -148,6 +154,10 @@ void nrg::Socket::setNonBlocking(bool enabled){
 	fcntl(fd, F_SETFL, flags);
 }
 #endif
+
+void nrg::Socket::enableTimestamps(bool enable){
+	do_timestamp = enable;
+}
 
 nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(family, SOCK_DGRAM){
 

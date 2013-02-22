@@ -18,10 +18,10 @@ class NRG_LIB Server {
 public:
 	Server(Input& input = null_input);
 	Server(const NetAddress& bind_addr, Input& input = null_input);
-	void bind(const NetAddress& addr);
+	bool bind(const NetAddress& addr);
 	bool isBound();
 	size_t playerCount() const;
-	status_t update();
+	bool update();
 	bool pollEvent(Event& e);
 	~Server();
 

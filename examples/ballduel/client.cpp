@@ -101,7 +101,7 @@ int main(int argc, char** argv){
 	lsprite.SetPosition(640, 480);
 
 	while(running){
-		if(client.update() != nrg::status::OK) running = false;
+		running = client.update();
 		
 		lagometer.LoadFromPixels(32, 32, client.getStats().toRGBATexture(tex));
 		checkNRGEvents(client);

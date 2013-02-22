@@ -5,6 +5,7 @@ nrg::Client::Client(const NetAddress& addr, Input& input) : sock(), input(input)
 serv_addr(addr), in(serv_addr), out(serv_addr, sock), eventq(), states(), handshake(),
 game_state(eventq, sock, input), dc_reason() {
 	sock.setNonBlocking(true);
+	sock.enableTimestamps(true);
 #ifdef NRG_USE_SO_TIMESTAMP
 	sock.setOption(SOL_SOCKET, SO_TIMESTAMP, 1);
 #endif
@@ -12,17 +13,15 @@ game_state(eventq, sock, input), dc_reason() {
 	states.push_back(&handshake);
 }
 
-nrg::status_t nrg::Client::update(){
-	if(states.empty()){
-		return status::ERROR;
-	}
+bool nrg::Client::update(){
+	if(states.empty()) return false;
 
 	eventq.clear();	
 
 	while(sock.dataPending()){
 		NetAddress addr;
 		sock.recvPacket(buffer.reset(), addr);
-		//if(addr != serv_addr) continue;
+		if(addr != serv_addr) continue;
 		if(in.addPacket(buffer) && in.hasNewPacket()){
 			in.getLatestPacket(buffer.reset());
 
@@ -34,7 +33,7 @@ nrg::status_t nrg::Client::update(){
 				eventq.pushEvent(de);
 				states.clear();
 
-				return status::OK;
+				return true;
 			} else {
 				states.back()->addIncomingPacket(buffer);
 			}
@@ -49,10 +48,10 @@ nrg::status_t nrg::Client::update(){
 		}
 		
 		if(ur == STATE_EXIT_FAILURE){
-			return status::ERROR;	
+			return false;	
 		}
 	}
-	return status::OK;
+	return true;
 }
 
 void nrg::Client::registerEntity(Entity* e){
