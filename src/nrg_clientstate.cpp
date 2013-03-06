@@ -44,7 +44,7 @@ ClientHandshakeState::~ClientHandshakeState(){
 ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i) 
 : entities(), entity_types(), client_eventq(eq), stats(new ClientStatsImpl()), 
 state_id(-1), ss_timer(0.0), s_time_ms(0), c_time0_ms(0), c_time_ms(0), snapshot(), 
-buffer(), sock(s), input(i) {
+buffer(), sock(s), input(i), replay() {
 
 }
 
@@ -64,6 +64,8 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		return true;
 	}
 #endif
+	if(replay.isRecording()) replay.addPacket(p);
+
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
 	bool valid = false;
 
@@ -90,13 +92,15 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	c_time_ms = sock.getLastTimestamp() / 1000;
 
 	if(state_id != -1){
+		int diff = c_time_ms - (c_time0_ms + (s_newtime_ms - s_time_ms));
+		STATS().addSnapshotStat(std::max(0, diff));
 		c_time_ms = std::min(c_time_ms, c_time0_ms + (s_newtime_ms - s_time_ms));
 	}
 	s_time_ms = s_newtime_ms;
 
 	uint16_t ping = 0;
 	p.read16(ping);
-	STATS().addSnapshotStat(ping);
+//	STATS().addSnapshotStat(ping);
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
@@ -153,7 +157,16 @@ const ClientStats& ClientGameState::getClientStats() const {
 	return *stats;
 }
 
+void ClientGameState::startRecordingReplay(const char* filename) {
+	replay.startRecording(filename, state_id, entities);
+}
+
+void ClientGameState::stopRecordingReplay() {
+	replay.stopRecording();
+}
+
 ClientGameState::~ClientGameState(){
+	if(replay.isRecording()) replay.stopRecording();
 	delete stats;
 	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
 		if(*i){

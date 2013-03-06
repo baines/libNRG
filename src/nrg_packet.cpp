@@ -45,7 +45,7 @@ nrg::Packet& nrg::Packet::write32(const uint32_t& v){
 }
 
 nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
-	while((pointer - data) > (data_size - size)){
+	while(data_size - (pointer - data) < size){
 		resize();
 	}
 	memcpy(pointer, v, size);

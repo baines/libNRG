@@ -23,6 +23,9 @@ public:
 	bool update();
 	bool pollEvent(Event& e);
 	const ClientStats& getStats() const;
+	
+	void startRecordingReplay(const char* filename);
+	void stopRecordingReplay();
 protected:
 	UDPSocket sock;
 	Input& input;

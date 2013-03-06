@@ -46,7 +46,7 @@ bool ServerPlayerGameState::addIncomingPacket(Packet& p){
 	p.read16(new_ackd_id).read32(c_time);
 	ackd_id = new_ackd_id;
 
-	ping = (os::microseconds() / 1000) - c_time;
+	ping = std::max<int>(0, (os::microseconds() / 1000) - c_time);
 
 	if(!input.readFromPacket(p)) return false;
 	input.onUpdateNRG(player);
@@ -62,7 +62,7 @@ StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 	if(ackd_id == -1){
 		//TODO: input id
 		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000)
-			.write16(ping).write16(ping);
+			.write16(ping).write16(0);
 		master_ss.writeToPacket(buffer);
 		out.sendPacket(buffer);
 	} else {

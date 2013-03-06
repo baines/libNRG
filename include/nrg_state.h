@@ -4,6 +4,7 @@
 #include "nrg_connection.h"
 #include "nrg_packet.h"
 #include "nrg_snapshot.h"
+#include "nrg_replay.h"
 #include <map>
 #include <vector>
 
@@ -55,6 +56,9 @@ public:
 	void registerEntity(Entity* e);
 	double getSnapshotTiming() const;
 	const ClientStats& getClientStats() const;
+
+	void startRecordingReplay(const char* filename);
+	void stopRecordingReplay();
 private:
 	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
@@ -67,6 +71,7 @@ private:
 	Packet buffer;
 	const Socket& sock;
 	Input& input;
+	ReplayRecorder replay;
 };
 
 struct NRG_LIB ServerHandshakeState : public State {

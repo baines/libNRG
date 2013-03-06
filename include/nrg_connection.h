@@ -19,7 +19,7 @@ public:
 	size_t getHeaderSize() const { return 3; }
 	void setTransform(PacketTransformation* transform);
 protected:
-	NetAddress remote_addr;
+	const NetAddress& remote_addr;
 	uint16_t seq_num;
 	PacketTransformation* transform;
 };

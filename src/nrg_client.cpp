@@ -66,6 +66,14 @@ const nrg::ClientStats& nrg::Client::getStats() const {
 	return game_state.getClientStats();
 }
 
+void nrg::Client::startRecordingReplay(const char* filename){
+	game_state.startRecordingReplay(filename);
+}
+
+void nrg::Client::stopRecordingReplay(){
+	game_state.stopRecordingReplay();
+}
+
 nrg::Client::~Client(){
 	out.sendDisconnect(buffer.reset());
 }

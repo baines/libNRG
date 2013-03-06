@@ -77,9 +77,19 @@ void checkSFMLEvents(sf::RenderWindow& win){
 	}
 }
 
-int main(int argc, char** argv){
+static const char port[] = "9001";
 
-	nrg::Client client(nrg::NetAddress(argc < 2 ? "127.0.0.1" : argv[1], "4000"), input);
+int main(int argc, char** argv){
+	nrg::ReplayServer rserv;
+	bool playing_replay = false;
+
+	if(argc > 2 && strcmp(argv[1], "replay") == 0){
+		playing_replay = true;
+		rserv.openReplay(argv[2]);
+		rserv.bind(port);
+	}
+
+	nrg::Client client(nrg::NetAddress((playing_replay || argc < 2) ? "127.0.0.1" : argv[1], port), input);
 	client.registerEntity(new PlayerEntity(0));
 	client.registerEntity(new BallEntity());
 
@@ -89,21 +99,24 @@ int main(int argc, char** argv){
 	img.Create(16, 16, sf::Color::White);
 	score_str.SetX(320);
 
-	uint32_t tex[32*32];
+	uint32_t tex[64*64];
 
 	sf::Image lagometer;
 	lagometer.SetSmooth(false);
-	lagometer.LoadFromPixels(32, 32, client.getStats().toRGBATexture(tex));
+	lagometer.LoadFromPixels(64, 64, client.getStats().toRGBATexture(tex));
 	sf::Sprite lsprite(lagometer);
 	lsprite.SetColor(sf::Color(0xff, 0xff, 0xff, 0xcc));
-	lsprite.SetScale(4.0f, 4.0f);
-	lsprite.SetCenter(32, 32);
+	lsprite.SetScale(2.0f, 2.0f);
+	lsprite.SetCenter(64, 64);
 	lsprite.SetPosition(640, 480);
 
+	if(!playing_replay && argc > 2) client.startRecordingReplay(argv[2]);
+
 	while(running){
+		if(playing_replay) rserv.update();
 		running = client.update();
 		
-		lagometer.LoadFromPixels(32, 32, client.getStats().toRGBATexture(tex));
+		lagometer.LoadFromPixels(64, 64, client.getStats().toRGBATexture(tex));
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
 		
