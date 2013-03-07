@@ -62,7 +62,7 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			}
 		} else if(!isValidPacketHeader(seq, flags)){
 			ref.seek(o, SEEK_SET);
-			return false;
+			return true;
 		}
 
 		if(flags & PKTFLAG_FINISHED){
