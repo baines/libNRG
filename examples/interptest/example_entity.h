@@ -9,7 +9,7 @@ enum MyEntities {
 
 class ExampleEntity : public nrg::EntityHelper<ExampleEntity, EXAMPLE> {
 public:	
-	ExampleEntity() : angle(0.0f), xpos(this, 320), ypos(this, 240){}
+	ExampleEntity() : angle(0.0f), xpos(this, 320), ypos(this, 240), array(this){}
 
 	void update(){
 		angle += M_PI / 45.0f;
@@ -28,13 +28,13 @@ public:
 		else return ypos.get();
 	}
 	
-	/*uint8_t getArray(int i){
+	uint8_t getArray(int i){
 		return array.get(i);
-	}*/
+	}
 private:
 	float angle;
 	nrg::Field<uint16_t> xpos, ypos;
-	//nrg::Field<uint8_t[8]> array;
+	nrg::Field<uint8_t[8]> array;
 };
 
 #endif

@@ -60,7 +60,6 @@ bool ServerPlayerGameState::needsUpdate() const {
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 	if(ackd_id == -1){
-		//TODO: input id
 		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000)
 			.write16(ping).write16(0);
 		master_ss.writeToPacket(buffer);

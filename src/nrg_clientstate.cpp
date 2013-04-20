@@ -92,20 +92,17 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	c_time_ms = sock.getLastTimestamp() / 1000;
 
 	if(state_id != -1){
-		int diff = c_time_ms - (c_time0_ms + (s_newtime_ms - s_time_ms));
-		STATS().addSnapshotStat(std::max(0, diff));
 		c_time_ms = std::min(c_time_ms, c_time0_ms + (s_newtime_ms - s_time_ms));
 	}
 	s_time_ms = s_newtime_ms;
 
 	uint16_t ping = 0;
 	p.read16(ping);
-//	STATS().addSnapshotStat(ping);
+	STATS().addSnapshotStat(ping);
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
-	// TODO: acknowledge input
-
+	
 	snapshot.reset();
 	if(!snapshot.readFromPacket(p)) return false;
 	state_id = new_state_id;
@@ -120,14 +117,12 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		}
 	}
 
-	// TODO timing of applying new snapshot
 	snapshot.applyUpdate(entities, entity_types, client_eventq);
 
 	return true;
 }
 
 bool ClientGameState::needsUpdate() const {
-	//TODO, true if new input to send, or new snapshot to ack
 	return state_id != -1;
 }
 	

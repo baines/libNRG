@@ -104,7 +104,7 @@ public:
 			T v;
 			p.read<index_t>(k);
 			p.read<T>(v);
-			data[k] = v;
+			data_next[k] = v;
 		}
 		return sizeof(index_t) + (count * (sizeof(index_t) + sizeof(T)));
 	}
@@ -118,6 +118,10 @@ public:
 			}
 		}
 		return sizeof(index_t) + (updated_indices.count() * (sizeof(index_t) + sizeof(T)));
+	}
+
+	virtual void shiftData(){
+		memcpy(data, data_next, N);
 	}
 
 	virtual void setUpdated(bool updated){
@@ -140,10 +144,19 @@ public:
 	}
 	
 	T get(size_t index) const {
-		return data[index];
+		return data_next[index];
+	}
+	
+	template<class F>
+	T getInterp(size_t index, const F& func) const {
+		return func(data[index], data_next[index], this->container->getClientSnapshotTiming());
+	}
+
+	T getInterp(size_t index) const {
+		return lerp<T>()(data[index], data_next[index], this->container->getClientSnapshotTiming());
 	}
 private:
-	T data[N];
+	T data[N], data_next[N];
 	std::bitset<N> updated_indices;
 	typedef typename size2type<min_sizeof<N-1>::val>::type index_t;
 };
