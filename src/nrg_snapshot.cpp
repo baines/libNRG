@@ -1,4 +1,5 @@
 #include "nrg_snapshot.h"
+#include "nrg_bit_io.h"
 #include <climits>
 #include <cassert>
 #include <numeric>
@@ -45,51 +46,11 @@ void Snapshot::removeEntityById(uint16_t id){
 	EDat_it it = edata.find(id);
 	if(it != edata.end()) edata.erase(it);
 }
-/*
-bool Snapshot::mergeWithNext(const Snapshot& next){
-	if(id != -1 && next.id != ((id + 1) & USHRT_MAX)) return false;
-	id = next.id;
-
-	for(EDat_cit i = next.edata.begin(), j = next.edata.end(); i!=j; ++i){
-		EDat_it k = edata.find(i->first);		
-		if(k != edata.end()){
-			EntityData& ed_this = k->second;
-			const EntityData& ed_next = i->second;
-			buffer.reset().writeArray(
-				ed_this.field_data.getBasePointer(), ed_this.field_data.size()
-			);
-			ed_this.field_data.reset();
-
-			if(ed_this.field_sizes.size() < ed_next.field_sizes.size())
-				ed_this.field_sizes.resize(ed_next.field_sizes.size());
-			
-			for(size_t x = 0; x < ed_next.field_sizes.size(); ++x){
-				size_t sz = 0;
-				if((sz = ed_next.field_sizes[x]) != 0){
-					ed_this.field_data.writeArray(
-						ed_next.field_data.getBasePointer() + ed_next.getFieldOffset(x), sz
-					);
-					ed_this.field_sizes[x] = sz;
-				} else if((sz = ed_this.field_sizes[x]) != 0){
-					ed_this.field_data.writeArray(
-						buffer.getBasePointer() + ed_this.getFieldOffset(x), sz
-					);
-				}
-			}
-		} else {
-			edata.insert(*i);
-		}
-	}
-
-	return true;
-}*/
 
 void Snapshot::reset(){
 	edata.clear();
 	id = -1;
 }
-
-static const int MAX_BYTE_SHIFTS = 7;
 
 void Snapshot::writeToPacket(Packet& p) const {
 	size_t total_bytes = 0;
@@ -103,17 +64,10 @@ void Snapshot::writeToPacket(Packet& p) const {
 		p.write16(ed.id);
 		p.write16(ed.type);
 	
-		uint8_t bits = 0;
-		for(size_t x = 0; x < ed.field_sizes.size(); ++x){
-			if(ed.field_sizes[x] != 0){
-				bits |= 1 << (MAX_BYTE_SHIFTS - (x & MAX_BYTE_SHIFTS));
-			}
-			if((x < ed.field_sizes.size()-1) && (x & MAX_BYTE_SHIFTS) == MAX_BYTE_SHIFTS){
-				p.write8(bits);
-				bits = 0;
-			}
-		}
-		p.write8(bits);
+		BitWriter(p).writeFunc(ed.field_sizes.size(), [&](int x){
+			return ed.field_sizes[x] != 0;
+		});
+		
 		p.writeArray(ed.field_data.getBasePointer(), ed.field_data.size());	
 	}
 }
@@ -138,6 +92,8 @@ bool ClientSnapshot::readFromPacket(Packet& p){
 		return false;
 	}
 }
+
+static const size_t MAX_BYTE_SHIFTS = 7;
 
 void ClientSnapshot::applyUpdate(std::vector<Entity*>& entities, 
 const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){

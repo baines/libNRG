@@ -1,4 +1,5 @@
 #include "nrg_snapshot.h"
+#include "nrg_bit_io.h"
 #include <cassert>
 
 using namespace nrg;
@@ -21,9 +22,7 @@ void DeltaSnapshot::addEntity(Entity* e){
 			FieldInfo fi = {e->getID(), i, sz, off};
 			metadata.push_back(fi);
 		}
-	}
-
-	sort(entities.begin(), entities.end());
+	}	
 }
 
 void DeltaSnapshot::removeEntityById(uint16_t){
@@ -37,31 +36,25 @@ void DeltaSnapshot::reset(){
 	id = -1;
 }
 
-static const size_t MAX_BYTE_SHIFTS = 7;
-
 void DeltaSnapshot::writeToPacket(Packet& p) const {
 	size_t total_bytes = 0;
 	for(auto& f : metadata)	total_bytes += f.size;
 	for(auto& e : entities)	total_bytes += 5 + (e.num_fields-1)/8;
 	p.write32(total_bytes);
 
+	typedef vector<FieldInfo>::const_iterator F_cit;
+
 	for(auto& e : entities){
 		p.write16(e.id);
 		p.write16(e.type);
 	
-		uint8_t bits = 0;
-		vector<FieldInfo>::const_iterator i = find(metadata.begin(), metadata.end(), e.id), j = i;
-		for(size_t x = 0; x < e.num_fields; ++x){
-			if(i != metadata.end() && *i == e.id && i->number == x){
-				bits |= 1 << (MAX_BYTE_SHIFTS - (x & MAX_BYTE_SHIFTS));
-				++i;
-			}
-			if((x < e.num_fields-1) && (x & MAX_BYTE_SHIFTS) == MAX_BYTE_SHIFTS){
-				p.write8(bits);
-				bits = 0;
-			}
-		}
-		p.write8(bits);
+		F_cit i = lower_bound(metadata.begin(), metadata.end(), e.id), j = i;
+		
+		BitWriter(p).writeFunc(e.num_fields, [&](int x){
+			bool b = i != metadata.end() && *i == e.id && i->number == x;
+			if(b) ++i;
+			return b;
+		});
 		
 		while(j != metadata.end() && *j == e.id){
 			p.writeArray(j->get(field_data), j->size);
@@ -103,22 +96,15 @@ void DeltaSnapshot::mergeWithNext(const DeltaSnapshot& other){
 	
 	for(size_t i = mid; i < entities.size(); ++i){
 		uint16_t eid = entities[i].id;
-	
-		vector<FieldInfo>::const_iterator old_it, new_it, it, end;
-		const Packet* p;
-	
-		old_it = find(this->metadata.begin(), this->metadata.end(), eid);
-		if(old_it == metadata.end()){
+		vector<FieldInfo>::const_iterator it;
+		const DeltaSnapshot* s = this;
+		
+		if((it = find(metadata.begin(), metadata.end(), eid)) == metadata.end()){
 			it = find(that->metadata.begin(), that->metadata.end(), eid);
-			end = that->metadata.end();
-			p = &that->field_data;
-		} else {
-			it = old_it;
-			end = metadata.end();
-			p = &field_data;
+			s = that;
 		}
 		
-		while(it != end && *it == eid) write_fn(it, *p);
+		while(it != s->metadata.end() && *it == eid) write_fn(it, s->field_data);
 	}
 	
 	entities.resize(mid);
@@ -129,11 +115,10 @@ void DeltaSnapshot::mergeWithNext(const DeltaSnapshot& other){
 	
 	for(size_t i = mid; i < entities.size(); ++i){
 		uint16_t eid = entities[i].id;
-	
 		vector<FieldInfo>::const_iterator old_it, new_it;
 	
-		old_it = find(this->metadata.begin(), this->metadata.end(), eid);
-		new_it = find(that->metadata.begin(), that->metadata.end(), eid);
+		old_it = lower_bound(this->metadata.begin(), this->metadata.end(), eid);
+		new_it = lower_bound(that->metadata.begin(), that->metadata.end(), eid);
 	
 		bool ob, nb;
 		while(ob = (old_it != this->metadata.end() && *old_it == eid), 

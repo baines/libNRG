@@ -50,23 +50,16 @@ private:
 		const uint8_t* get(const Packet& p) const {
 			return p.getBasePointer() + offset;
 		}
-		bool operator==(uint16_t v) const {
-			return entity == v;
-		}
+		bool operator<(uint16_t v) const { return entity < v; }
+		bool operator==(uint16_t v) const { return entity == v; }
 	};
 	struct EntityInfo {
 		size_t num_fields;
 		uint16_t id;
 		uint16_t type;
-		bool operator<(const EntityInfo& other) const {
-			return id < other.id;
-		}
-		bool operator==(const EntityInfo& other) const {
-			return id == other.id;
-		}
-		bool operator==(uint16_t v) const {
-			return id == v;
-		}
+		bool operator<(const EntityInfo& other) const { return id < other.id; }
+		bool operator==(const EntityInfo& other) const { return id == other.id;	}
+		bool operator==(uint16_t v) const {	return id == v;	}
 	};
 	
 	int id;

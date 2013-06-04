@@ -71,6 +71,8 @@ bool nrg::Server::update(){
 	DeltaSnapshot& delta_ss = snaps.next();
 	master_snapshot.setID(delta_ss.getID());
 	
+	sort(updated_entities.begin(), updated_entities.end());
+	
 	for(std::vector<uint16_t>::iterator i = updated_entities.begin(),
 	j = updated_entities.end(); i != j; ++i){
 		if(entities.size() > *i){
