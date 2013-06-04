@@ -16,9 +16,7 @@ typedef enum {
 	STATE_CONTINUE = 1
 } StateUpdateResult;
 
-class NRG_LIB State {
-public:
-	State(){};
+struct NRG_LIB State {
 	virtual bool addIncomingPacket(Packet& p) = 0;
 	virtual bool needsUpdate() const = 0;
 	virtual size_t getTimeoutSeconds() const { return 10; }
@@ -91,7 +89,7 @@ public:
 	bool needsUpdate() const;
 	StateUpdateResult update(ConnectionOutgoing& out);
 private:
-	Snapshot snapshot;
+	DeltaSnapshot snapshot;
 	const Snapshot& master_ss;
 	const DeltaSnapshotBuffer& snaps;
 	int ackd_id;

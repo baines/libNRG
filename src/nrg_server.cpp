@@ -3,6 +3,8 @@
 #include "nrg_player_impl.h"
 #include "nrg_os.h"
 
+using namespace std;
+
 nrg::Server::Server(const NetAddress& bind_addr, Input& input) 
 : sock(), buffer(), input(input), eventq(), clients(), 
 timer(nrg::os::microseconds()), interval(50000) {
@@ -25,7 +27,7 @@ size_t nrg::Server::playerCount() const {
 void nrg::Server::clearEntityUpdated(Entity* e){
 	e->nrg_updated = false;
 	
-	for(FieldBase* f = e->getFirstField(); f; f = f->getNext()){
+	for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
 		f->setUpdated(false);
 	}
 }
@@ -48,9 +50,7 @@ bool nrg::Server::update(){
 		if(it == clients.end()){
 			printf("new client: %s:%d\n", addr.name(), addr.port());
 			uint16_t pid = player_ids.acquire();
-			std::pair<ClientMap::iterator, bool> res = clients.insert(
-				std::pair<NetAddress, PlayerImpl*>(addr, NULL)
-			);
+			auto res = clients.insert(make_pair(addr, nullptr));
 			res.first->second = new PlayerImpl(pid, *this, res.first->first);
 			
 			PlayerEvent e = { PLAYER_JOIN, pid, res.first->second };
@@ -71,7 +71,7 @@ bool nrg::Server::update(){
 	DeltaSnapshot& delta_ss = snaps.next();
 	master_snapshot.setID(delta_ss.getID());
 	
-	for(std::set<uint16_t>::iterator i = updated_entities.begin(),
+	for(std::vector<uint16_t>::iterator i = updated_entities.begin(),
 	j = updated_entities.end(); i != j; ++i){
 		if(entities.size() > *i){
 			if(entities[*i] != NULL){
@@ -120,19 +120,22 @@ void nrg::Server::registerEntity(Entity* e){
 		entities.resize(id+1);
 	}
 	entities[id] = e;
-	updated_entities.insert(e->getID());
+	updated_entities.push_back(e->getID());
 }
 
 void nrg::Server::unregisterEntity(Entity* e){
 	if(e && entities[e->nrg_id]){
 		entity_ids.release(e->nrg_id);
-		updated_entities.insert(e->nrg_id);
+		updated_entities.push_back(e->nrg_id);
 		entities[e->nrg_id] = NULL;
 	}
 }
 
 void nrg::Server::markEntityUpdated(Entity* e){
-	if(e) updated_entities.insert(e->getID());
+	if(e && std::find(updated_entities.begin(), updated_entities.end(), 
+	e->getID()) == updated_entities.end()){
+		updated_entities.push_back(e->getID());
+	}
 }
 
 nrg::Player* nrg::Server::getPlayerByID(uint16_t id) const {

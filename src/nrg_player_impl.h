@@ -23,12 +23,12 @@ protected:
 	ConnectionOutgoing out;
 	Packet buffer;
 	
+	int ping;
 	std::vector<State*> states;
 	ServerHandshakeState handshake;
 	ServerPlayerGameState game_state;
 	uint16_t id;
 	bool connected;
-	int ping;
 };
 
 }

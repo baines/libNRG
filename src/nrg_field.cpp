@@ -29,11 +29,11 @@ void FieldBase::setUpdated(bool val){
 	}
 }
 
-FieldBase* FieldBase::getNext() const {
+FieldBase* FieldBase::getNextField() const {
 	return next;
 }
 
-void FieldBase::setNext(FieldBase* f){
+void FieldBase::setNextField(FieldBase* f){
 	next = f;
 }
 
@@ -56,10 +56,10 @@ void FieldContainer::addField(FieldBase* f){
 		field_head = f;
 	} else {
 		FieldBase* f2 = field_head, *f3;
-		while((f3 = f2->getNext())){
+		while((f3 = f2->getNextField())){
 			f2 = f3;
 		}
-		f2->setNext(f);
+		f2->setNextField(f);
 	}
 	++num_fields;
 }

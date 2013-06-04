@@ -9,7 +9,7 @@
 #include "nrg_player.h"
 #include "nrg_input.h"
 #include <map>
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 namespace nrg {
@@ -45,7 +45,7 @@ protected:
 	Snapshot master_snapshot;
 	DeltaSnapshotBuffer snaps;
 	std::vector<Entity*> entities;
-	std::set<uint16_t> updated_entities;
+	std::vector<uint16_t> updated_entities;
 	IDAssigner<uint16_t> player_ids, entity_ids;
 	uint64_t timer;
 	int interval;

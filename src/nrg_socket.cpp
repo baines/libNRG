@@ -9,7 +9,7 @@ fd(0), family(family), type(type), do_timestamp(false), last_timestamp(0) {
 	fd = socket(family, type, 0);
 }
 
-static inline void addrAssign(nrg::NetAddress* oldaddr, nrg::NetAddress* newaddr){
+static inline void addrAssign(nrg::NetAddress*& oldaddr, nrg::NetAddress* const& newaddr){
 	if(oldaddr != NULL)	delete oldaddr;
 	oldaddr = newaddr;
 }
@@ -137,6 +137,7 @@ const nrg::NetAddress* nrg::Socket::getBoundAddress(){
 }
 
 nrg::Socket::~Socket(){
+	if(bound_addr) delete bound_addr;
 	if(fd >= 0) close(fd);
 }
 

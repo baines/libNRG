@@ -111,7 +111,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	// Could maybe store fields instead of entities for better efficiency
 	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
 		(*i)->nrg_updated = false;
-		for(FieldBase* f = (*i)->getFirstField(); f; f = f->getNext()){
+		for(FieldBase* f = (*i)->getFirstField(); f; f = f->getNextField()){
 			f->shiftData();			
 			f->setUpdated(false);
 		}

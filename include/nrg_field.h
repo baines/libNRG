@@ -22,8 +22,8 @@ public:
 
 	virtual bool wasUpdated() const;
 	virtual void setUpdated(bool updated);
-	FieldBase* getNext() const;
-	void setNext(FieldBase* f);
+	FieldBase* getNextField() const;
+	void setNextField(FieldBase* f);
 protected:
 	FieldContainer* container;
 	FieldBase* next;
@@ -121,7 +121,7 @@ public:
 	}
 
 	virtual void shiftData(){
-		memcpy(data, data_next, N);
+		memcpy(data, data_next, N*sizeof(T));
 	}
 
 	virtual void setUpdated(bool updated){

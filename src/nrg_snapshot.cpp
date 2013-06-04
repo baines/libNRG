@@ -34,26 +34,18 @@ void Snapshot::addEntity(Entity* e){
 				buffer.getBasePointer() + ed.getFieldOffset(i), ed.field_sizes[i]
 			);
 		}
-		f = f->getNext();
+		f = f->getNextField();
 	}
 }
 
-typedef std::map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
-typedef std::map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
+typedef std::unordered_map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
+typedef std::unordered_map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
 
 void Snapshot::removeEntityById(uint16_t id){
 	EDat_it it = edata.find(id);
 	if(it != edata.end()) edata.erase(it);
 }
-
-void DeltaSnapshot::removeEntityById(uint16_t id){
-	Snapshot::removeEntityById(id);
-	
-	EntityData& ed = edata[id];
-	ed.id = id;
-	ed.type = 0;
-}
-
+/*
 bool Snapshot::mergeWithNext(const Snapshot& next){
 	if(id != -1 && next.id != ((id + 1) & USHRT_MAX)) return false;
 	id = next.id;
@@ -90,7 +82,7 @@ bool Snapshot::mergeWithNext(const Snapshot& next){
 	}
 
 	return true;
-}
+}*/
 
 void Snapshot::reset(){
 	edata.clear();
@@ -204,7 +196,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 				f->readFromPacket(data);
 				f->setUpdated(true);
 			}
-			f = f->getNext();
+			f = f->getNextField();
 		}
 
 		delete [] bytes;

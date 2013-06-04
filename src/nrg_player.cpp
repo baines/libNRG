@@ -4,8 +4,8 @@ using namespace nrg;
 
 PlayerImpl::PlayerImpl(uint16_t id, const Server& s, const NetAddress& addr) 
 : server(s), addr(addr), sock(s.getSocket()), in(addr), out(addr, sock), 
-buffer(NRG_MAX_PACKET_SIZE), states(), handshake(), game_state(s.getSnapshot(), 
-s.getDeltaSnapshots(), s.getInput(), *this, ping), id(id), connected(true), ping(0) {
+buffer(NRG_MAX_PACKET_SIZE), ping(0), states(), handshake(), game_state(s.getSnapshot(), 
+s.getDeltaSnapshots(), s.getInput(), *this, ping), id(id), connected(true) {
 	states.push_back(&game_state);
 	states.push_back(&handshake);
 }

@@ -4,6 +4,7 @@
 #include "nrg_entity.h"
 #include "nrg_event.h"
 #include <vector>
+#include <unordered_map>
 #include <map>
 
 namespace nrg {
@@ -15,8 +16,7 @@ public:
 	int getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
 	void addEntity(Entity* e);
-	virtual void removeEntityById(uint16_t id);
-	bool mergeWithNext(const Snapshot& next);
+	void removeEntityById(uint16_t id);
 	void writeToPacket(Packet& p) const;
 	void reset();
 protected:
@@ -28,20 +28,60 @@ protected:
 		size_t getTotalBytes() const;
 	};
 	int id;
-	std::map<uint16_t, EntityData> edata;
+	std::unordered_map<uint16_t, EntityData> edata;
 	Packet buffer;
 };
 
-struct NRG_LIB DeltaSnapshot : public Snapshot {
-	virtual void removeEntityById(uint16_t id);
+struct NRG_LIB DeltaSnapshot {
+	DeltaSnapshot();
+	int getID() const { return id; }
+	void setID(uint16_t id){ this->id = id; }
+	void addEntity(Entity* e);
+	void removeEntityById(uint16_t id);
+	void mergeWithNext(const DeltaSnapshot& next);
+	void writeToPacket(Packet& p) const;
+	void reset();
+private:
+	struct FieldInfo {
+		uint16_t entity;
+		uint16_t number;
+		size_t size;
+		size_t offset;
+		const uint8_t* get(const Packet& p) const {
+			return p.getBasePointer() + offset;
+		}
+		bool operator==(uint16_t v) const {
+			return entity == v;
+		}
+	};
+	struct EntityInfo {
+		size_t num_fields;
+		uint16_t id;
+		uint16_t type;
+		bool operator<(const EntityInfo& other) const {
+			return id < other.id;
+		}
+		bool operator==(const EntityInfo& other) const {
+			return id == other.id;
+		}
+		bool operator==(uint16_t v) const {
+			return id == v;
+		}
+	};
+	
+	int id;
+	std::vector<EntityInfo> entities;
+	std::vector<FieldInfo> metadata, scratch;
+	Packet field_data, buffer;
 };
 
 class NRG_LIB ClientSnapshot {
+	typedef std::vector<Entity*> EVec;
+	typedef std::map<uint16_t, Entity*> EMap;
 public:
 	ClientSnapshot() : data() {};
 	bool readFromPacket(Packet& p);
-	void applyUpdate(std::vector<Entity*>& entities, 
-		const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq);
+	void applyUpdate(EVec& entities, const EMap& entity_types, EventQueue& eq);
 	void reset();
 private:
 	Packet data;

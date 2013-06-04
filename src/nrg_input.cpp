@@ -13,7 +13,7 @@ void Input::markUpdated(){
 }
 
 bool Input::readFromPacket(Packet& p){
-	for(FieldBase* f = getFirstField(); f; f = f->getNext()){
+	for(FieldBase* f = getFirstField(); f; f = f->getNextField()){
 		if(f->readFromPacket(p) == 0) return false;
 		f->shiftData();
 	}
@@ -21,7 +21,7 @@ bool Input::readFromPacket(Packet& p){
 }
 
 void Input::writeToPacket(Packet& p) const {
-	for(FieldBase* f = getFirstField(); f; f = f->getNext()){
+	for(FieldBase* f = getFirstField(); f; f = f->getNextField()){
 		f->writeToPacket(p);
 	}
 }
