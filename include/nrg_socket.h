@@ -9,7 +9,8 @@ namespace nrg {
 
 class NRG_LIB Socket {
 public:
-	Socket(int family, int type);
+	Socket(int type, int family = PF_UNSPEC);
+	Socket(int type, const NetAddress& addr);
 	bool bind(const NetAddress& addr);
 	bool connect(const NetAddress& addr);
 	ssize_t sendPacket(const Packet& p) const;
@@ -41,7 +42,8 @@ protected:
 };
 
 struct NRG_LIB UDPSocket : public Socket {
-	UDPSocket(int family = AF_INET);
+	UDPSocket(int family = PF_UNSPEC);
+	UDPSocket(const NetAddress& a);
 };
 
 };

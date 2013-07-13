@@ -65,7 +65,7 @@ StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 		master_ss.writeToPacket(buffer);
 		out.sendPacket(buffer);
 	} else {
-		const DeltaSnapshot* ss = snaps.find((ackd_id + 1) & USHRT_MAX);
+		const DeltaSnapshot* ss = snaps.find(ackd_id + 1);
 		if(ss != NULL){
 			snapshot.reset();
 			for(uint16_t i = ackd_id + 1; i != snaps.getCurrentID(); ++i){

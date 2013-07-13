@@ -24,16 +24,10 @@ bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags) c
 	
 	if(flags & PKTFLAG_CONTINUATION){
 		if(latest.tell() != 0 && !full_packet){
-			valid = (seq == ((seq_num + 1) & USHRT_MAX));
+			valid = seq == (seq_num + 1);
 		}
 	} else {
-		for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
-			uint16_t v = (seq_num + i) & USHRT_MAX;
-			if(v == seq){
-				valid = true;
-				break;
-			}
-		}
+		valid = (seq - seq_num) < NRG_NUM_PAST_SNAPSHOTS;
 	}
 	return valid;
 }

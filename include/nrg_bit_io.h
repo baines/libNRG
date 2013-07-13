@@ -24,12 +24,17 @@ public:
 		for(int i = 0; i < sz; ++i){
 			write(fn(i));
 		}
-		flush();
 	}
 	void flush(void){
 		if(!count) return;
 		p.write8(bits);
+		clear();
+	}
+	void clear(){
 		bits = count = 0;
+	}
+	~BitWriter(){
+		flush();
 	}
 private:
 	uint8_t bits, count;

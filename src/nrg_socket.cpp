@@ -4,8 +4,13 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-nrg::Socket::Socket(int family, int type) : bound_addr(NULL), connected_addr(NULL), 
+nrg::Socket::Socket(int type, int family) : bound_addr(NULL), connected_addr(NULL), 
 fd(0), family(family), type(type), do_timestamp(false), last_timestamp(0) {
+	if(family != PF_UNSPEC) fd = socket(family, type, 0);
+}
+
+nrg::Socket::Socket(int type, const nrg::NetAddress& a) : bound_addr(NULL), connected_addr(NULL),
+fd(0), family(a.family()), type(type), do_timestamp(false), last_timestamp(0) {
 	fd = socket(family, type, 0);
 }
 
@@ -15,9 +20,12 @@ static inline void addrAssign(nrg::NetAddress*& oldaddr, nrg::NetAddress* const&
 }
 
 bool nrg::Socket::bind(const NetAddress& addr){
-	if(addr.family() != family) return status::ERROR;
+	if(!fd){
+		family = addr.family();
+		fd = socket(family, type, 0);
+	} else if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
-
+	
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::bind(fd, sa, len) == 0){
 		addrAssign(bound_addr, new NetAddress(addr));
@@ -28,7 +36,10 @@ bool nrg::Socket::bind(const NetAddress& addr){
 }
 
 bool nrg::Socket::connect(const NetAddress& addr){
-	if(addr.family() != family) return status::ERROR;
+	if(!fd){
+		family = addr.family();
+		fd = socket(family, type, 0);
+	} else if(addr.family() != family) return status::ERROR;
 	socklen_t len = 0;
 
 	const struct sockaddr* sa = addr.toSockAddr(len);
@@ -160,7 +171,11 @@ void nrg::Socket::enableTimestamps(bool enable){
 	do_timestamp = enable;
 }
 
-nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(family, SOCK_DGRAM){
+nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(SOCK_DGRAM, family){
+
+}
+
+nrg::UDPSocket::UDPSocket(const NetAddress& a) : nrg::Socket(SOCK_DGRAM, a){
 
 }
 

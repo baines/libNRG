@@ -67,24 +67,15 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	if(replay.isRecording()) replay.addPacket(p);
 
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
-	bool valid = false;
 
 	uint16_t new_state_id = 0;
 	p.read16(new_state_id);
 
-	if(state_id == -1){
-		valid = true;
-	} else {
-		for(int i = 1; i < NRG_NUM_PAST_SNAPSHOTS; ++i){
-			uint16_t id = (state_id + i) & USHRT_MAX;
-			if(id == new_state_id){
-				while(--i) STATS().addSnapshotStat(-1);
-				valid = true;
-				break;
-			}
-		}
+	int dropped = new_state_id - state_id;
+	if(state_id != -1){
+		if (dropped >= NRG_NUM_PAST_SNAPSHOTS)	return false;
+		while(--dropped) STATS().addSnapshotStat(-1);
 	}
-	if(!valid) return false;
 
 	uint32_t s_newtime_ms = 0;
 	p.read32(s_newtime_ms);

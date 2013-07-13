@@ -4,27 +4,28 @@
 #include "nrg_os.h"
 
 using namespace std;
+using namespace nrg;
 
-nrg::Server::Server(const NetAddress& bind_addr, Input& input) 
-: sock(), buffer(), input(input), eventq(), clients(), 
+Server::Server(const NetAddress& bind_addr, Input& input) 
+: sock(bind_addr), buffer(), input(input), eventq(), clients(), 
 timer(nrg::os::microseconds()), interval(50000) {
 	sock.setNonBlocking(true);
 	bind(bind_addr);
 }
 
-bool nrg::Server::bind(const NetAddress& addr){
+bool Server::bind(const NetAddress& addr){
 	return sock.bind(addr) == status::OK;
 }
 
-bool nrg::Server::isBound() {
+bool Server::isBound() {
 	return sock.getBoundAddress() != NULL;
 }
 
-size_t nrg::Server::playerCount() const {
+size_t Server::playerCount() const {
 	return clients.size();
 }
 
-void nrg::Server::clearEntityUpdated(Entity* e){
+void Server::clearEntityUpdated(Entity* e){
 	e->nrg_updated = false;
 	
 	for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
@@ -32,23 +33,25 @@ void nrg::Server::clearEntityUpdated(Entity* e){
 	}
 }
 
-static inline nrg::PlayerImpl* IMPL(nrg::Player* p){
+static inline PlayerImpl* IMPL(nrg::Player* p){
 	return static_cast<nrg::PlayerImpl*>(p);
 }
 
-bool nrg::Server::update(){
+bool Server::update(){
 	eventq.clear();
 
-	uint64_t blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
+	uint64_t blocktime;
 
-	while(sock.dataPending(blocktime)){
+	while(blocktime = max<int>(0, interval - (os::microseconds() - timer)),
+	sock.dataPending(blocktime)){
+		
 		NetAddress addr;
-		buffer.reset();
-		sock.recvPacket(buffer, addr);
+		sock.recvPacket(buffer.reset(), addr);
 		
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
 			printf("new client: %s:%d\n", addr.name(), addr.port());
+			
 			uint16_t pid = player_ids.acquire();
 			auto res = clients.insert(make_pair(addr, nullptr));
 			res.first->second = new PlayerImpl(pid, *this, res.first->first);
@@ -62,7 +65,6 @@ bool nrg::Server::update(){
 		if(!IMPL(it->second)->addPacket(buffer)){
 			it->second->kick("Recieved invalid packet from client.");
 		}
-		blocktime = std::max<int>(0, interval - (os::microseconds() - timer));
 	}
 
 	timer = os::microseconds();
@@ -73,16 +75,17 @@ bool nrg::Server::update(){
 	
 	sort(updated_entities.begin(), updated_entities.end());
 	
-	for(std::vector<uint16_t>::iterator i = updated_entities.begin(),
-	j = updated_entities.end(); i != j; ++i){
-		if(entities.size() > *i){
-			if(entities[*i] != NULL){
-				master_snapshot.addEntity(entities[*i]);
-				delta_ss.addEntity(entities[*i]);
-				clearEntityUpdated(entities[*i]);
+	for(uint16_t i : updated_entities){
+		if(entities.size() > i){
+			Entity* e = entities[i];
+			
+			if(e != NULL){
+				master_snapshot.addEntity(e);
+				delta_ss.addEntity(e);
+				clearEntityUpdated(e);
 			} else {
-				master_snapshot.removeEntityById(*i);
-				delta_ss.removeEntityById(*i);
+				master_snapshot.removeEntityById(i);
+				delta_ss.removeEntityById(i);
 			}
 		}
 	}
@@ -91,6 +94,7 @@ bool nrg::Server::update(){
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; /**/){
 		if(!i->second->isConnected()){
 			printf("client quit: %s:%d\n", i->first.name(), i->first.port());
+			
 			player_ids.release(i->second->getID());
 			PlayerEvent e = { PLAYER_LEAVE, i->second->getID(), i->second };
 			eventq.pushEvent(e);
@@ -102,19 +106,19 @@ bool nrg::Server::update(){
 		}
 	}
 
-	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
-		if(!IMPL(i->second)->update()){
-			i->second->kick("Client update failed.");
+	for(auto& c : clients){
+		if(!IMPL(c.second)->update()){
+			c.second->kick("Client update failed.");
 		}
 	}
 	return true;
 }
 
-bool nrg::Server::pollEvent(Event& e){
+bool Server::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }
 
-void nrg::Server::registerEntity(Entity* e){
+void Server::registerEntity(Entity* e){
 	e->nrg_serv_ptr = this;
 	uint16_t id = entity_ids.acquire();
 	e->nrg_id = id;
@@ -125,7 +129,7 @@ void nrg::Server::registerEntity(Entity* e){
 	updated_entities.push_back(e->getID());
 }
 
-void nrg::Server::unregisterEntity(Entity* e){
+void Server::unregisterEntity(Entity* e){
 	if(e && entities[e->nrg_id]){
 		entity_ids.release(e->nrg_id);
 		updated_entities.push_back(e->nrg_id);
@@ -133,33 +137,31 @@ void nrg::Server::unregisterEntity(Entity* e){
 	}
 }
 
-void nrg::Server::markEntityUpdated(Entity* e){
-	if(e && std::find(updated_entities.begin(), updated_entities.end(), 
-	e->getID()) == updated_entities.end()){
+void Server::markEntityUpdated(Entity* e){
+	if(e && find(updated_entities.begin(), updated_entities.end(), e->getID()) 
+	== updated_entities.end()){
 		updated_entities.push_back(e->getID());
 	}
 }
 
-nrg::Player* nrg::Server::getPlayerByID(uint16_t id) const {
-	for(ClientMap::const_iterator i = clients.begin(), j = clients.end(); i != j; ++i){
-		if(i->second->getID() == id){
-			return i->second;		
-		}
-	}
-	return NULL;
+Player* Server::getPlayerByID(uint16_t id) const {
+	auto i = find_if(clients.begin(), clients.end(), 
+	[&](const pair<NetAddress, Player*>& p){
+		return p.second->getID() == id;
+	});
+	return i == clients.end() ? nullptr : i->second;
 }
 
-nrg::Server::~Server(){
-	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; ++i){
-		i->second->kick("Server closing.");
-		delete i->second;
+Server::~Server(){
+	for(auto& c : clients){
+		c.second->kick("Server closing.");
+		delete c.second;
 	}
 
-	for(std::vector<Entity*>::iterator i = entities.begin(), j = entities.end()
-	; i != j; ++i){
-		if((*i)){
-			(*i)->nrg_serv_ptr = NULL;
-			(*i)->nrg_id = 0;
+	for(Entity* e : entities){
+		if(e){
+			e->nrg_serv_ptr = NULL;
+			e->nrg_id = 0;
 		}
 	}
 }
