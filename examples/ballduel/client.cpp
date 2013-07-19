@@ -89,7 +89,7 @@ int main(int argc, char** argv){
 		rserv.bind(port);
 	}
 
-	nrg::Client client(nrg::NetAddress((playing_replay || argc < 2) ? "127.0.0.1" : argv[1], port), input);
+	nrg::Client client(nrg::NetAddress((playing_replay || argc < 2) ? "::1" : argv[1], port), input);
 	client.registerEntity(new PlayerEntity(0));
 	client.registerEntity(new BallEntity());
 

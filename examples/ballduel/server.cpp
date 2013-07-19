@@ -16,7 +16,7 @@ int main(int argc, char** argv){
 	signal(SIGINT, &sig);
 
 	MyInput input;
-	nrg::Server server(nrg::NetAddress("::", port), input);
+	nrg::Server server(nrg::NetAddress("0.0.0.0", port), input);
 	if(server.isBound()){
 		const nrg::NetAddress* addr = server.getSocket().getBoundAddress();
 		printf("bound to %s:%hu\n", addr->name(), addr->port());

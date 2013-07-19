@@ -71,7 +71,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	uint16_t new_state_id = 0;
 	p.read16(new_state_id);
 
-	int dropped = new_state_id - state_id;
+	uint16_t dropped = new_state_id - state_id;
 	if(state_id != -1){
 		if (dropped >= NRG_NUM_PAST_SNAPSHOTS)	return false;
 		while(--dropped) STATS().addSnapshotStat(-1);

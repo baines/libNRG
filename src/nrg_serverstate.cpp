@@ -32,7 +32,7 @@ StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
 const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l) : snapshot(), 
-master_ss(master), snaps(dsb), ackd_id(-1), ping(l), buffer(), input(i), player(p) {
+master_ss(master), snaps(dsb), ackd_id(-1), ping(l), c_time(0), buffer(), input(i), player(p) {
 
 }
 
@@ -41,12 +41,9 @@ static const size_t NRG_MIN_SPGS_PACKET_LEN = 6;
 bool ServerPlayerGameState::addIncomingPacket(Packet& p){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
 	uint16_t new_ackd_id = 0;
-	uint32_t c_time = 0;
 
 	p.read16(new_ackd_id).read32(c_time);
 	ackd_id = new_ackd_id;
-
-	ping = std::max<int>(0, (os::microseconds() / 1000) - c_time);
 
 	if(!input.readFromPacket(p)) return false;
 	input.onUpdateNRG(player);
@@ -59,6 +56,8 @@ bool ServerPlayerGameState::needsUpdate() const {
 }
 
 StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
+	ping = std::max<int>(0, (os::microseconds() / 1000) - c_time);
+
 	if(ackd_id == -1){
 		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000)
 			.write16(ping).write16(0);

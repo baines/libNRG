@@ -94,6 +94,7 @@ private:
 	const DeltaSnapshotBuffer& snaps;
 	int ackd_id;
 	int& ping;
+	uint32_t c_time;
 	Packet buffer;
 	Input& input;
 	Player& player;
