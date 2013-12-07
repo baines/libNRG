@@ -58,6 +58,10 @@ void nrg::Client::registerEntity(Entity* e){
 	game_state.registerEntity(e);
 }
 
+void nrg::Client::registerMessage(const MessageBase& m){
+	game_state.registerMessage(m);
+}
+
 bool nrg::Client::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }

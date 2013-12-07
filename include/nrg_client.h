@@ -6,6 +6,7 @@
 #include "nrg_state.h"
 #include "nrg_event.h"
 #include "nrg_input.h"
+#include "nrg_message.h"
 #include <vector>
 
 namespace nrg {
@@ -20,6 +21,8 @@ public:
 	const NetAddress& getAddress() const;
 
 	void registerEntity(Entity* e);
+	void registerMessage(const MessageBase& m);
+	
 	bool update();
 	bool pollEvent(Event& e);
 	const ClientStats& getStats() const;

@@ -137,6 +137,10 @@ void Server::unregisterEntity(Entity* e){
 	}
 }
 
+void Server::registerMessage(const MessageBase& m){
+	messages.insert(std::make_pair(m.getID(), m.clone()));
+}
+
 void Server::markEntityUpdated(Entity* e){
 	if(e && find(updated_entities.begin(), updated_entities.end(), e->getID()) 
 	== updated_entities.end()){

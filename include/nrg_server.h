@@ -8,6 +8,7 @@
 #include "nrg_event.h"
 #include "nrg_player.h"
 #include "nrg_input.h"
+#include "nrg_message.h"
 #include <map>
 #include <unordered_set>
 #include <vector>
@@ -27,6 +28,7 @@ public:
 
 	void registerEntity(Entity* e);
 	void unregisterEntity(Entity* e);
+	void registerMessage(const MessageBase& m);
 	void markEntityUpdated(Entity* e);
 	Player* getPlayerByID(uint16_t) const;
 	
@@ -46,6 +48,7 @@ protected:
 	DeltaSnapshotBuffer snaps;
 	std::vector<Entity*> entities;
 	std::vector<uint16_t> updated_entities;
+	std::map<uint16_t, MessageBase*> messages;
 	IDAssigner<uint16_t> player_ids, entity_ids;
 	uint64_t timer;
 	int interval;

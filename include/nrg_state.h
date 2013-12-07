@@ -5,6 +5,7 @@
 #include "nrg_packet.h"
 #include "nrg_snapshot.h"
 #include "nrg_replay.h"
+#include "nrg_message.h"
 #include <map>
 #include <vector>
 
@@ -52,6 +53,8 @@ public:
 	~ClientGameState();
 
 	void registerEntity(Entity* e);
+	void registerMessage(const MessageBase& m);
+	
 	double getSnapshotTiming() const;
 	const ClientStats& getClientStats() const;
 
@@ -60,6 +63,7 @@ public:
 private:
 	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
+	std::map<uint16_t, MessageBase*> messages;
 	EventQueue& client_eventq;
 	ClientStats* stats;
 	int state_id;

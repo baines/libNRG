@@ -136,6 +136,10 @@ void ClientGameState::registerEntity(Entity* e){
 	entity_types.insert(std::make_pair(e->getType(), e));
 }
 
+void ClientGameState::registerMessage(const MessageBase& m){
+	messages.insert(std::make_pair(m.getID(), m.clone()));
+}
+
 double ClientGameState::getSnapshotTiming() const {
 	return ss_timer;
 }
