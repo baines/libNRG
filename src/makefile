@@ -9,7 +9,7 @@ includes := -I../include
 
 CXX := g++
 CXXFLAGS := -std=c++0x -g -Wall -fPIC -DBUILDING_NRG -fvisibility=hidden -ffast-math \
--fno-exceptions -U_FORTIFY_SOURCE -fno-stack-protector
+-fno-exceptions -U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing
 LDFLAGS := -lrt -shared -Wl,-soname,$(libname_shared)
 
 all: ../$(libname_shared) ../$(libname_static)

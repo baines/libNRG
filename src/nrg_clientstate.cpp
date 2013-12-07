@@ -90,6 +90,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	uint16_t ping = 0;
 	p.read16(ping);
 	STATS().addSnapshotStat(ping);
+	printf("%hu\n", ping);
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);

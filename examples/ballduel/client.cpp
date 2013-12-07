@@ -83,7 +83,7 @@ int main(int argc, char** argv){
 	nrg::ReplayServer rserv;
 	bool playing_replay = false;
 
-	if(argc > 2 && strcmp(argv[1], "replay") == 0){
+	if(argc > 2 && strcmp(argv[1], "--replay") == 0){
 		playing_replay = true;
 		rserv.openReplay(argv[2]);
 		rserv.bind(port);

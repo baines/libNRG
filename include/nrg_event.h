@@ -1,7 +1,7 @@
 #ifndef NRG_EVENT_H
 #define NRG_EVENT_H
 #include "nrg_core.h"
-#include <queue>
+#include "nrg_queue.h"
 
 namespace nrg {
 
@@ -52,7 +52,7 @@ union NRG_LIB Event {
 
 class EventQueue {
 public:
-	EventQueue() : queue(){}
+	EventQueue() : queue(32){}
 	void pushEvent(const Event& e){
 		queue.push(e);
 	}
@@ -60,16 +60,15 @@ public:
 		if(queue.empty()){
 			return false;
 		} else {
-			e = queue.front();
-			queue.pop();
+			e = queue.pop();
 			return true;
 		}
 	}
 	void clear(){
-		while(!queue.empty()) queue.pop();
+		queue.clear();
 	}
 private:
-	std::queue<Event> queue;
+	Queue<Event> queue;
 };
 
 };

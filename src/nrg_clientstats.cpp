@@ -51,7 +51,7 @@ uint8_t* ClientStatsImpl::toRGBATexture(uint32_t (&tex)[NUM_STATS*NUM_STATS]) co
 			uint32_t& p = tex[h*NUM_STATS+w];
 			if(getSnapshotStat(w) < 0){
 				p = RED;
-			} else if(1 + getSnapshotStat(w) / 4 >= (NUM_STATS-h)){
+			} else if(1 + getSnapshotStat(w) / 8 >= (NUM_STATS-h)){
 				p = GRN;
 			} else {
 				int x = (s_index + w) % NUM_STATS;
