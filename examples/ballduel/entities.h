@@ -2,6 +2,8 @@
 #define EXAMPLE_ENTITY_H
 #include "nrg.h"
 #include <cmath>
+#include "constants.h"
+namespace c = constants;
 
 enum MyEntities {
 	PLAYER,
@@ -10,27 +12,26 @@ enum MyEntities {
 
 class EntityBase {
 public:
-	EntityBase(nrg::Entity* e) : xpos(e), ypos(e), e(e) {}
+	EntityBase(nrg::Entity* e) : xpos(e), ypos(e) {}
 	short getX() const { return xpos.get(); }
 	short getY() const { return ypos.get(); }
-	short getXI() const { return xpos.getInterp(); }
-	short getYI() const { return ypos.getInterp(); }
+	short getXI() { return xpos.getInterp(); }
+	short getYI() { return ypos.getInterp(); }
 	void setX(int x){ xpos = x; }
 	void setY(int y){ ypos = y; }
-	uint16_t getID() const { return e->getID(); }
+	uint16_t getID() const { return reinterpret_cast<const nrg::Entity*>(this)->getID(); }
 protected:
 	nrg::Field<short> xpos, ypos;
-	nrg::Entity* e;
 };
 
 class PlayerEntity : public nrg::EntityHelper<PlayerEntity, PLAYER>, public EntityBase {
 public:	
 	PlayerEntity(int x) : EntityBase(this), score(this, 0){
 		xpos = x;
-		ypos = 232;
+		ypos = (c::screen_h - c::paddle_h) / 2;
 	}
 	void incScore(){
-		score = score.get()+1;
+		score = score.get() + 1;
 	}
 	uint16_t getScore(){ return score.get(); }
 private:
@@ -39,13 +40,13 @@ private:
 
 class BallEntity : public nrg::EntityHelper<BallEntity, BALL>, public EntityBase {
 public:
-	BallEntity() : EntityBase(this), xv(-10.0f), yv(10.0f), speed(2.0f) {
+	BallEntity() : EntityBase(this), xv(-1.0f), yv(1.0f), speed(c::ball_speed) {
 		reset();
 	}
 	void reset(){
-		xpos = 312;
-		ypos = 232;
-		speed = 1.0f;
+		xpos = (c::screen_w - c::ball_size) / 2;
+		ypos = (c::screen_h - c::ball_size) / 2;
+		speed = c::ball_speed;
 		xv *= -1.0f;
 	}
 	void update(){

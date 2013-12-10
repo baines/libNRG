@@ -14,9 +14,9 @@ public:
 	}
 	void onUpdateNRG(nrg::Player& player){
 		if(player.getID() == 0){
-			gs->getPlayer1().setY(ypos.get()-32);
+			gs->getPlayer1().setY(ypos.get()-(c::paddle_h/2));
 		} else if(player.getID() == 1){
-			gs->getPlayer2().setY(ypos.get()-32);
+			gs->getPlayer2().setY(ypos.get()-(c::paddle_h/2));
 		}
 	}
 private:

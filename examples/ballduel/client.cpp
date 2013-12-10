@@ -3,11 +3,11 @@
 #include "entities.h"
 #include "input.h"
 #include "sprite.h"
+#include "constants.h"
+namespace c = constants;
 
 std::vector<Sprite> sprites;
-sf::Image img;
 bool running = true;
-bool interp = true;
 typedef std::vector<Sprite>::iterator s_it;
 MyInput input;
 int score1 = 0, score2 = 0;
@@ -17,10 +17,9 @@ bool findSprite(nrg::Entity* e, s_it& i){
 	return (i = std::find(sprites.begin(), sprites.end(), e)) != sprites.end();
 }
 
-
 void updateScore(){
 	char buf[32];
-	snprintf(buf, 32, "%3d  -  %-3d", score1, score2);
+	snprintf(buf, sizeof(buf), "%3d  -  %-3d", score1, score2);
 	score_str.SetText(buf);
 	score_str.SetCenter(score_str.GetRect().GetWidth()/2, 0);
 }
@@ -33,9 +32,9 @@ void checkNRGEvents(nrg::Client& c){
 		switch(e.type){
 		case nrg::ENTITY_CREATED:
 			if(e.entity.etype == PLAYER){
-				sprites.push_back(Sprite(img, static_cast<PlayerEntity*>(e.entity.pointer)));
+				sprites.push_back(Sprite(static_cast<PlayerEntity*>(e.entity.pointer)));
 			} else if(e.entity.etype == BALL){
-				sprites.push_back(Sprite(img, static_cast<BallEntity*>(e.entity.pointer)));
+				sprites.push_back(Sprite(static_cast<BallEntity*>(e.entity.pointer)));
 			}
 			break;
 		case nrg::ENTITY_DESTROYED:
@@ -44,7 +43,7 @@ void checkNRGEvents(nrg::Client& c){
 		case nrg::ENTITY_UPDATED:
 			if(e.entity.etype == PLAYER){
 				PlayerEntity* p = static_cast<PlayerEntity*>(e.entity.pointer);
-				if(p->getX() < 320){
+				if(p->getX() < c::screen_w / 2){
 					score1 = p->getScore();
 				} else {	
 					score2 = p->getScore();
@@ -73,31 +72,31 @@ void checkSFMLEvents(sf::RenderWindow& win){
 	while(win.GetEvent(e)){
 		if(e.Type == sf::Event::Closed) running = false;
 		if(e.Type == sf::Event::KeyPressed) handleSFMLKeyPress(e.Key.Code);
-		if(e.Type == sf::Event::MouseMoved) input.setY(e.MouseMove.Y);
+		if(e.Type == sf::Event::MouseMoved){ input.setY(e.MouseMove.Y); }
 	}
 }
-
-static const char port[] = "9001";
 
 int main(int argc, char** argv){
 	nrg::ReplayServer rserv;
 	bool playing_replay = false;
 
-	if(argc > 2 && strcmp(argv[1], "--replay") == 0){
+	if(argc > 2 && strcmp(argv[1], c::replay_arg) == 0){
 		playing_replay = true;
 		rserv.openReplay(argv[2]);
-		rserv.bind(port);
+		rserv.bind(c::port);
 	}
 
-	nrg::Client client(nrg::NetAddress((playing_replay || argc < 2) ? "::1" : argv[1], port), input);
+	nrg::Client client(nrg::NetAddress((playing_replay || argc < 2) ? c::addr_local : argv[1], c::port), input);
 	client.registerEntity(new PlayerEntity(0));
 	client.registerEntity(new BallEntity());
 
-	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client", sf::Style::Close);
+	sf::View view(sf::FloatRect(0, 0, c::screen_w, c::screen_h));
+	sf::RenderWindow window(sf::VideoMode(c::screen_w, c::screen_h), c::client_title);
+	window.SetView(view);
 	window.UseVerticalSync(true);
-	window.SetFramerateLimit(60);
-	img.Create(16, 16, sf::Color::White);
-	score_str.SetX(320);
+	window.SetFramerateLimit(c::fps_limit);
+	
+	score_str.SetX(c::screen_w / 2);
 
 	uint32_t tex[64*64];
 
@@ -105,13 +104,13 @@ int main(int argc, char** argv){
 	lagometer.SetSmooth(false);
 	lagometer.LoadFromPixels(64, 64, client.getStats().toRGBATexture(tex));
 	sf::Sprite lsprite(lagometer);
-	lsprite.SetColor(sf::Color(0xff, 0xff, 0xff, 0xcc));
-	lsprite.SetScale(2.0f, 2.0f);
-	lsprite.SetCenter(64, 64);
-	lsprite.SetPosition(640, 480);
+	lsprite.SetColor(c::lag_col);
+	lsprite.SetScale(c::lag_scale, c::lag_scale);
+	lsprite.SetCenter(c::lag_centre, c::lag_centre);
+	lsprite.SetPosition(c::screen_w, c::screen_h);
 
 	if(!playing_replay && argc > 2) client.startRecordingReplay(argv[2]);
-
+	
 	while(running){
 		if(playing_replay) rserv.update();
 		running = client.update();
@@ -122,7 +121,6 @@ int main(int argc, char** argv){
 		
 		window.Clear();
 		for(s_it i = sprites.begin(), j = sprites.end(); i!=j; ++i){
-			i->update();	
 			i->draw(window);
 		}
 		window.Draw(lsprite);

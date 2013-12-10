@@ -90,7 +90,6 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	uint16_t ping = 0;
 	p.read16(ping);
 	STATS().addSnapshotStat(ping);
-	printf("%hu\n", ping);
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
@@ -119,8 +118,9 @@ bool ClientGameState::needsUpdate() const {
 }
 	
 StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
-	ss_timer = (((os::microseconds() / 1000)-50)-c_time0_ms) / double(c_time_ms - c_time0_ms);
-	uint32_t s_time_est = s_time_ms + ((os::microseconds() / 1000) - c_time_ms);
+	uint32_t now_ms = os::microseconds() / 1000;
+	ss_timer = ((now_ms-50)-c_time0_ms) / double(c_time_ms - c_time0_ms);
+	uint32_t s_time_est = s_time_ms + (now_ms - c_time_ms);
 
 	STATS().addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
 
