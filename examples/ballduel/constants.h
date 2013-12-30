@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+#ifdef CLIENTSIDE
 #include "SFML/Graphics.hpp"
+#endif
 
 namespace constants {
 
@@ -25,11 +27,11 @@ namespace constants {
 	static const char client_title[] = "NRG Example Game Client";
 	static const char replay_arg[] = "--replay";
 	
-	#ifdef CLIENTSIDE
-		static const sf::Color lag_col(0xff, 0xff, 0xff, 0xcc);
-		static const sf::Shape ball(sf::Shape::Rectangle(0, 0, ball_size, ball_size, sf::Color::White));
-		static const sf::Shape paddle(sf::Shape::Rectangle(0, 0, paddle_w, paddle_h, sf::Color::White));
-	#endif
+#ifdef CLIENTSIDE
+	static const sf::Color lag_col(0xff, 0xff, 0xff, 0xcc);
+	static const sf::Shape ball(sf::Shape::Rectangle(0, 0, ball_size, ball_size, sf::Color::White));
+	static const sf::Shape paddle(sf::Shape::Rectangle(0, 0, paddle_w, paddle_h, sf::Color::White));
+#endif
 }
 
 #endif

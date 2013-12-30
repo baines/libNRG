@@ -14,7 +14,7 @@ struct NRG_LIB Input : public FieldContainer {
 	void writeToPacket(Packet& p) const;
 };
 
-extern Input null_input;
+extern NRG_LIB Input null_input;
 
 }
 

@@ -2,17 +2,37 @@
 #define NRG_CODEC_H
 #include "nrg_core.h"
 #include <string>
+#include <type_traits>
 
 namespace nrg {
 
+namespace detail {
+
+using namespace std;
+
 template<class T>
+class has_encode_decode {
+	template<class C, C> struct S {};
+	template<class X> static true_type check(S<size_t (X::*)(Packet&) const, &X::encode>*,
+	                                         S<size_t (X::*)(Packet&), &X::decode>*);
+	template<class X> static false_type check(...);
+public:
+	static const bool value = decltype(check<T>(0, 0))::value;
+};
+
+}
+
+using std::enable_if;
+using detail::has_encode_decode;
+
+template<class T, class E = void>
 struct Codec {
 	size_t encode(Packet& p, const T& data){
 		p.write(data);
 		return sizeof(data);
 	}
 	size_t decode(Packet& p, T& data){
-		if(p.remaining() >= sizeof(T)){
+		if(p.remaining() >= sizeof(data)){
 			p.read(data);
 			return sizeof(data);
 		} else {
@@ -23,6 +43,21 @@ struct Codec {
 	struct rebind {
 		typedef Codec<New> type;
 	};
+};
+
+template<class T>
+struct Codec<T, typename enable_if<has_encode_decode<T>::value>::type> {
+	size_t encode(Packet& p, const T& data){
+		return data.encode(p);
+	}
+	size_t decode(Packet& p, T& data){
+		return data.decode(p);
+	}
+	template<class New>
+	struct rebind {
+		typedef Codec<New> type;
+	};
+
 };
 
 template<size_t len>
