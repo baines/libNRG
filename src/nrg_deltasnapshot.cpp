@@ -9,7 +9,7 @@ DeltaSnapshot::DeltaSnapshot() : id(-1) {
 	entities.reserve(16);
 	metadata.reserve(16);
 	scratch.reserve(16);
-};
+}
 
 void DeltaSnapshot::addEntity(Entity* e){
 	assert(e && find(entities.begin(), entities.end(), e->getID()) == entities.end());

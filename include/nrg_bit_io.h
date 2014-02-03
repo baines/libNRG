@@ -8,7 +8,7 @@ namespace nrg {
 class NRG_LIB BitWriter {
 	static const size_t MAX_BYTE_SHIFTS = 7;
 public:
-	BitWriter(nrg::Packet& p) : bits(0), count(0), p(p){};
+	BitWriter(nrg::Packet& p) : bits(0), count(0), p(p){}
 	void write(bool b){
 		b ? write1() : write0();
 	}

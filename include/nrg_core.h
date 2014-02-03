@@ -26,10 +26,10 @@ namespace status {
 		ERROR = -1,
 		NYI   = -2
 	};
-};
+}
 
 typedef enum nrg::status::status_t status_t;
 
-};
+}
 
 #endif

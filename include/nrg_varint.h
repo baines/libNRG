@@ -79,7 +79,7 @@ template<class T>
 struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 
 	TVarint() : data(0){}
-	TVarint(const T& t) : data(t){};
+	TVarint(const T& t) : data(t){}
 
 	size_t encode(Packet& p) const {
 		return detail::varint_encode(p, detail::varint_zigzag(data));

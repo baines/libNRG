@@ -7,7 +7,7 @@
 nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na), 
 seq_num(os::random()), transform(NULL) {
 
-};
+}
 
 void nrg::ConnectionBase::setTransform(nrg::PacketTransformation* t){
 	transform = t;

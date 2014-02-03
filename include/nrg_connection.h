@@ -48,6 +48,6 @@ protected:
 	Packet buffer, buffer2;
 };
 
-};
+}
 
 #endif

@@ -46,6 +46,6 @@ struct NRG_LIB UDPSocket : public Socket {
 	UDPSocket(const NetAddress& a);
 };
 
-};
+}
 
 #endif

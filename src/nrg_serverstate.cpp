@@ -5,7 +5,7 @@
 
 using namespace nrg;
 
-ServerHandshakeState::ServerHandshakeState() : send_response(false){};
+ServerHandshakeState::ServerHandshakeState() : send_response(false){}
 
 bool ServerHandshakeState::addIncomingPacket(Packet& p){
 	if(p.remaining() == 1){

@@ -34,6 +34,6 @@ struct EntityHelper : nrg::Entity {
 	virtual uint16_t getType() const { return type; }
 };
 
-};
+}
 
 #endif

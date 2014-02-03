@@ -43,6 +43,6 @@ protected:
 	char dc_reason[NRG_MAX_ERRORMSG_LEN];
 };
 
-};
+}
 
 #endif

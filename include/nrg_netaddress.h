@@ -30,6 +30,6 @@ protected:
 	socklen_t addr_len;
 };
 
-};
+}
 
 #endif

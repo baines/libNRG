@@ -22,7 +22,7 @@ struct NRG_LIB State {
 	virtual bool needsUpdate() const = 0;
 	virtual size_t getTimeoutSeconds() const { return 10; }
 	virtual StateUpdateResult update(ConnectionOutgoing& out) = 0;
-	virtual ~State(){};
+	virtual ~State(){}
 };
 
 class NRG_LIB ClientHandshakeState : public State {
@@ -104,6 +104,6 @@ private:
 	Player& player;
 };
 
-};
+}
 
 #endif

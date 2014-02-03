@@ -37,11 +37,11 @@ void FieldBase::setNextField(FieldBase* f){
 	next = f;
 }
 
-FieldContainer::FieldContainer() : field_head(NULL), num_fields(0) {};
+FieldContainer::FieldContainer() : field_head(NULL), num_fields(0) {}
 
 FieldContainer::FieldContainer(const FieldContainer& copy) 
 : field_head(copy.field_head ? OFF(copy.field_head, this, &copy) : NULL), 
-num_fields(copy.num_fields) {};
+num_fields(copy.num_fields) {}
 
 FieldBase* FieldContainer::getFirstField() const {
 	return field_head;

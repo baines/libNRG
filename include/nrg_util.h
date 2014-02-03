@@ -10,7 +10,7 @@ namespace nrg {
 template<class ID>
 class IDAssigner {
 public:
-	IDAssigner(const ID& start = 0) : max_id(start){};
+	IDAssigner(const ID& start = 0) : max_id(start){}
 	ID acquire(){
 		if(reusable_ids.empty()){
 			return max_id++;

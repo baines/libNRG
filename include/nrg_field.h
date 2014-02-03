@@ -18,7 +18,7 @@ public:
 	virtual size_t readFromPacket(Packet& p) = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
 	virtual void shiftData() = 0;
-	virtual ~FieldBase(){};
+	virtual ~FieldBase(){}
 
 	virtual bool wasUpdated() const;
 	virtual void setUpdated(bool updated);
@@ -46,8 +46,8 @@ private:
 template<typename T, class Cdc = nrg::Codec<T> >
 class Field : public FieldBase {
 public:
-	Field(FieldContainer* c) : FieldBase(c), data(), data_next(){};
-	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t), data_next(t){};
+	Field(FieldContainer* c) : FieldBase(c), data(), data_next(){}
+	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t), data_next(t){}
 
 	virtual size_t readFromPacket(Packet& p){
 		return Cdc().decode(p, data_next);
@@ -92,8 +92,8 @@ private:
 template<typename T, size_t N>
 class Field<T[N]> : public FieldBase {
 public:
-	Field(FieldContainer* c) : FieldBase(c), data(){};
-	Field(FieldContainer* c, const T (&t)[N]) : FieldBase(c), data(t){};
+	Field(FieldContainer* c) : FieldBase(c), data(){}
+	Field(FieldContainer* c, const T (&t)[N]) : FieldBase(c), data(t){}
 
 	//TODO: read/write whole array if (index, val) pairs will take up more space
 	virtual size_t readFromPacket(Packet& p){
@@ -161,6 +161,6 @@ private:
 	typedef typename size2type<min_sizeof<N-1>::val>::type index_t;
 };
 
-};
+}
 
 #endif

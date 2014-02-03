@@ -7,7 +7,7 @@
 
 using namespace nrg;
 
-ClientHandshakeState::ClientHandshakeState() : phase(NOT_STARTED){};
+ClientHandshakeState::ClientHandshakeState() : phase(NOT_STARTED){}
 
 bool ClientHandshakeState::addIncomingPacket(Packet& p){
 	uint8_t v = 0;

@@ -91,6 +91,6 @@ struct NRG_LIB PacketCompressor : PacketTransformation {
 
 #endif
 
-};
+}
 
 #endif

@@ -10,7 +10,7 @@ static const off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
 static const off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
 
 NetAddress::NetAddress() : text(), addr(), addr_len(0) {
-};
+}
 
 NetAddress::NetAddress(const char* name, const char* port) : text(), addr(), addr_len(0) {
 	resolve(name, port);
@@ -120,4 +120,4 @@ bool operator<(const NetAddress& a, const NetAddress& b){
 	}
 }
 
-};
+}

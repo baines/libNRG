@@ -8,7 +8,7 @@ objects := $(patsubst %.cpp,$(builddir)/%.o,$(sources))
 includes := -I../include
 
 CXX := g++-4.7
-CXXFLAGS := -std=c++11 -g -Wall -fPIC -DBUILDING_NRG -fvisibility=hidden -ffast-math \
+CXXFLAGS := -pedantic -std=c++11 -g -Wall -fPIC -DBUILDING_NRG -fvisibility=hidden -ffast-math \
 -fno-exceptions -U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing
 LDFLAGS := -lrt -lz -shared -Wl,-soname,$(libname_shared)
 

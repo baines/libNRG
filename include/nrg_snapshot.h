@@ -71,7 +71,7 @@ class NRG_LIB ClientSnapshot {
 	typedef std::vector<Entity*> EVec;
 	typedef std::map<uint16_t, Entity*> EMap;
 public:
-	ClientSnapshot() : data() {};
+	ClientSnapshot() : data() {}
 	bool readFromPacket(Packet& p);
 	void applyUpdate(EVec& entities, const EMap& entity_types, EventQueue& eq);
 	void reset();
@@ -82,7 +82,7 @@ private:
 class NRG_LIB DeltaSnapshotBuffer {
 	static const int N = NRG_NUM_PAST_SNAPSHOTS;
 public:
-	DeltaSnapshotBuffer() : snaps(), cur_id(0){};
+	DeltaSnapshotBuffer() : snaps(), cur_id(0){}
 	DeltaSnapshot* find(uint16_t id) {
 		DeltaSnapshot* s = &snaps[id % N];	
 		return s->getID() == id ? s : NULL;
@@ -106,6 +106,6 @@ private:
 	uint16_t cur_id;
 };
 
-};
+}
 
 #endif

@@ -71,6 +71,6 @@ private:
 	Queue<Event> queue;
 };
 
-};
+}
 
 #endif
