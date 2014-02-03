@@ -14,5 +14,6 @@
 #include "nrg_message.h"
 #include "nrg_replay_server.h"
 #include "nrg_util.h"
+#include "nrg_varint.h"
 #include "nrg_os.h"
 #endif

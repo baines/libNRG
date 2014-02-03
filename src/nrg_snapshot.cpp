@@ -39,8 +39,8 @@ void Snapshot::addEntity(Entity* e){
 	}
 }
 
-typedef std::unordered_map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
-typedef std::unordered_map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
+typedef std::map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
+typedef std::map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
 
 void Snapshot::removeEntityById(uint16_t id){
 	EDat_it it = edata.find(id);

@@ -55,7 +55,7 @@ nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
 }
 
 nrg::Packet& nrg::Packet::read8(uint8_t& v){
-	if(pointer - data <= (used_size - sizeof(v))){
+	if((size_t)(pointer - data) <= (used_size - sizeof(v))){
 		v = *pointer++;
 	}
 	return *this;
@@ -76,7 +76,7 @@ nrg::Packet& nrg::Packet::read32(uint32_t& v){
 }
 
 nrg::Packet& nrg::Packet::readArray(uint8_t* v, size_t size){
-	if(pointer - data <= (used_size - size)){
+	if((size_t)(pointer - data) <= (used_size - size)){
 		memcpy(v, pointer, size);
 		pointer += size;
 	}

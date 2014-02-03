@@ -4,7 +4,6 @@
 #include "nrg_entity.h"
 #include "nrg_event.h"
 #include <vector>
-#include <unordered_map>
 #include <map>
 
 namespace nrg {
@@ -28,7 +27,7 @@ protected:
 		size_t getTotalBytes() const;
 	};
 	int id;
-	std::unordered_map<uint16_t, EntityData> edata;
+	std::map<uint16_t, EntityData> edata;
 	Packet buffer;
 };
 
