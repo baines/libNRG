@@ -1,6 +1,6 @@
 #include "nrg_entity.h"
 #include "nrg_server.h"
-#include "nrg_state.h"
+#include "nrg_client_state.h"
 
 nrg::Entity::Entity() : nrg_id(0), nrg_updated(false), 
 nrg_serv_ptr(NULL), nrg_cgs_ptr(NULL) {

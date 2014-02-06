@@ -3,49 +3,53 @@
 #include "nrg_os.h"
 #include <climits>
 #include <cstdlib>
+#include <cassert>
+#include <iostream>
 
-nrg::ConnectionBase::ConnectionBase(const NetAddress& na) : remote_addr(na), 
+using namespace nrg;
+using namespace std;
+
+ConnectionCommon::ConnectionCommon(const NetAddress& na) : remote_addr(na), 
 seq_num(os::random()), transform(NULL) {
 
 }
 
-void nrg::ConnectionBase::setTransform(nrg::PacketTransformation* t){
+void ConnectionCommon::setTransform(PacketTransformation* t){
 	transform = t;
 }
 
-nrg::ConnectionIncoming::ConnectionIncoming(const NetAddress& na)
-: ConnectionBase(na), new_packet(false), first_packet(true), full_packet(false), 
-  final_packet(false), latest(NRG_MAX_PACKET_SIZE) {
+ConnectionIn::ConnectionIn(const NetAddress& na)
+: cc(na), new_packet(false), first_packet(true), full_packet(false), 
+  latest(NRG_MAX_PACKET_SIZE) {
 
 }
 
-bool nrg::ConnectionIncoming::isValidPacketHeader(uint16_t seq, uint8_t flags) const {
+bool ConnectionIn::isValidPacketHeader(uint16_t seq, uint8_t flags) {
 	bool valid = false;
 	
 	if(flags & PKTFLAG_CONTINUATION){
 		if(latest.tell() != 0 && !full_packet){
-			valid = seq == (seq_num + 1);
+			valid = seq == (cc.seq_num + 1);
 		}
 	} else {
-		valid = (seq - seq_num) < NRG_NUM_PAST_SNAPSHOTS;
+		valid = (seq - cc.seq_num) < NRG_NUM_PAST_SNAPSHOTS;
 	}
 	return valid;
 }
 
-bool nrg::ConnectionIncoming::addPacket(Packet& p){
-	if(final_packet) return false;
-	
+bool ConnectionIn::addPacket(Packet& p){
 	uint16_t seq = 0;
 	uint8_t flags = 0;
 	
 	buffer.reset();
 	p.seek(0, SEEK_SET);
-	if(transform && !transform->remove(p, buffer)) return false;
-	Packet& ref = transform ? buffer : p;
+	if(cc.transform && !cc.transform->remove(p, buffer)) return false;
+	Packet& ref = cc.transform ? buffer : p;
 	
 	if(ref.size() >= (sizeof(seq) + sizeof(flags))){
 		off_t o = p.tell();
-		ref.seek(0, SEEK_SET).read16(seq).read8(flags);
+		ref.seek(0, SEEK_SET);
+		ref.read16(seq).read8(flags);
 				
 		if(first_packet){
 			if(flags & PKTFLAG_CONTINUATION){
@@ -54,13 +58,12 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			} else {
 				first_packet = false;
 			}
-		} else if(!isValidPacketHeader(seq, flags)){
+		} else if(!isValidPacketHeader(seq, flags)){ //XXX near out of order are valid
 			ref.seek(o, SEEK_SET);
 			return true;
 		}
 
 		if(flags & PKTFLAG_FINISHED){
-			final_packet = true;
 			flags &= ~(PKTFLAG_CONTINUATION | PKTFLAG_CONTINUED);
 		}
 		
@@ -77,7 +80,8 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 			full_packet = false;
 		}
 		
-		seq_num = seq;
+		latest_flags = static_cast<PacketFlags>(flags); // XXX PKTFLAG_OUT_OF_ORDER
+		cc.seq_num = seq;
 		ref.seek(o, SEEK_SET);
 		return true;
 	} else {
@@ -85,63 +89,87 @@ bool nrg::ConnectionIncoming::addPacket(Packet& p){
 	}
 }
 
-bool nrg::ConnectionIncoming::hasNewPacket() const {
+bool ConnectionIn::hasNewPacket() const {
 	return new_packet;
 }
 
-void nrg::ConnectionIncoming::getLatestPacket(Packet& p){
-	p.writeArray(latest.getBasePointer(), latest.size()).seek(0, SEEK_SET);
+PacketFlags ConnectionIn::getLatestPacket(Packet& p){
+	p.writeArray(latest.getBasePointer(), latest.size());
+	p.seek(0, SEEK_SET);
 	new_packet = false;
+	
+	return latest_flags;
 }
 
-bool nrg::ConnectionIncoming::isLatestPacketFinal() const {
-	return final_packet;
+ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
+: cc(na), sock(sock) {
 }
 
-nrg::ConnectionOutgoing::ConnectionOutgoing(const NetAddress& na, const Socket& sock)
-: ConnectionBase(na), sock(sock) {
-}
-
-void nrg::ConnectionOutgoing::sendPacket(Packet& p){
+void ConnectionOut::sendPacket(Packet& p, PacketFlags f){
+	uint8_t user_flags = f & (PKTFLAG_STATE_CHANGE | PKTFLAG_STATE_CHANGE_ACK);
+	assert(user_flags == f);
+	
 	buffer.reset();
 	uint8_t flags = 0;
 	off_t o = p.tell();
 	p.seek(0, SEEK_SET);	
 
-	while(p.remaining()){
-		size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - getHeaderSize());
+	do {
+		size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - cc.getHeaderSize());
 
-		if(p.remaining() > NRG_MAX_PACKET_SIZE - getHeaderSize()){
+		if(p.remaining() > NRG_MAX_PACKET_SIZE - cc.getHeaderSize()){
 			flags |= PKTFLAG_CONTINUED;
 		}
-
-		buffer.write16(seq_num++).write8(flags).writeArray(p.getPointer(), n);
+		
+		buffer.write16(cc.seq_num++).write8(flags | user_flags);
+		assert(*(buffer.getPointer()-1) == (flags | user_flags));
+		buffer.writeArray(p.getPointer(), n);
 		p.seek(n, SEEK_CUR);
 		buffer.seek(0, SEEK_SET);
-		if(transform){
-			transform->apply(buffer, buffer2.reset());
-			sock.sendPacket(buffer2, remote_addr);
+		if(cc.transform){
+			cc.transform->apply(buffer, buffer2.reset());
+			sock.sendPacket(buffer2, cc.remote_addr);
 		} else {
-			sock.sendPacket(buffer, remote_addr);
+			sock.sendPacket(buffer, cc.remote_addr);
 		}
 		flags = PKTFLAG_CONTINUATION;
-	}
+	} while(p.remaining());
 	p.seek(o, SEEK_SET);
 }
 
-void nrg::ConnectionOutgoing::sendDisconnect(Packet& p){
+bool ConnectionOut::resendLastPacket(void){
+	if(buffer.size() <= sizeof(cc.seq_num)){ //XXX separate Packet for last packet since may be split
+		return false;
+	}
+	
+	uint8_t old_flags = 0;
+	
+	buffer.seek(sizeof(cc.seq_num), SEEK_SET);
+	buffer.read8(old_flags);
+	buffer.seek(-1, SEEK_CUR);
+	buffer.write8(old_flags | PKTFLAG_RETRANSMISSION);
+	    	
+	if(cc.transform){
+		cc.transform->apply(buffer, buffer2.reset());
+		return sock.sendPacket(buffer2, cc.remote_addr) > 0;
+	} else {
+		return sock.sendPacket(buffer, cc.remote_addr) > 0;
+	}
+}
+
+void ConnectionOut::sendDisconnect(Packet& p){
 	off_t o = p.tell();
 	p.seek(0, SEEK_SET);
-	size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - getHeaderSize());
+	size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - cc.getHeaderSize());
 
-	buffer.reset().write16(seq_num++).write8(PKTFLAG_FINISHED)
-	      .writeArray(p.getPointer(), n).seek(0, SEEK_SET);
+	buffer.reset().write16(cc.seq_num++).write8(PKTFLAG_FINISHED).writeArray(p.getPointer(), n);
+	buffer.seek(0, SEEK_SET);
 	
-	if(transform){
-		transform->apply(buffer, buffer2.reset());
-		sock.sendPacket(buffer2, remote_addr);
+	if(cc.transform){
+		cc.transform->apply(buffer, buffer2.reset());
+		sock.sendPacket(buffer2, cc.remote_addr);
 	} else {
-		sock.sendPacket(buffer, remote_addr);
+		sock.sendPacket(buffer, cc.remote_addr);
 	}
 
 	p.seek(o, SEEK_SET);

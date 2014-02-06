@@ -4,19 +4,16 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-nrg::Socket::Socket(int type, int family) : bound_addr(NULL), connected_addr(NULL), 
+using std::unique_ptr;
+
+nrg::Socket::Socket(int type, int family) : bound_addr(), connected_addr(), 
 fd(0), family(family), type(type), do_timestamp(false), last_timestamp(0) {
 	if(family != PF_UNSPEC) fd = socket(family, type, 0);
 }
 
-nrg::Socket::Socket(int type, const nrg::NetAddress& a) : bound_addr(NULL), connected_addr(NULL),
+nrg::Socket::Socket(int type, const nrg::NetAddress& a) : bound_addr(), connected_addr(),
 fd(0), family(a.family()), type(type), do_timestamp(false), last_timestamp(0) {
 	fd = socket(family, type, 0);
-}
-
-static inline void addrAssign(nrg::NetAddress*& oldaddr, nrg::NetAddress* const& newaddr){
-	if(oldaddr != NULL)	delete oldaddr;
-	oldaddr = newaddr;
 }
 
 bool nrg::Socket::bind(const NetAddress& addr){
@@ -28,7 +25,7 @@ bool nrg::Socket::bind(const NetAddress& addr){
 	
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::bind(fd, sa, len) == 0){
-		addrAssign(bound_addr, new NetAddress(addr));
+		bound_addr = unique_ptr<NetAddress>(new NetAddress(addr));
 		return true;
 	} else {
 		return false;
@@ -44,7 +41,7 @@ bool nrg::Socket::connect(const NetAddress& addr){
 
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::connect(fd, sa, len) == 0){
-		addrAssign(connected_addr, new NetAddress(addr));
+		connected_addr = unique_ptr<NetAddress>(new NetAddress(addr));
 		return true;
 	} else {
 		return false;
@@ -52,13 +49,13 @@ bool nrg::Socket::connect(const NetAddress& addr){
 }
 
 ssize_t nrg::Socket::sendPacket(const Packet& p) const {
-	return ::send(fd, p.data, p.used_size, 0);
+	return ::send(fd, p.getBasePointer(), p.size(), 0);
 }
 
 ssize_t nrg::Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
-	return ::sendto(fd, p.data, p.used_size, 0, sa, len);
+	return ::sendto(fd, p.getBasePointer(), p.size(), 0, sa, len);
 }
 
 ssize_t nrg::Socket::recvPacket(Packet& p) const {
@@ -129,18 +126,18 @@ bool nrg::Socket::dataPending(int usToBlock) const {
 	}
 }
 
-const nrg::NetAddress* nrg::Socket::getBoundAddress() const {
+const std::unique_ptr<nrg::NetAddress>& nrg::Socket::getBoundAddress() const {
 	return bound_addr;
 }
 
-const nrg::NetAddress* nrg::Socket::getBoundAddress(){
-	if(bound_addr == NULL){
+const std::unique_ptr<nrg::NetAddress>& nrg::Socket::getBoundAddress(){
+	if(bound_addr){
 		struct sockaddr_storage sas = {}, sas_zero = {};
 		socklen_t len = sizeof(sas);
 		if(getsockname(fd, (struct sockaddr*)&sas, &len) == 0){
 			sas_zero.ss_family = sas.ss_family;
 			if(memcmp(&sas, &sas_zero, sizeof(sas)) != 0){
-				bound_addr = new NetAddress(sas);
+				bound_addr = unique_ptr<NetAddress>(new NetAddress(sas));
 			}
 		}
 	}
@@ -148,7 +145,6 @@ const nrg::NetAddress* nrg::Socket::getBoundAddress(){
 }
 
 nrg::Socket::~Socket(){
-	if(bound_addr) delete bound_addr;
 	if(fd >= 0) close(fd);
 }
 

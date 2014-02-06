@@ -25,9 +25,9 @@ public:
 	void setNonBlocking(bool nonblock);
 	void enableTimestamps(bool enable);
 	
-	const NetAddress* getBoundAddress();
-	const NetAddress* getBoundAddress() const;
-	const NetAddress* getConnectedAddress() const {
+	const std::unique_ptr<NetAddress>& getBoundAddress();
+	const std::unique_ptr<NetAddress>& getBoundAddress() const;
+	const std::unique_ptr<NetAddress>& getConnectedAddress() const {
 		return connected_addr;
 	}
 	uint64_t getLastTimestamp() const {
@@ -35,7 +35,7 @@ public:
 	}
 	~Socket();
 protected:
-	NetAddress *bound_addr, *connected_addr;
+	std::unique_ptr<NetAddress> bound_addr, connected_addr;
 	int fd, family, type;
 	bool do_timestamp;
 	uint64_t last_timestamp;

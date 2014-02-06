@@ -18,7 +18,7 @@ int main(int argc, char** argv){
 	MyInput input;
 	nrg::Server server(nrg::NetAddress(c::addr_listen, c::port), input);
 	if(server.isBound()){
-		const nrg::NetAddress* addr = server.getSocket().getBoundAddress();
+		const auto& addr = server.getSocket().getBoundAddress();
 		printf("bound to %s:%hu\n", addr->name(), addr->port());
 		ServerGameState gs(server);
 		input.setGameState(&gs);

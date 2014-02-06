@@ -2,56 +2,44 @@
 #include "nrg_config.h"
 
 nrg::Client::Client(const NetAddress& addr, Input& input) : sock(addr), input(input), buffer(), 
-serv_addr(addr), in(serv_addr), out(serv_addr, sock), eventq(), states(), handshake(),
+serv_addr(addr), con(serv_addr, sock), eventq(), state_manager(this), handshake(), 
 game_state(eventq, sock, input), dc_reason() {
 	sock.setNonBlocking(true);
 	sock.enableTimestamps(true);
 #ifdef NRG_USE_SO_TIMESTAMP
 	sock.setOption(SOL_SOCKET, SO_TIMESTAMP, 1);
 #endif
-	states.push_back(&game_state);
-	states.push_back(&handshake);
+	state_manager.addState(game_state);
+	state_manager.addState(handshake);
 }
 
 bool nrg::Client::update(){
-	if(states.empty()) return false;
-
-	eventq.clear();	
+	eventq.clear();
 
 	while(sock.dataPending()){
 		NetAddress addr;
 		sock.recvPacket(buffer.reset(), addr);
 		if(addr != serv_addr) continue;
-		if(in.addPacket(buffer) && in.hasNewPacket()){
-			in.getLatestPacket(buffer.reset());
+		if(con.in.addPacket(buffer) && con.in.hasNewPacket()){
+			PacketFlags f = con.in.getLatestPacket(buffer.reset());
 
-			if(in.isLatestPacketFinal()){
+			if(f & PKTFLAG_FINISHED){
 				size_t sz = std::min(sizeof(dc_reason)-1, buffer.remaining());
 				buffer.readArray((uint8_t*)dc_reason, sz);
 				
 				DisconnectEvent de = { DISCONNECTED, dc_reason };
 				eventq.pushEvent(de);
-				states.clear();
 
 				return true;
 			} else {
-				states.back()->addIncomingPacket(buffer);
+				if(!state_manager.onRecvPacket(buffer, f)){
+					return false;
+				}
 			}
 		}
 	}
 	
-	if(states.back()->needsUpdate()){
-		StateUpdateResult ur = states.back()->update(out);
-		
-		if(ur != STATE_CONTINUE){
-			states.pop_back();
-		}
-		
-		if(ur == STATE_EXIT_FAILURE){
-			return false;	
-		}
-	}
-	return true;
+	return state_manager.update(con.out);
 }
 
 void nrg::Client::registerEntity(Entity* e){
@@ -79,5 +67,5 @@ void nrg::Client::stopRecordingReplay(){
 }
 
 nrg::Client::~Client(){
-	out.sendDisconnect(buffer.reset());
+	con.out.sendDisconnect(buffer.reset());
 }

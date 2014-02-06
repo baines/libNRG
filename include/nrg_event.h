@@ -23,6 +23,8 @@ struct NRG_LIB DisconnectEvent {
 	const char* reason;
 };
 
+class Entity;
+
 struct NRG_LIB EntityEvent {
 	uint8_t type; /* ENTITY_{UPDATED, CREATED, DESTROYED} */
 	uint16_t eid;
@@ -30,7 +32,7 @@ struct NRG_LIB EntityEvent {
 	Entity* pointer;
 };
 
-class NRG_LIB Player;
+class Player;
 
 struct NRG_LIB PlayerEvent {
 	uint8_t type; /* PLAYER_{JOIN, LEAVE} */

@@ -1,4 +1,4 @@
-#include "nrg_state.h"
+#include "nrg_client_state.h"
 #include "nrg_input.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
@@ -7,33 +7,61 @@
 
 using namespace nrg;
 
-ClientHandshakeState::ClientHandshakeState() : phase(NOT_STARTED){}
+namespace {
+	enum {
+		HS_NOT_STARTED = -1,
+		HS_WAITING     = 0,
+		HS_CLIENT_SYN  = 1,
+		HS_ACCEPTED    = 1	
+	};
+	
+	static const size_t NRG_CGS_HEADER_SIZE = 8;
+	typedef std::vector<Entity*>::iterator e_it;
+	typedef std::vector<FieldBase*>::iterator f_it;
+	typedef std::map<uint16_t, Entity*>::iterator et_it;
+}
 
-bool ClientHandshakeState::addIncomingPacket(Packet& p){
-	uint8_t v = 0;
-	if(phase != WAITING_ON_RESPONSE || p.size() < 1) return false;
-	p.read8(v);
-	if(v != 0) phase = static_cast<HandShakePhase>(v);
-	return true;
+ClientHandshakeState::ClientHandshakeState() : phase(HS_NOT_STARTED), timeouts(0){}
+
+bool ClientHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
+	if(phase == HS_WAITING && p.remaining()){
+		uint8_t i = 0;
+		p.read8(i);
+		phase = i;
+		return true;
+	} else {
+		return false;
+	}
 }
 	
 bool ClientHandshakeState::needsUpdate() const {
-	return (phase != WAITING_ON_RESPONSE);
+	return (phase != HS_WAITING);
 }
 	
-StateUpdateResult ClientHandshakeState::update(ConnectionOutgoing& out){
-	StateUpdateResult res;
-	if(phase == NOT_STARTED){
-		Packet p(1);
-		p.write8(1);
-		out.sendPacket(p);
-		phase = WAITING_ON_RESPONSE;
-		res = STATE_CONTINUE;
-	} else if(phase == ACCEPTED){
-		res = STATE_EXIT_SUCCESS;
+StateResult ClientHandshakeState::update(ConnectionOut& out, StateFlags f){
+	StateResult res;
+	
+	if(f & SFLAG_TIMED_OUT){
+		if(++timeouts > 5){
+			res = STATE_FAILURE;
+		} else {
+			out.resendLastPacket();
+			res = STATE_CONTINUE;
+		}
 	} else {
-		res = STATE_EXIT_FAILURE;
+		timeouts = 0;
+		if(phase == HS_NOT_STARTED){
+			buffer.reset().write8(HS_CLIENT_SYN);
+			out.sendPacket(buffer);
+			phase = HS_WAITING;
+			res = STATE_CONTINUE;
+		} else if(phase == HS_ACCEPTED){
+			res = STATE_CHANGE;
+		} else {
+			res = STATE_FAILURE;
+		}
 	}
+	
 	return res;
 }
 
@@ -43,19 +71,12 @@ ClientHandshakeState::~ClientHandshakeState(){
 
 ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i) 
 : entities(), entity_types(), client_eventq(eq), stats(new ClientStatsImpl()), 
-state_id(-1), ss_timer(0.0), s_time_ms(0), c_time0_ms(0), c_time_ms(0), snapshot(), 
+state_id(-1), timeouts(0), ss_timer(0.0), s_time_ms(0), c_time0_ms(0), c_time_ms(0), snapshot(), 
 buffer(), sock(s), input(i), replay() {
 
 }
 
-static const size_t NRG_CGS_HEADER_SIZE = 8;
-typedef std::vector<Entity*>::iterator e_it;
-typedef std::vector<FieldBase*>::iterator f_it;
-typedef std::map<uint16_t, Entity*>::iterator et_it;
-
-#define STATS() (*static_cast<ClientStatsImpl*>(stats))
-
-bool ClientGameState::addIncomingPacket(Packet& p){
+bool ClientGameState::onRecvPacket(Packet& p, PacketFlags f){
 #ifdef NRG_TEST_PACKET_DROP
 	static bool drop = true;
 	drop = rand()%4 == 0;
@@ -64,6 +85,9 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 		return true;
 	}
 #endif
+
+	ClientStatsImpl& stats_impl = *static_cast<ClientStatsImpl*>(stats);
+
 	if(replay.isRecording()) replay.addPacket(p);
 
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
@@ -74,7 +98,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 	uint16_t dropped = new_state_id - state_id;
 	if(state_id != -1){
 		if (dropped >= NRG_NUM_PAST_SNAPSHOTS)	return false;
-		while(--dropped) STATS().addSnapshotStat(-1);
+		while(--dropped) stats_impl.addSnapshotStat(-1);
 	}
 
 	uint32_t s_newtime_ms = 0;
@@ -89,7 +113,7 @@ bool ClientGameState::addIncomingPacket(Packet& p){
 
 	uint16_t ping = 0;
 	p.read16(ping);
-	STATS().addSnapshotStat(ping);
+	stats_impl.addSnapshotStat(ping);
 
 	uint16_t ackd_input_id = 0;
 	p.read16(ackd_input_id);
@@ -117,12 +141,22 @@ bool ClientGameState::needsUpdate() const {
 	return state_id != -1;
 }
 	
-StateUpdateResult ClientGameState::update(ConnectionOutgoing& out){
+StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
+	if(f & SFLAG_TIMED_OUT){
+		if(++timeouts > 5){
+			return STATE_FAILURE;
+		} else {
+			out.resendLastPacket();
+			return STATE_CONTINUE;
+		}
+	}
+	
+	timeouts = 0;
 	uint32_t now_ms = os::microseconds() / 1000;
 	ss_timer = ((now_ms-50)-c_time0_ms) / double(c_time_ms - c_time0_ms);
 	uint32_t s_time_est = s_time_ms + (now_ms - c_time_ms);
 
-	STATS().addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
+	static_cast<ClientStatsImpl*>(stats)->addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
 
 	buffer.reset().write16(state_id).write32(s_time_est);
 	input.writeToPacket(buffer);

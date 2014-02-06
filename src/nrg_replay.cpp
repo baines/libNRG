@@ -9,16 +9,20 @@
 
 using namespace nrg;
 
-static const int STATUS_ERROR = -1;
-static const int STATUS_STOPPED = 0;
-static const int STATUS_RECORDING = 2;
-static const char header[] = "NRG Replay File";
+namespace {
+	enum {
+		STATUS_ERROR = -1,
+		STATUS_STOPPED = 0,
+		STATUS_RECORDING = 2
+	};
+	
+	static const char header[] = "NRG Replay File";
+	typedef std::vector<Entity*>::const_iterator E_cit;
+}
 
 ReplayRecorder::ReplayRecorder() : file(NULL), status(STATUS_STOPPED){
 
 }
-
-typedef std::vector<Entity*>::const_iterator E_cit;
 
 bool ReplayRecorder::startRecording(const char* filename, int sid, const std::vector<Entity*>& ents){
 	if(isRecording()) stopRecording();
@@ -64,7 +68,7 @@ void ReplayRecorder::addPacket(Packet& p){
 }
 
 ReplayServer::ReplayServer() : bind_addr(), client_addr(), 
-sock(), in(client_addr), out(client_addr, sock), handshake(), file(), buffer(),
+sock(), con(client_addr, sock), handshake(), file(), buffer(),
 local_timer(), remote_timer(), time_diff(), started(false) {
 
 }
@@ -92,14 +96,14 @@ bool ReplayServer::update(){
 		NetAddress addr;
 		sock.recvPacket(buffer.reset(), addr);
 
-		if(in.addPacket(buffer) && in.hasNewPacket()){
-			in.getLatestPacket(buffer.reset());
+		if(con.in.addPacket(buffer) && con.in.hasNewPacket()){
+			PacketFlags f = con.in.getLatestPacket(buffer.reset());
 			
-			if(in.isLatestPacketFinal()){
+			if(f & PKTFLAG_FINISHED){
 				return false;
 			} else if(!client_addr.isValid()){
 				client_addr = addr;
-				handshake.addIncomingPacket(buffer);
+				handshake.onRecvPacket(buffer, f);
 			}
 		}
 	}
@@ -107,7 +111,7 @@ bool ReplayServer::update(){
 	local_timer = os::microseconds() / 1000;
 
 	if(handshake.needsUpdate()){
-		handshake.update(out);
+		handshake.update(con.out, SFLAG_NONE);
 	} else if(client_addr.isValid()){
 		if(!started){
 			gzseek(file, 6, SEEK_CUR);
@@ -126,8 +130,9 @@ bool ReplayServer::update(){
 			len = std::min<int>(len, NRG_MAX_PACKET_SIZE);
 
 			gzread(file, buff, len);
-
-			out.sendPacket(buffer.reset().writeArray(buff, len));
+		
+			buffer.reset().writeArray(buff, len);
+			con.out.sendPacket(buffer);
 		
 			if(!gzeof(file)){
 				gzseek(file, 6, SEEK_CUR);

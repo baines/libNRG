@@ -1,17 +1,29 @@
-#include "nrg_state.h"
+#include "nrg_server_state.h"
 #include "nrg_input.h"
 #include "nrg_os.h"
 #include <climits>
+#include <iostream>
 
 using namespace nrg;
+using namespace std;
+
+namespace {
+	enum {
+		HS_NOT_STARTED = -1,
+		HS_WAITING     = 0,
+		HS_CLIENT_SYN  = 1,
+		HS_ACCEPTED    = 1	
+	};
+}
 
 ServerHandshakeState::ServerHandshakeState() : send_response(false){}
 
-bool ServerHandshakeState::addIncomingPacket(Packet& p){
+bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
+	std::cout << p.remaining() << std::endl;
 	if(p.remaining() == 1){
 		uint8_t v;
 		p.read8(v);
-		if(v == 1) send_response = true;
+		if(v == HS_CLIENT_SYN) send_response = true;
 		return true;
 	} else {
 		return false;	
@@ -22,12 +34,16 @@ bool ServerHandshakeState::needsUpdate() const {
 	return send_response;
 }
 
-StateUpdateResult ServerHandshakeState::update(ConnectionOutgoing& out){
-	Packet p(1);
-	p.write8(1);
-	out.sendPacket(p);
-	send_response = false;
-	return STATE_EXIT_SUCCESS;
+StateResult ServerHandshakeState::update(ConnectionOut& out, StateFlags f){
+	if(f & SFLAG_TIMED_OUT){
+		return STATE_FAILURE;
+	} else {
+		Packet p(1);
+		p.write8(HS_ACCEPTED);
+		out.sendPacket(p, PKTFLAG_STATE_CHANGE);
+		send_response = false;
+		return STATE_CHANGE;
+	}
 }
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
@@ -38,7 +54,7 @@ master_ss(master), snaps(dsb), ackd_id(-1), ping(l), c_time(0), buffer(), input(
 
 static const size_t NRG_MIN_SPGS_PACKET_LEN = 6;
 
-bool ServerPlayerGameState::addIncomingPacket(Packet& p){
+bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
 	uint16_t new_ackd_id = 0;
 
@@ -55,7 +71,11 @@ bool ServerPlayerGameState::needsUpdate() const {
 	return snapshot.getID() != master_ss.getID();
 }
 
-StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
+StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
+	if(f & SFLAG_TIMED_OUT){
+		return STATE_FAILURE;
+	}
+	
 	ping = std::max<int>(0, (os::microseconds() / 1000) - c_time);
 
 	if(ackd_id == -1){
@@ -75,7 +95,7 @@ StateUpdateResult ServerPlayerGameState::update(ConnectionOutgoing& out){
 			snapshot.writeToPacket(buffer);
 			out.sendPacket(buffer);
 		} else {
-			return STATE_EXIT_FAILURE;
+			return STATE_FAILURE;
 		}
 	}
 	return STATE_CONTINUE;

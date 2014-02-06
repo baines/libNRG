@@ -7,45 +7,67 @@
 
 namespace nrg {
 
-enum ConnectionFlags {
-	PKTFLAG_CONTINUATION = 0x01,
-	PKTFLAG_CONTINUED    = 0x02,
-	PKTFLAG_FINISHED     = 0x04
+enum PacketFlags : uint8_t {
+	PKTFLAG_NONE             = 0x00,
+	
+	/* Only sent over the wire, not present in getLatestPacket() return value */
+	PKTFLAG_CONTINUATION     = 0x01,
+	PKTFLAG_CONTINUED        = 0x02,
+	
+	/* Both sent over the wire and present in getLatestPacket() return value */
+	PKTFLAG_FINISHED         = 0x04,
+	PKTFLAG_RETRANSMISSION   = 0x08,
+	PKTFLAG_STATE_CHANGE     = 0x10,
+	PKTFLAG_STATE_CHANGE_ACK = 0x20,
+	
+	/* Not sent over the wire, but used in getLastestPacket() return value */
+	PKTFLAG_OUT_OF_ORDER     = 0x01
 };
 
-class NRG_LIB ConnectionBase {
+struct NRG_LIB ConnectionCommon {
 public:
-	ConnectionBase(const NetAddress& remote_addr);
-	size_t getHeaderSize() const { return 3; }
+	ConnectionCommon(const NetAddress& remote_addr);
+	size_t getHeaderSize() const { return sizeof(uint16_t) + sizeof(uint8_t); }
 	void setTransform(PacketTransformation* transform);
-protected:
 	const NetAddress& remote_addr;
 	uint16_t seq_num;
 	PacketTransformation* transform;
 };
 
-class NRG_LIB ConnectionIncoming : public ConnectionBase {
+class NRG_LIB ConnectionIn {
 public:
-	ConnectionIncoming(const NetAddress& remote_addr);
+	ConnectionIn(const NetAddress& remote_addr);
 	bool addPacket(Packet& p);
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
-	void getLatestPacket(Packet& p);
-	bool isLatestPacketFinal() const;
+	PacketFlags getLatestPacket(Packet& p);
+	void setTransform(PacketTransformation* transform);
 protected:
-	bool isValidPacketHeader(uint16_t seq, uint8_t flags) const;
-	bool new_packet, first_packet, full_packet, final_packet;
+	ConnectionCommon cc;
+	bool isValidPacketHeader(uint16_t seq, uint8_t flags);
+	bool new_packet, first_packet, full_packet;
+	PacketFlags latest_flags;
 	Packet latest, buffer;
 };
 
-class NRG_LIB ConnectionOutgoing : public ConnectionBase {
+class NRG_LIB ConnectionOut {
 public:
-	ConnectionOutgoing(const NetAddress& remote_addr, const Socket& sock_out);
-	void sendPacket(Packet& p);
+	ConnectionOut(const NetAddress& remote_addr, const Socket& sock_out);
+	void sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
 	void sendDisconnect(Packet& extra_data);
+	void setTransform(PacketTransformation* transform);
+	bool resendLastPacket(void);
 protected:
+	ConnectionCommon cc;
 	const Socket& sock;
 	Packet buffer, buffer2;
+};
+
+struct NRG_LIB Connection {
+	Connection(const NetAddress& remote_addr, const Socket& sock_out)
+		: in(remote_addr), out(remote_addr, sock_out){}
+	ConnectionIn in;
+	ConnectionOut out;
 };
 
 }

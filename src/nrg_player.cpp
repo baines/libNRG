@@ -3,24 +3,23 @@
 using namespace nrg;
 
 PlayerImpl::PlayerImpl(uint16_t id, const Server& s, const NetAddress& addr) 
-: server(s), addr(addr), sock(s.getSocket()), in(addr), out(addr, sock), 
-buffer(NRG_MAX_PACKET_SIZE), ping(0), states(), handshake(), game_state(s.getSnapshot(), 
+: server(s), addr(addr), sock(s.getSocket()), con(addr, sock), 
+buffer(NRG_MAX_PACKET_SIZE), ping(0), state_manager(this), handshake(), game_state(s.getSnapshot(), 
 s.getDeltaSnapshots(), s.getInput(), *this, ping), id(id), connected(true) {
-	states.push_back(&game_state);
-	states.push_back(&handshake);
+	state_manager.addState(game_state);
+	state_manager.addState(handshake);
 }
 
 bool PlayerImpl::addPacket(Packet& p){
 	bool valid = false;
-	if(!states.empty() && in.addPacket(p)){
-		if(in.hasNewPacket()){
-			in.getLatestPacket(buffer.reset());
-			if(in.isLatestPacketFinal()){
+	if(con.in.addPacket(p)){
+		if(con.in.hasNewPacket()){
+			PacketFlags f = con.in.getLatestPacket(buffer.reset());
+			if(f & PKTFLAG_FINISHED){
 				valid = true;				
 				connected = false;
-				states.clear();
 			} else {
-				valid = states.back()->addIncomingPacket(buffer);
+				valid = state_manager.onRecvPacket(buffer, f);
 			}
 		} else {
 			valid = true;
@@ -30,22 +29,12 @@ bool PlayerImpl::addPacket(Packet& p){
 }
 
 bool PlayerImpl::update(){
-	if(states.empty()) return false;
-	
-	if(states.back()->needsUpdate()){
-		StateUpdateResult ur = states.back()->update(out);
-		if(ur != STATE_CONTINUE){
-			states.pop_back();
-		}
-		return ur != STATE_EXIT_FAILURE;
-	} else {
-		return true;
-	}
+	return state_manager.update(con.out);
 }
 
 void PlayerImpl::kick(const char* reason){
 	buffer.reset().writeArray((uint8_t*)reason, strlen(reason));
-	out.sendDisconnect(buffer);
+	con.out.sendDisconnect(buffer);
 	connected = false;
 }
 

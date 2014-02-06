@@ -1,25 +1,29 @@
 #include "nrg_packet.h"
 #include "nrg_config.h"
 #include <algorithm>
+#include <iostream>
 
-nrg::Packet::Packet() : data(new uint8_t[NRG_MAX_PACKET_SIZE]), pointer(data), 
+using namespace nrg;
+using namespace std;
+
+Packet::Packet() : data(new uint8_t[NRG_MAX_PACKET_SIZE]), pointer(data), 
 data_size(NRG_MAX_PACKET_SIZE), used_size(0) {
 
 }
 
-nrg::Packet::Packet(size_t initial_size) 
+Packet::Packet(size_t initial_size) 
 : data(new uint8_t[initial_size]), pointer(data), data_size(initial_size)
 , used_size(0) {
 
 }
 
-nrg::Packet::Packet(const Packet& copy) : data(new uint8_t[copy.data_size]), 
+Packet::Packet(const Packet& copy) : data(new uint8_t[copy.data_size]), 
 pointer(data + (copy.pointer - copy.data)), data_size(copy.data_size), 
 used_size(copy.used_size){
 	memcpy(data, copy.data, copy.used_size);
 }
 
-nrg::Packet& nrg::Packet::operator=(const nrg::Packet& other){
+Packet& Packet::operator=(const Packet& other){
 	reset();
 	while(data_size < other.used_size) resize();
 	used_size = other.used_size;
@@ -28,23 +32,35 @@ nrg::Packet& nrg::Packet::operator=(const nrg::Packet& other){
 	return *this;
 }
 
-nrg::Packet::~Packet(){
+Packet::~Packet(){
 	if(data) delete [] data;
 }
 
-nrg::Packet& nrg::Packet::write8(const uint8_t& v){
-	return writeBE(v);
+PacketWritable& Packet::write8(const uint8_t& v){
+	while((size_t)(pointer - data) > (data_size - sizeof(v))){
+		resize();
+	}
+	*pointer++ = v;
+	used_size = std::max(used_size, (size_t)(pointer - data));
+	return *this;
 }
 
-nrg::Packet& nrg::Packet::write16(const uint16_t& v){
-	return writeBE(nrg::hton(v));
+PacketWritable& Packet::write16(const uint16_t& v){
+	writeBE(hton(v));
+	return *this;
 }
 
-nrg::Packet& nrg::Packet::write32(const uint32_t& v){
-	return writeBE(nrg::hton(v));
+PacketWritable& Packet::write32(const uint32_t& v){
+	writeBE(hton(v));
+	return *this;
 }
 
-nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
+PacketWritable& Packet::write64(const uint64_t& v){
+	writeBE(hton(v));
+	return *this;
+}
+
+PacketWritable& Packet::writeArray(const uint8_t* v, size_t size){
 	while(data_size - (pointer - data) < size){
 		resize();
 	}
@@ -54,28 +70,35 @@ nrg::Packet& nrg::Packet::writeArray(const uint8_t* v, size_t size){
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::read8(uint8_t& v){
+PacketReadable& Packet::read8(uint8_t& v){
 	if((size_t)(pointer - data) <= (used_size - sizeof(v))){
 		v = *pointer++;
 	}
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::read16(uint16_t& v){
+PacketReadable& Packet::read16(uint16_t& v){
 	uint16_t be_v;
 	readBE(be_v);
-	v = nrg::ntoh(be_v);
+	v = ntoh(be_v);
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::read32(uint32_t& v){
+PacketReadable& Packet::read32(uint32_t& v){
 	uint32_t be_v;
 	readBE(be_v);
-	v = nrg::ntoh(be_v);
+	v = ntoh(be_v);
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::readArray(uint8_t* v, size_t size){
+PacketReadable& Packet::read64(uint64_t& v){
+	uint64_t be_v;
+	readBE(be_v);
+	v = ntoh(be_v);
+	return *this;
+}
+
+PacketReadable& Packet::readArray(uint8_t* v, size_t size){
 	if((size_t)(pointer - data) <= (used_size - size)){
 		memcpy(v, pointer, size);
 		pointer += size;
@@ -83,14 +106,14 @@ nrg::Packet& nrg::Packet::readArray(uint8_t* v, size_t size){
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::reset(){
+Packet& Packet::reset(){
 	//memset(data, 0, used_size);
 	used_size = 0;
 	pointer = data;
 	return *this;
 }
 
-nrg::Packet& nrg::Packet::seek(off_t offset, int whence){
+void Packet::seek(off_t offset, int whence){
 	switch(whence){
 	case SEEK_CUR:
 		pointer += offset; break;
@@ -100,14 +123,13 @@ nrg::Packet& nrg::Packet::seek(off_t offset, int whence){
 		pointer = (data + used_size) - offset; break;
 	}
 	pointer = std::max(data, std::min(data + used_size, pointer));
-	return *this;
 }
 
-off_t nrg::Packet::tell() const {
+off_t Packet::tell() const {
 	return pointer - data;
 }
 
-void nrg::Packet::resize(){
+void Packet::resize(){
 	uint8_t* new_data = new uint8_t[data_size * 2];
 	memcpy(new_data, data, data_size);
 	data_size *= 2;
@@ -121,7 +143,7 @@ static const int NRG_COMPRESSION_LEVEL = 3;
 #ifdef NRG_ENABLE_ZLIB_COMPRESSION
 #include <zlib.h>
 
-bool nrg::PacketCompressor::apply(Packet& in, Packet& out){
+bool PacketCompressor::apply(Packet& in, Packet& out){
 	uLongf buff_size = ::compressBound(in.remaining()), len = buff_size;
 	uint8_t* buff = new uint8_t[buff_size];
 	::compress2(buff, &len, in.getPointer(), in.remaining(), NRG_COMPRESSION_LEVEL);
@@ -137,7 +159,7 @@ bool nrg::PacketCompressor::apply(Packet& in, Packet& out){
 	return true;
 }
 
-bool nrg::PacketCompressor::remove(Packet& in, Packet& out){
+bool PacketCompressor::remove(Packet& in, Packet& out){
 	bool ret = false;	
 	uint8_t v = 2;
 	in.read8(v);

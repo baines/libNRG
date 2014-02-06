@@ -3,7 +3,8 @@
 #include "nrg_core.h"
 #include "nrg_socket.h"
 #include "nrg_netaddress.h"
-#include "nrg_state.h"
+#include "nrg_client_state.h"
+#include "nrg_state_manager.h"
 #include "nrg_event.h"
 #include "nrg_input.h"
 #include "nrg_message.h"
@@ -34,10 +35,9 @@ protected:
 	Input& input;
 	Packet buffer;
 	NetAddress serv_addr;
-	ConnectionIncoming in;
-	ConnectionOutgoing out;
+	Connection con;
 	EventQueue eventq;
-	std::vector<State*> states;
+	StateManager state_manager;
 	ClientHandshakeState handshake;
 	ClientGameState game_state;
 	char dc_reason[NRG_MAX_ERRORMSG_LEN];

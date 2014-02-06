@@ -3,105 +3,32 @@
 #include "nrg_core.h"
 #include "nrg_connection.h"
 #include "nrg_packet.h"
-#include "nrg_snapshot.h"
-#include "nrg_replay.h"
-#include "nrg_message.h"
-#include <map>
-#include <vector>
 
 namespace nrg {
 
-typedef enum {
-	STATE_EXIT_FAILURE = -1,
-	STATE_EXIT_SUCCESS = 0,
-	STATE_CONTINUE = 1
-} StateUpdateResult;
+enum StateResult : uint32_t {
+	STATE_CONTINUE = 0x00,
+	STATE_EXIT_BIT = 0x10,
+	STATE_FAILURE  = STATE_EXIT_BIT,
+	STATE_CHANGE   = STATE_EXIT_BIT | 0x01
+};
+
+enum StateFlags : uint32_t {
+	SFLAG_NONE      = 0x00,
+	SFLAG_TIMED_OUT = 0x01
+};
+
+class Client;
+class Server;
+class Player;
 
 struct NRG_LIB State {
-	virtual bool addIncomingPacket(Packet& p) = 0;
+	virtual bool init(Client* c, Server* s, Player* p) = 0;
+	virtual bool onRecvPacket(Packet& p, PacketFlags f) = 0;
 	virtual bool needsUpdate() const = 0;
 	virtual size_t getTimeoutSeconds() const { return 10; }
-	virtual StateUpdateResult update(ConnectionOutgoing& out) = 0;
+	virtual StateResult update(ConnectionOut& out, StateFlags f = SFLAG_NONE) = 0;
 	virtual ~State(){}
-};
-
-class NRG_LIB ClientHandshakeState : public State {
-public:
-	ClientHandshakeState();
-	bool addIncomingPacket(Packet& p);
-	bool needsUpdate() const;
-	StateUpdateResult update(ConnectionOutgoing& out);
-	~ClientHandshakeState();
-private:
-	enum HandShakePhase {
-		NOT_STARTED = -1,
-		WAITING_ON_RESPONSE = 0,
-		ACCEPTED = 1,
-		REJECTED_FULL = 2
-	} phase;
-};
-
-class Entity;
-class Input;
-
-class NRG_LIB ClientGameState : public State {
-public:
-	ClientGameState(EventQueue& eq, const Socket& s, Input& i);
-	bool addIncomingPacket(Packet& p);
-	bool needsUpdate() const;
-	StateUpdateResult update(ConnectionOutgoing& out);
-	~ClientGameState();
-
-	void registerEntity(Entity* e);
-	void registerMessage(const MessageBase& m);
-	
-	double getSnapshotTiming() const;
-	const ClientStats& getClientStats() const;
-
-	void startRecordingReplay(const char* filename);
-	void stopRecordingReplay();
-private:
-	std::vector<Entity*> entities;
-	std::map<uint16_t, Entity*> entity_types;
-	std::map<uint16_t, MessageBase*> messages;
-	EventQueue& client_eventq;
-	ClientStats* stats;
-	int state_id;
-	double ss_timer;
-	uint32_t s_time_ms, c_time0_ms, c_time_ms;
-	ClientSnapshot snapshot;
-	Packet buffer;
-	const Socket& sock;
-	Input& input;
-	ReplayRecorder replay;
-};
-
-struct NRG_LIB ServerHandshakeState : public State {
-	ServerHandshakeState();
-	bool addIncomingPacket(Packet& p);
-	bool needsUpdate() const;
-	StateUpdateResult update(ConnectionOutgoing& out);
-private:
-	bool send_response;
-};
-
-class NRG_LIB ServerPlayerGameState : public State {
-public:
-	ServerPlayerGameState(const Snapshot& master_ss, 
-		const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& latency);
-	bool addIncomingPacket(Packet& p);
-	bool needsUpdate() const;
-	StateUpdateResult update(ConnectionOutgoing& out);
-private:
-	DeltaSnapshot snapshot;
-	const Snapshot& master_ss;
-	const DeltaSnapshotBuffer& snaps;
-	int ackd_id;
-	int& ping;
-	uint32_t c_time;
-	Packet buffer;
-	Input& input;
-	Player& player;
 };
 
 }

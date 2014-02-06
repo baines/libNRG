@@ -2,7 +2,7 @@
 #define NRG_REPLAY_SERVER_H
 #include "nrg_core.h"
 #include "nrg_socket.h"
-#include "nrg_state.h"
+#include "nrg_server_state.h"
 #include <zlib.h>
 
 namespace nrg {
@@ -17,8 +17,7 @@ public:
 private:
 	NetAddress bind_addr, client_addr;
 	UDPSocket sock;
-	ConnectionIncoming in;
-	ConnectionOutgoing out;
+	Connection con;
 	ServerHandshakeState handshake;
 	gzFile file;
 	Packet buffer;
