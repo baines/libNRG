@@ -80,9 +80,31 @@ size_t TransitionState::getTimeoutSeconds() const {
 	return client_mode ? 1 : 10;
 }
 
-StateManager::StateManager(Client* c) : state_ptr(nullptr), last_update(system_clock::now()), c(c), s(nullptr), p(nullptr){}
-StateManager::StateManager(Server* s) : state_ptr(nullptr), last_update(system_clock::now()), c(nullptr), s(s), p(nullptr){}
-StateManager::StateManager(Player* p) : state_ptr(nullptr), last_update(system_clock::now()), c(nullptr), s(nullptr), p(p){}
+StateManager::StateManager(Client* c)
+: state_ptr(nullptr)
+, last_update(system_clock::now())
+, c(c)
+, s(nullptr)
+, p(nullptr){
+
+}
+StateManager::StateManager(Server* s)
+: state_ptr(nullptr)
+, last_update(system_clock::now())
+, c(nullptr)
+, s(s)
+, p(nullptr){
+
+}
+
+StateManager::StateManager(Player* p)
+: state_ptr(nullptr)
+, last_update(system_clock::now())
+, c(nullptr)
+, s(nullptr)
+, p(p){
+
+}
 	
 void StateManager::addState(State& s){
 	states.push_back(&s);

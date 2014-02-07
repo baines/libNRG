@@ -3,7 +3,7 @@
 #include <climits>
 
 namespace nrg {
-Input null_input;
+	Input null_input;
 }
 
 using namespace nrg;

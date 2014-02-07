@@ -4,19 +4,32 @@
 #include <unistd.h>
 #include <sys/time.h>
 
+using namespace nrg;
 using std::unique_ptr;
 
-nrg::Socket::Socket(int type, int family) : bound_addr(), connected_addr(), 
-fd(0), family(family), type(type), do_timestamp(false), last_timestamp(0) {
+Socket::Socket(int type, int family) 
+: bound_addr()
+, connected_addr()
+, fd(0)
+, family(family)
+, type(type)
+, do_timestamp(false)
+, last_timestamp(0) {
 	if(family != PF_UNSPEC) fd = socket(family, type, 0);
 }
 
-nrg::Socket::Socket(int type, const nrg::NetAddress& a) : bound_addr(), connected_addr(),
-fd(0), family(a.family()), type(type), do_timestamp(false), last_timestamp(0) {
+Socket::Socket(int type, const NetAddress& a)
+: bound_addr()
+, connected_addr()
+, fd(0)
+, family(a.family())
+, type(type)
+, do_timestamp(false)
+, last_timestamp(0) {
 	fd = socket(family, type, 0);
 }
 
-bool nrg::Socket::bind(const NetAddress& addr){
+bool Socket::bind(const NetAddress& addr){
 	if(!fd){
 		family = addr.family();
 		fd = socket(family, type, 0);
@@ -32,7 +45,7 @@ bool nrg::Socket::bind(const NetAddress& addr){
 	}
 }
 
-bool nrg::Socket::connect(const NetAddress& addr){
+bool Socket::connect(const NetAddress& addr){
 	if(!fd){
 		family = addr.family();
 		fd = socket(family, type, 0);
@@ -48,17 +61,17 @@ bool nrg::Socket::connect(const NetAddress& addr){
 	}
 }
 
-ssize_t nrg::Socket::sendPacket(const Packet& p) const {
+ssize_t Socket::sendPacket(const Packet& p) const {
 	return ::send(fd, p.getBasePointer(), p.size(), 0);
 }
 
-ssize_t nrg::Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
+ssize_t Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	return ::sendto(fd, p.getBasePointer(), p.size(), 0, sa, len);
 }
 
-ssize_t nrg::Socket::recvPacket(Packet& p) const {
+ssize_t Socket::recvPacket(Packet& p) const {
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
 	ssize_t result = ::recv(fd, buf, NRG_MAX_PACKET_SIZE, 0);
 	if(result > 0){
@@ -67,7 +80,7 @@ ssize_t nrg::Socket::recvPacket(Packet& p) const {
 	return result;
 }
 
-ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) {
+ssize_t Socket::recvPacket(Packet& p, NetAddress& addr) {
 	struct sockaddr_storage sas = {};
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
 	socklen_t len = sizeof(sas);
@@ -113,7 +126,7 @@ ssize_t nrg::Socket::recvPacket(Packet& p, NetAddress& addr) {
 	return result;
 }
 
-bool nrg::Socket::dataPending(int usToBlock) const {
+bool Socket::dataPending(int usToBlock) const {
 	fd_set s;
 	FD_ZERO(&s);
 	FD_SET(fd, &s);
@@ -126,11 +139,11 @@ bool nrg::Socket::dataPending(int usToBlock) const {
 	}
 }
 
-const std::unique_ptr<nrg::NetAddress>& nrg::Socket::getBoundAddress() const {
+const std::unique_ptr<NetAddress>& Socket::getBoundAddress() const {
 	return bound_addr;
 }
 
-const std::unique_ptr<nrg::NetAddress>& nrg::Socket::getBoundAddress(){
+const std::unique_ptr<NetAddress>& Socket::getBoundAddress(){
 	if(bound_addr){
 		struct sockaddr_storage sas = {}, sas_zero = {};
 		socklen_t len = sizeof(sas);
@@ -144,34 +157,34 @@ const std::unique_ptr<nrg::NetAddress>& nrg::Socket::getBoundAddress(){
 	return bound_addr;
 }
 
-nrg::Socket::~Socket(){
+Socket::~Socket(){
 	if(fd >= 0) close(fd);
 }
 
 #if defined __WIN32
 #include <Winsock2.h>
-void nrg::Socket::setNonBlocking(bool enabled){
+void Socket::setNonBlocking(bool enabled){
 	u_long l = enabled ? 1 : 0;
 	ioctlsocket(fd, FIONBIO, &i);
 }
 #else
 #include <fcntl.h>
-void nrg::Socket::setNonBlocking(bool enabled){
+void Socket::setNonBlocking(bool enabled){
 	int flags = fcntl(fd, F_GETFL, 0);
 	flags = (enabled ? flags | O_NONBLOCK : flags & ~O_NONBLOCK);
 	fcntl(fd, F_SETFL, flags);
 }
 #endif
 
-void nrg::Socket::enableTimestamps(bool enable){
+void Socket::enableTimestamps(bool enable){
 	do_timestamp = enable;
 }
 
-nrg::UDPSocket::UDPSocket(int family) : nrg::Socket(SOCK_DGRAM, family){
+UDPSocket::UDPSocket(int family) : Socket(SOCK_DGRAM, family){
 
 }
 
-nrg::UDPSocket::UDPSocket(const NetAddress& a) : nrg::Socket(SOCK_DGRAM, a){
+UDPSocket::UDPSocket(const NetAddress& a) : Socket(SOCK_DGRAM, a){
 
 }
 

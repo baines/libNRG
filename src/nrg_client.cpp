@@ -1,9 +1,18 @@
 #include "nrg_client.h"
 #include "nrg_config.h"
 
-nrg::Client::Client(const NetAddress& addr, Input& input) : sock(addr), input(input), buffer(), 
-serv_addr(addr), con(serv_addr, sock), eventq(), state_manager(this), handshake(), 
-game_state(eventq, sock, input), dc_reason() {
+using namespace nrg;
+
+Client::Client(const NetAddress& addr, Input& input) 
+: sock(addr)
+, input(input)
+, buffer()
+, serv_addr(addr)
+, con(serv_addr, sock)
+, eventq()
+, state_manager(this)
+, handshake()
+, game_state(eventq, sock, input), dc_reason() {
 	sock.setNonBlocking(true);
 	sock.enableTimestamps(true);
 #ifdef NRG_USE_SO_TIMESTAMP
@@ -13,7 +22,7 @@ game_state(eventq, sock, input), dc_reason() {
 	state_manager.addState(handshake);
 }
 
-bool nrg::Client::update(){
+bool Client::update(){
 	eventq.clear();
 
 	while(sock.dataPending()){
@@ -42,30 +51,30 @@ bool nrg::Client::update(){
 	return state_manager.update(con.out);
 }
 
-void nrg::Client::registerEntity(Entity* e){
+void Client::registerEntity(Entity* e){
 	game_state.registerEntity(e);
 }
 
-void nrg::Client::registerMessage(const MessageBase& m){
+void Client::registerMessage(const MessageBase& m){
 	game_state.registerMessage(m);
 }
 
-bool nrg::Client::pollEvent(Event& e){
+bool Client::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }
 
-const nrg::ClientStats& nrg::Client::getStats() const {
+const ClientStats& Client::getStats() const {
 	return game_state.getClientStats();
 }
 
-void nrg::Client::startRecordingReplay(const char* filename){
+void Client::startRecordingReplay(const char* filename){
 	game_state.startRecordingReplay(filename);
 }
 
-void nrg::Client::stopRecordingReplay(){
+void Client::stopRecordingReplay(){
 	game_state.stopRecordingReplay();
 }
 
-nrg::Client::~Client(){
+Client::~Client(){
 	con.out.sendDisconnect(buffer.reset());
 }

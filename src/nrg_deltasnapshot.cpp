@@ -5,7 +5,8 @@
 using namespace nrg;
 using namespace std;
 
-DeltaSnapshot::DeltaSnapshot() : id(-1) {
+DeltaSnapshot::DeltaSnapshot() 
+: id(-1) {
 	entities.reserve(16);
 	metadata.reserve(16);
 	scratch.reserve(16);

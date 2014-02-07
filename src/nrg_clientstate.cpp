@@ -21,7 +21,11 @@ namespace {
 	typedef std::map<uint16_t, Entity*>::iterator et_it;
 }
 
-ClientHandshakeState::ClientHandshakeState() : phase(HS_NOT_STARTED), timeouts(0){}
+ClientHandshakeState::ClientHandshakeState() 
+: phase(HS_NOT_STARTED)
+, timeouts(0){
+
+}
 
 bool ClientHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
 	if(phase == HS_WAITING && p.remaining()){
@@ -70,9 +74,21 @@ ClientHandshakeState::~ClientHandshakeState(){
 }
 
 ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i) 
-: entities(), entity_types(), client_eventq(eq), stats(new ClientStatsImpl()), 
-state_id(-1), timeouts(0), ss_timer(0.0), s_time_ms(0), c_time0_ms(0), c_time_ms(0), snapshot(), 
-buffer(), sock(s), input(i), replay() {
+: entities()
+, entity_types()
+, client_eventq(eq)
+, stats(new ClientStatsImpl())
+, state_id(-1)
+, timeouts(0)
+, ss_timer(0.0)
+, s_time_ms(0)
+, c_time0_ms(0)
+, c_time_ms(0)
+, snapshot()
+, buffer()
+, sock(s)
+, input(i)
+, replay() {
 
 }
 

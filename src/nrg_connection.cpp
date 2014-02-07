@@ -9,8 +9,10 @@
 using namespace nrg;
 using namespace std;
 
-ConnectionCommon::ConnectionCommon(const NetAddress& na) : remote_addr(na), 
-seq_num(os::random()), transform(NULL) {
+ConnectionCommon::ConnectionCommon(const NetAddress& na) 
+: remote_addr(na)
+, seq_num(os::random())
+, transform(NULL) {
 
 }
 
@@ -19,8 +21,11 @@ void ConnectionCommon::setTransform(PacketTransformation* t){
 }
 
 ConnectionIn::ConnectionIn(const NetAddress& na)
-: cc(na), new_packet(false), first_packet(true), full_packet(false), 
-  latest(NRG_MAX_PACKET_SIZE) {
+: cc(na)
+, new_packet(false)
+, first_packet(true)
+, full_packet(false)
+, latest(NRG_MAX_PACKET_SIZE) {
 
 }
 
@@ -102,7 +107,9 @@ PacketFlags ConnectionIn::getLatestPacket(Packet& p){
 }
 
 ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
-: cc(na), sock(sock) {
+: cc(na)
+, sock(sock) {
+
 }
 
 void ConnectionOut::sendPacket(Packet& p, PacketFlags f){

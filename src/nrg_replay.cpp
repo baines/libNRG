@@ -20,7 +20,9 @@ namespace {
 	typedef std::vector<Entity*>::const_iterator E_cit;
 }
 
-ReplayRecorder::ReplayRecorder() : file(NULL), status(STATUS_STOPPED){
+ReplayRecorder::ReplayRecorder() 
+: file(NULL)
+, status(STATUS_STOPPED){
 
 }
 
@@ -67,9 +69,18 @@ void ReplayRecorder::addPacket(Packet& p){
 	gzwrite(file, p.getBasePointer(), sz);
 }
 
-ReplayServer::ReplayServer() : bind_addr(), client_addr(), 
-sock(), con(client_addr, sock), handshake(), file(), buffer(),
-local_timer(), remote_timer(), time_diff(), started(false) {
+ReplayServer::ReplayServer() 
+: bind_addr()
+, client_addr()
+, sock()
+, con(client_addr, sock)
+, handshake()
+, file()
+, buffer()
+, local_timer()
+, remote_timer()
+, time_diff()
+, started(false) {
 
 }
 

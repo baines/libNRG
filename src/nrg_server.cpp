@@ -7,8 +7,13 @@ using namespace std;
 using namespace nrg;
 
 Server::Server(const NetAddress& bind_addr, Input& input) 
-: sock(bind_addr), buffer(), input(input), eventq(), clients(), 
-timer(nrg::os::microseconds()), interval(50000) {
+: sock(bind_addr)
+, buffer()
+, input(input)
+, eventq()
+, clients()
+, timer(nrg::os::microseconds())
+, interval(50000){
 	sock.setNonBlocking(true);
 	bind(bind_addr);
 }

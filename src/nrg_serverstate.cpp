@@ -16,7 +16,10 @@ namespace {
 	};
 }
 
-ServerHandshakeState::ServerHandshakeState() : send_response(false){}
+ServerHandshakeState::ServerHandshakeState() 
+: send_response(false){
+
+}
 
 bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
 	std::cout << p.remaining() << std::endl;
@@ -47,8 +50,16 @@ StateResult ServerHandshakeState::update(ConnectionOut& out, StateFlags f){
 }
 
 ServerPlayerGameState::ServerPlayerGameState(const Snapshot& master, 
-const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l) : snapshot(), 
-master_ss(master), snaps(dsb), ackd_id(-1), ping(l), c_time(0), buffer(), input(i), player(p) {
+const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l) 
+: snapshot()
+, master_ss(master)
+, snaps(dsb)
+, ackd_id(-1)
+, ping(l)
+, c_time(0)
+, buffer()
+, input(i)
+, player(p) {
 
 }
 

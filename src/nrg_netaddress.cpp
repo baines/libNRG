@@ -9,7 +9,11 @@ using namespace nrg;
 static const off_t addr_off = offsetof(struct sockaddr_in, sin_addr);
 static const off_t addr6_off = offsetof(struct sockaddr_in6, sin6_addr);
 
-NetAddress::NetAddress() : text(), addr(), addr_len(0) {
+NetAddress::NetAddress() 
+: text()
+, addr()
+, addr_len(0) {
+
 }
 
 NetAddress::NetAddress(const char* name, const char* port) : text(), addr(), addr_len(0) {
@@ -26,7 +30,7 @@ NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in6)) {
 	inet_ntop(AF_INET6, (char*)&addr + addr6_off, text, INET6_ADDRSTRLEN);
 }
 
-NetAddress& nrg::NetAddress::operator=(const struct sockaddr_storage& s){
+NetAddress& NetAddress::operator=(const struct sockaddr_storage& s){
 	set(s);
 	return *this;
 }
@@ -85,9 +89,9 @@ int NetAddress::family() const {
 
 uint16_t NetAddress::port() const {
 	if(addr.ss_family == AF_INET){
-		return nrg::ntoh(reinterpret_cast<const struct sockaddr_in*>(&addr)->sin_port);
+		return ntoh(reinterpret_cast<const struct sockaddr_in*>(&addr)->sin_port);
 	} else if(addr.ss_family == AF_INET6){
-		return nrg::ntoh(reinterpret_cast<const struct sockaddr_in6*>(&addr)->sin6_port);
+		return ntoh(reinterpret_cast<const struct sockaddr_in6*>(&addr)->sin6_port);
 	} else {
 		return 0;
 	}

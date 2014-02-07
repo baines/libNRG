@@ -3,18 +3,26 @@
 
 using namespace nrg;
 
+namespace {
+
 template<class T, class S>
 static T* OFF(const T* a, const S* b, const S* c){
 	return (T*)((char*)a + ((char*)b-(char*)c));
 }
 
-FieldBase::FieldBase(FieldContainer* c) : container(c), next(NULL), updated(true) {
+}
+
+FieldBase::FieldBase(FieldContainer* c) 
+: container(c)
+, next(NULL)
+, updated(true) {
 	container->addField(this);
 }
 
-FieldBase::FieldBase(const FieldBase& copy) : 
-container(OFF(copy.container, this, &copy)), 
-next(copy.next ? OFF(copy.next, this, &copy) : NULL), updated(true){
+FieldBase::FieldBase(const FieldBase& copy) 
+: container(OFF(copy.container, this, &copy))
+, next(copy.next ? OFF(copy.next, this, &copy) : NULL)
+, updated(true){
 
 }
 
@@ -37,11 +45,17 @@ void FieldBase::setNextField(FieldBase* f){
 	next = f;
 }
 
-FieldContainer::FieldContainer() : field_head(NULL), num_fields(0) {}
+FieldContainer::FieldContainer()
+: field_head(NULL)
+, num_fields(0) {
+
+}
 
 FieldContainer::FieldContainer(const FieldContainer& copy) 
-: field_head(copy.field_head ? OFF(copy.field_head, this, &copy) : NULL), 
-num_fields(copy.num_fields) {}
+: field_head(copy.field_head ? OFF(copy.field_head, this, &copy) : NULL)
+, num_fields(copy.num_fields) {
+
+}
 
 FieldBase* FieldContainer::getFirstField() const {
 	return field_head;

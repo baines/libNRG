@@ -7,9 +7,23 @@
 
 using namespace nrg;
 
-Snapshot::Snapshot() : id(-1), edata(){ }
+namespace {
+	typedef std::map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
+	typedef std::map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
+	static const size_t MAX_BYTE_SHIFTS = 7;
+}
 
-Snapshot::Snapshot(uint16_t id) : id(id), edata(){ }
+Snapshot::Snapshot() 
+: id(-1)
+, edata(){
+
+}
+
+Snapshot::Snapshot(uint16_t id)
+: id(id)
+, edata(){
+
+}
 
 void Snapshot::addEntity(Entity* e){
 	bool merge = edata.find(e->getID()) != edata.end();
@@ -39,8 +53,6 @@ void Snapshot::addEntity(Entity* e){
 	}
 }
 
-typedef std::map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
-typedef std::map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
 
 void Snapshot::removeEntityById(uint16_t id){
 	EDat_it it = edata.find(id);
@@ -92,8 +104,6 @@ bool ClientSnapshot::readFromPacket(Packet& p){
 		return false;
 	}
 }
-
-static const size_t MAX_BYTE_SHIFTS = 7;
 
 void ClientSnapshot::applyUpdate(std::vector<Entity*>& entities, 
 const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
