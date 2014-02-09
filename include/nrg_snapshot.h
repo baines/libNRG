@@ -3,6 +3,7 @@
 #include "nrg_core.h"
 #include "nrg_entity.h"
 #include "nrg_event.h"
+#include "nrg_ringbuffer.h"
 #include <vector>
 #include <map>
 
@@ -12,7 +13,7 @@ class NRG_LIB Snapshot {
 public:
 	Snapshot();
 	Snapshot(uint16_t id);
-	int getID() const { return id; }
+	uint16_t getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
 	void addEntity(Entity* e);
 	void removeEntityById(uint16_t id);
@@ -20,25 +21,26 @@ public:
 	void reset();
 protected:
 	struct NRG_LIB EntityData {
-		uint16_t id, type;
+		uint16_t eid, etype;
 		std::vector<size_t> field_sizes;
 		Packet field_data;
 		off_t getFieldOffset(int num) const;
 		size_t getTotalBytes() const;
 	};
-	int id;
+	uint16_t id;
 	std::map<uint16_t, EntityData> edata;
 	Packet buffer;
 };
 
 struct NRG_LIB DeltaSnapshot {
-	DeltaSnapshot();
-	int getID() const { return id; }
+	DeltaSnapshot() : DeltaSnapshot(0){}
+	DeltaSnapshot(int i);
+	uint16_t getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
 	void addEntity(Entity* e);
 	void removeEntityById(uint16_t id);
 	void mergeWithNext(const DeltaSnapshot& next);
-	void writeToPacket(Packet& p) const;
+	void writeToPacket(Packet& p);
 	void reset();
 private:
 	struct FieldInfo {
@@ -56,14 +58,16 @@ private:
 		size_t num_fields;
 		uint16_t id;
 		uint16_t type;
+		bool full;
 		bool operator<(const EntityInfo& other) const { return id < other.id; }
 		bool operator==(const EntityInfo& other) const { return id == other.id;	}
 		bool operator==(uint16_t v) const {	return id == v;	}
 	};
 	
-	int id;
+	uint16_t id;
 	std::vector<EntityInfo> entities;
-	std::vector<FieldInfo> metadata, scratch;
+	std::vector<FieldInfo> fields, tmp_fields;
+	size_t full_count, del_count, upd_count;
 	Packet field_data, buffer;
 };
 
@@ -79,32 +83,7 @@ private:
 	Packet data;
 };
 
-class NRG_LIB DeltaSnapshotBuffer {
-	static const int N = NRG_NUM_PAST_SNAPSHOTS;
-public:
-	DeltaSnapshotBuffer() : snaps(), cur_id(0){}
-	DeltaSnapshot* find(uint16_t id) {
-		DeltaSnapshot* s = &snaps[id % N];	
-		return s->getID() == id ? s : NULL;
-	}
-	const DeltaSnapshot* find(uint16_t id) const {
-		const DeltaSnapshot* s = &snaps[id % N];	
-		return s->getID() == id ? s : NULL;
-	}
-	DeltaSnapshot& next(){
-		DeltaSnapshot& ds = snaps[cur_id % N];
-		ds.reset();
-		ds.setID(cur_id);
-		cur_id++;
-		return ds;
-	}
-	uint16_t getCurrentID() const {
-		return cur_id;
-	}
-private:
-	DeltaSnapshot snaps[N];
-	uint16_t cur_id;
-};
+typedef RingBuffer<DeltaSnapshot, NRG_NUM_PAST_SNAPSHOTS> DeltaSnapshotBuffer;
 
 }
 

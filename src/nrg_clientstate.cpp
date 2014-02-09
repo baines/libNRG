@@ -2,10 +2,13 @@
 #include "nrg_input.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
+#include "nrg_varint.h"
 #include "nrg_clientstats_impl.h"
 #include <climits>
+#include <cmath>
 
 using namespace nrg;
+using namespace std;
 
 namespace {
 	enum {
@@ -15,10 +18,10 @@ namespace {
 		HS_ACCEPTED    = 1	
 	};
 	
-	static const size_t NRG_CGS_HEADER_SIZE = 8;
-	typedef std::vector<Entity*>::iterator e_it;
-	typedef std::vector<FieldBase*>::iterator f_it;
-	typedef std::map<uint16_t, Entity*>::iterator et_it;
+	static const size_t NRG_CGS_HEADER_SIZE = 4;
+	typedef vector<Entity*>::iterator e_it;
+	typedef vector<FieldBase*>::iterator f_it;
+	typedef map<uint16_t, Entity*>::iterator et_it;
 }
 
 ClientHandshakeState::ClientHandshakeState() 
@@ -88,7 +91,8 @@ ClientGameState::ClientGameState(EventQueue& eq, const Socket& s, Input& i)
 , buffer()
 , sock(s)
 , input(i)
-, replay() {
+, replay()
+, got_packet(false) {
 
 }
 
@@ -101,60 +105,52 @@ bool ClientGameState::onRecvPacket(Packet& p, PacketFlags f){
 		return true;
 	}
 #endif
-
 	ClientStatsImpl& stats_impl = *static_cast<ClientStatsImpl*>(stats);
-
+	
 	if(replay.isRecording()) replay.addPacket(p);
-
+	if(f & PKTFLAG_OUT_OF_ORDER) return true;
 	if(p.size() < NRG_CGS_HEADER_SIZE) return false;
 
-	uint16_t new_state_id = 0;
-	p.read16(new_state_id);
-
-	uint16_t dropped = new_state_id - state_id;
-	if(state_id != -1){
-		if (dropped >= NRG_NUM_PAST_SNAPSHOTS)	return false;
-		while(--dropped) stats_impl.addSnapshotStat(-1);
-	}
-
-	uint32_t s_newtime_ms = 0;
-	p.read32(s_newtime_ms);
+	uint16_t s_newtime_ms = 0;
+	p.read16(s_newtime_ms);
 	c_time0_ms = c_time_ms;
-	c_time_ms = sock.getLastTimestamp() / 1000;
+	c_time_ms = (sock.getLastTimestamp() / 1000);
 
-	if(state_id != -1){
-		c_time_ms = std::min(c_time_ms, c_time0_ms + (s_newtime_ms - s_time_ms));
+	if(got_packet){
+		float f = (s_newtime_ms - s_time_ms) / 50.0f;
+		int dropped = max<int>(0, round(f)-1);
+		while(dropped--) stats_impl.addSnapshotStat(-1);
+		//c_time_ms = min(c_time_ms, c_time0_ms + (s_newtime_ms - s_time_ms));
 	}
 	s_time_ms = s_newtime_ms;
 
-	uint16_t ping = 0;
-	p.read16(ping);
-	stats_impl.addSnapshotStat(ping);
-
-	uint16_t ackd_input_id = 0;
-	p.read16(ackd_input_id);
+	UVarint ping_vi;
+	ping_vi.decode(p);
 	
-	snapshot.reset();
-	if(!snapshot.readFromPacket(p)) return false;
-	state_id = new_state_id;
-
+	stats_impl.addSnapshotStat(ping_vi.get());
+	
 	// Mark all previously updated entities as no longer updated
 	// Could maybe store fields instead of entities for better efficiency
 	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
+		if(*i == nullptr) continue;
+		
 		(*i)->nrg_updated = false;
 		for(FieldBase* f = (*i)->getFirstField(); f; f = f->getNextField()){
 			f->shiftData();			
 			f->setUpdated(false);
 		}
 	}
-
+	
+	snapshot.reset();
+	if(!snapshot.readFromPacket(p)) return false;
 	snapshot.applyUpdate(entities, entity_types, client_eventq);
 
+	got_packet = true;
 	return true;
 }
 
 bool ClientGameState::needsUpdate() const {
-	return state_id != -1;
+	return got_packet;
 }
 	
 StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
@@ -168,13 +164,14 @@ StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
 	}
 	
 	timeouts = 0;
-	uint32_t now_ms = os::microseconds() / 1000;
-	ss_timer = ((now_ms-50)-c_time0_ms) / double(c_time_ms - c_time0_ms);
-	uint32_t s_time_est = s_time_ms + (now_ms - c_time_ms);
+	uint32_t now_ms = (os::microseconds() / 1000);
+	//FIXME: Hardcoded 50ms server interval assumption
+	ss_timer = ((now_ms-50u)-c_time0_ms) / double(c_time_ms - c_time0_ms);
 
 	static_cast<ClientStatsImpl*>(stats)->addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
 
-	buffer.reset().write16(state_id).write32(s_time_est);
+	buffer.reset().write16(s_time_ms);
+	TVarint<uint16_t>(now_ms - c_time_ms).encode(buffer);
 	input.writeToPacket(buffer);
 	out.sendPacket(buffer);
 
@@ -183,11 +180,11 @@ StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
 
 void ClientGameState::registerEntity(Entity* e){
 	e->nrg_cgs_ptr = this;
-	entity_types.insert(std::make_pair(e->getType(), e));
+	entity_types.insert(make_pair(e->getType(), e));
 }
 
 void ClientGameState::registerMessage(const MessageBase& m){
-	messages.insert(std::make_pair(m.getID(), m.clone()));
+	messages.insert(make_pair(m.getID(), m.clone()));
 }
 
 double ClientGameState::getSnapshotTiming() const {

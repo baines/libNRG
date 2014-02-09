@@ -42,13 +42,16 @@ bool Client::update(){
 				return true;
 			} else {
 				if(!state_manager.onRecvPacket(buffer, f)){
+					puts("RecvPacket failed!");
 					return false;
 				}
 			}
 		}
 	}
 	
-	return state_manager.update(con.out);
+	bool b = state_manager.update(con.out);
+	if(!b) puts("State Update failed!");
+	return b;
 }
 
 void Client::registerEntity(Entity* e){

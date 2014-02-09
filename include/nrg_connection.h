@@ -4,14 +4,17 @@
 #include "nrg_netaddress.h"
 #include "nrg_packet.h"
 #include "nrg_socket.h"
+#include <bitset>
 
 namespace nrg {
 
 enum PacketFlags : uint8_t {
 	PKTFLAG_NONE             = 0x00,
 	
+	/* Not sent over the wire, but used in getLastestPacket() return value */
+	PKTFLAG_OUT_OF_ORDER     = 0x01,
+	
 	/* Only sent over the wire, not present in getLatestPacket() return value */
-	PKTFLAG_CONTINUATION     = 0x01,
 	PKTFLAG_CONTINUED        = 0x02,
 	
 	/* Both sent over the wire and present in getLatestPacket() return value */
@@ -19,15 +22,12 @@ enum PacketFlags : uint8_t {
 	PKTFLAG_RETRANSMISSION   = 0x08,
 	PKTFLAG_STATE_CHANGE     = 0x10,
 	PKTFLAG_STATE_CHANGE_ACK = 0x20,
-	
-	/* Not sent over the wire, but used in getLastestPacket() return value */
-	PKTFLAG_OUT_OF_ORDER     = 0x01
 };
 
 struct NRG_LIB ConnectionCommon {
 public:
 	ConnectionCommon(const NetAddress& remote_addr);
-	size_t getHeaderSize() const { return sizeof(uint16_t) + sizeof(uint8_t); }
+	size_t getHeaderSize() const { return 4; }
 	void setTransform(PacketTransformation* transform);
 	const NetAddress& remote_addr;
 	uint16_t seq_num;
@@ -44,8 +44,8 @@ public:
 	void setTransform(PacketTransformation* transform);
 protected:
 	ConnectionCommon cc;
-	bool isValidPacketHeader(uint16_t seq, uint8_t flags);
-	bool new_packet, first_packet, full_packet;
+	bool new_packet, full_packet;
+	std::bitset<NRG_CONN_PACKET_HISTORY> packet_history;
 	PacketFlags latest_flags;
 	Packet latest, buffer;
 };

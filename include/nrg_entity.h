@@ -18,12 +18,16 @@ public:
 	void markUpdated();
 	double getClientSnapshotTiming() const;
 	uint16_t getID() const { return nrg_id; }
-
+	
+	void setID(int id){ nrg_id = id; }
+	
+	//TODO: remove friends, add setter methods
 	friend class Server;
 	friend class ClientGameState;
 private:
 	int nrg_id;
 	bool nrg_updated;
+	//TODO: use interfaces instead of these
 	Server* nrg_serv_ptr;
 	ClientGameState* nrg_cgs_ptr;
 };

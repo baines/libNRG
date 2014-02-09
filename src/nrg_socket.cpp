@@ -108,6 +108,7 @@ ssize_t Socket::recvPacket(Packet& p, NetAddress& addr) {
 #endif
 	if(result > 0){
 		p.writeArray(buf, result);
+		p.seek(0, SEEK_SET);
 		if(do_timestamp){ 
 			last_timestamp = os::microseconds();
 #ifdef NRG_USE_SO_TIMESTAMP
@@ -180,11 +181,16 @@ void Socket::enableTimestamps(bool enable){
 	do_timestamp = enable;
 }
 
-UDPSocket::UDPSocket(int family) : Socket(SOCK_DGRAM, family){
+#include <err.h>
+#include <netinet/ip.h>
+
+UDPSocket::UDPSocket(int family)
+: Socket(SOCK_DGRAM, family){
 
 }
 
-UDPSocket::UDPSocket(const NetAddress& a) : Socket(SOCK_DGRAM, a){
+UDPSocket::UDPSocket(const NetAddress& a)
+: Socket(SOCK_DGRAM, a){
 
 }
 

@@ -75,8 +75,8 @@ bool Server::update(){
 	timer = os::microseconds();
 
 	// generate snapshot
-	DeltaSnapshot& delta_ss = snaps.next();
-	master_snapshot.setID(delta_ss.getID());
+	DeltaSnapshot& delta_ss = snaps.push(DeltaSnapshot(timer / 1000));
+	master_snapshot.setID(timer / 1000);
 	
 	sort(updated_entities.begin(), updated_entities.end());
 	

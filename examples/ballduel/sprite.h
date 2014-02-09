@@ -1,12 +1,26 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 #include "constants.h"
+#include <iostream>
+using namespace std;
 namespace c = constants;
 
 class Sprite {
 public:
-	Sprite(BallEntity* e) : interp(true), s(c::ball), entity(e), type(BALL) {}
-	Sprite(PlayerEntity* e) : interp(true), s(c::paddle), entity(e), type(PLAYER) {}
+	Sprite(BallEntity* e)
+	: interp(true)
+	, s(c::ball)
+	, entity(e)
+	, type(BALL) {
+	
+	}
+	Sprite(PlayerEntity* e)
+	: interp(true)
+	, s(c::paddle)
+	, entity(e)
+	, type(PLAYER) {
+	
+	}
 	void draw(sf::RenderWindow& win){
 		if(type == BALL){
 			if(entity->getX() != (c::screen_w - c::ball_size) / 2) interp = true;
@@ -21,7 +35,7 @@ public:
 		win.Draw(s);
 	}
 	bool operator==(nrg::Entity* e){
-		return e->getID() == entity->getID();
+		return e->getID() == entity->ID();
 	}
 private:
 	bool interp;

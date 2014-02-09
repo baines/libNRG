@@ -79,7 +79,7 @@ public:
 	}
 
 	virtual Packet& reset();
-	void seek(off_t offset, int whence);
+	Packet& seek(off_t offset, int whence);
 	off_t tell() const;
 	size_t size() const { return used_size; }
 	size_t remaining() const { return used_size - (pointer - data); }

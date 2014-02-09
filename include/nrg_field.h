@@ -6,6 +6,7 @@
 #include "nrg_util.h"
 #include "nrg_interp.h"
 #include <bitset>
+#include <iostream>
 
 namespace nrg {
 

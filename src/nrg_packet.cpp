@@ -1,7 +1,6 @@
 #include "nrg_packet.h"
 #include "nrg_config.h"
 #include <algorithm>
-#include <iostream>
 
 using namespace nrg;
 using namespace std;
@@ -120,7 +119,7 @@ Packet& Packet::reset(){
 	return *this;
 }
 
-void Packet::seek(off_t offset, int whence){
+Packet& Packet::seek(off_t offset, int whence){
 	switch(whence){
 	case SEEK_CUR:
 		pointer += offset; break;
@@ -130,6 +129,7 @@ void Packet::seek(off_t offset, int whence){
 		pointer = (data + used_size) - offset; break;
 	}
 	pointer = std::max(data, std::min(data + used_size, pointer));
+	return *this;
 }
 
 off_t Packet::tell() const {

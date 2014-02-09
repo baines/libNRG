@@ -2,6 +2,7 @@
 #define NRG_VARINT_H
 #include "nrg_core.h"
 #include <type_traits>
+#include <iostream>
 
 namespace nrg {
 
@@ -61,6 +62,10 @@ struct TVarint<T, typename std::enable_if<std::is_unsigned<T>::value>::type> {
 
 	TVarint() : data(0){}
 	TVarint(const T& t) : data(t){}
+	
+	size_t requiredBytes(void) const {
+		return (data == 0) ? 1 : (log2(data)/7)+1;
+	}
 
 	size_t encode(Packet& p) const {
 		return detail::varint_encode(p, data);	
@@ -71,6 +76,7 @@ struct TVarint<T, typename std::enable_if<std::is_unsigned<T>::value>::type> {
 	}
 
 	operator T () const { return data; }
+	T get() const { return data; }
 	
 	T data;
 };
@@ -80,6 +86,11 @@ struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 
 	TVarint() : data(0){}
 	TVarint(const T& t) : data(t){}
+	
+	size_t requiredBytes(void) const {
+		typename std::make_unsigned<T>::type udata = detail::varint_zigzag(data);
+		return !udata ? 1 : (log2(udata)/7)+1;
+	}
 
 	size_t encode(Packet& p) const {
 		return detail::varint_encode(p, detail::varint_zigzag(data));
@@ -93,6 +104,7 @@ struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 	}
 	
 	operator T () const { return data; }
+	T get() const { return data; }
 
 	T data;
 };

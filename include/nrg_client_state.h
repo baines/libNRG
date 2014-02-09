@@ -53,12 +53,14 @@ private:
 	ClientStats* stats;
 	int state_id, timeouts;
 	double ss_timer;
-	uint32_t s_time_ms, c_time0_ms, c_time_ms;
+	uint16_t s_time_ms;
+	uint32_t c_time0_ms, c_time_ms;
 	ClientSnapshot snapshot;
 	Packet buffer;
 	const Socket& sock;
 	Input& input;
 	ReplayRecorder replay;
+	bool got_packet;
 };
 
 }

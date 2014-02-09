@@ -19,7 +19,7 @@ public:
 	short getYI() { return ypos.getInterp(); }
 	void setX(int x){ xpos = x; }
 	void setY(int y){ ypos = y; }
-	uint16_t getID() const { return reinterpret_cast<const nrg::Entity*>(this)->getID(); }
+	uint16_t ID() const { return reinterpret_cast<const nrg::Entity*>(this)->getID(); }
 protected:
 	nrg::Field<short> xpos, ypos;
 };

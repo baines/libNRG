@@ -1,6 +1,7 @@
 #include "nrg_server_state.h"
 #include "nrg_input.h"
 #include "nrg_os.h"
+#include "nrg_varint.h"
 #include <climits>
 #include <iostream>
 
@@ -54,8 +55,10 @@ const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l)
 : snapshot()
 , master_ss(master)
 , snaps(dsb)
-, ackd_id(-1)
+, no_ack(true)
 , ping(l)
+, got_packet(true)
+, ack_time(0)
 , c_time(0)
 , buffer()
 , input(i)
@@ -63,14 +66,19 @@ const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l)
 
 }
 
-static const size_t NRG_MIN_SPGS_PACKET_LEN = 6;
+static const size_t NRG_MIN_SPGS_PACKET_LEN = 4;
 
 bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
-	uint16_t new_ackd_id = 0;
+	if(f & PKTFLAG_OUT_OF_ORDER) return true;
 
-	p.read16(new_ackd_id).read32(c_time);
-	ackd_id = new_ackd_id;
+	got_packet = true;
+	no_ack = false;
+
+	p.read16(ack_time);
+	TVarint<uint16_t> v;
+	v.decode(p);
+	c_time = ack_time + v.get();
 
 	if(!input.readFromPacket(p)) return false;
 	input.onUpdateNRG(player);
@@ -79,7 +87,7 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
-	return snapshot.getID() != master_ss.getID();
+	return snapshot.getID() != master_ss.getID() && got_packet;
 }
 
 StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
@@ -87,22 +95,25 @@ StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
 		return STATE_FAILURE;
 	}
 	
-	ping = std::max<int>(0, (os::microseconds() / 1000) - c_time);
+	got_packet = false;
+	
+	ping = std::max<int>(0, ((os::microseconds() / 1000) & USHRT_MAX) - c_time);
 
-	if(ackd_id == -1){
-		buffer.reset().write16(master_ss.getID()).write32(os::microseconds()/1000)
-			.write16(ping).write16(0);
+	if(no_ack){
+		buffer.reset().write16(master_ss.getID());
+		UVarint(ping).encode(buffer);
 		master_ss.writeToPacket(buffer);
 		out.sendPacket(buffer);
 	} else {
-		const DeltaSnapshot* ss = snaps.find(ackd_id + 1);
-		if(ss != NULL){
+		auto ss_r = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
+			return ack_time == s.getID();
+		});
+		if(ss_r != snaps.rend()){
+			auto ss = ss_r.base();
 			snapshot.reset();
-			for(uint16_t i = ackd_id + 1; i != snaps.getCurrentID(); ++i){
-				snapshot.mergeWithNext(*snaps.find(i));
-			}
-			buffer.reset().write16(snapshot.getID()).write32(os::microseconds()/1000).
-				write16(ping).write16(0);
+			while(ss != snaps.end()){ snapshot.mergeWithNext(*ss); ++ss; }
+			buffer.reset().write16(snapshot.getID());
+			UVarint(ping).encode(buffer);
 			snapshot.writeToPacket(buffer);
 			out.sendPacket(buffer);
 		} else {

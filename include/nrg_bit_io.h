@@ -5,19 +5,22 @@
 
 namespace nrg {
 
-class NRG_LIB BitWriter {
+namespace detail {
 	static const size_t MAX_BYTE_SHIFTS = 7;
+}
+
+class NRG_LIB BitWriter {
 public:
-	BitWriter(nrg::Packet& p) : bits(0), count(0), p(p){}
+	BitWriter(Packet& p) : bits(0), count(0), p(p){}
 	void write(bool b){
 		b ? write1() : write0();
 	}
 	void write1(){
-		bits |= 1 << (MAX_BYTE_SHIFTS - count);
+		bits |= 1 << (detail::MAX_BYTE_SHIFTS - count);
 		write0();
 	}
 	void write0(){
-		if(++count > MAX_BYTE_SHIFTS) flush();
+		if(++count > detail::MAX_BYTE_SHIFTS) flush();
 	}
 	template<class T>
 	void writeFunc(int sz, const T& fn){
@@ -35,6 +38,26 @@ public:
 	}
 	~BitWriter(){
 		flush();
+	}
+private:
+	uint8_t bits, count;
+	Packet& p;
+};
+
+class NRG_LIB BitReader {
+public:
+	BitReader(Packet& p) : bits(0), count(0), p(p){}
+	bool read(void){
+		if(count == 0) p.read8(bits);
+		bool b = bits & (1 << (detail::MAX_BYTE_SHIFTS - count));
+		count = (count + 1) & detail::MAX_BYTE_SHIFTS;
+		return b;
+	}
+	template<class T>
+	void readFunc(int sz, const T& fn){
+		for(int i = 0; i < sz; ++i){
+			fn(i, read());
+		}
 	}
 private:
 	uint8_t bits, count;

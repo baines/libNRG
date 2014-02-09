@@ -31,9 +31,11 @@ private:
 	DeltaSnapshot snapshot;
 	const Snapshot& master_ss;
 	const DeltaSnapshotBuffer& snaps;
-	int ackd_id;
+	bool no_ack;
 	int& ping;
-	uint32_t c_time;
+	bool got_packet;
+	uint16_t ack_time;
+	uint16_t c_time;
 	Packet buffer;
 	Input& input;
 	Player& player;

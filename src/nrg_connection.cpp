@@ -1,10 +1,9 @@
 #include "nrg_connection.h"
+#include "nrg_packet_header.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
 #include <climits>
 #include <cstdlib>
-#include <cassert>
-#include <iostream>
 
 using namespace nrg;
 using namespace std;
@@ -23,75 +22,66 @@ void ConnectionCommon::setTransform(PacketTransformation* t){
 ConnectionIn::ConnectionIn(const NetAddress& na)
 : cc(na)
 , new_packet(false)
-, first_packet(true)
 , full_packet(false)
 , latest(NRG_MAX_PACKET_SIZE) {
 
 }
 
-bool ConnectionIn::isValidPacketHeader(uint16_t seq, uint8_t flags) {
-	bool valid = false;
-	
-	if(flags & PKTFLAG_CONTINUATION){
-		if(latest.tell() != 0 && !full_packet){
-			valid = seq == (cc.seq_num + 1);
-		}
-	} else {
-		valid = (seq - cc.seq_num) < NRG_NUM_PAST_SNAPSHOTS;
-	}
-	return valid;
-}
-
 bool ConnectionIn::addPacket(Packet& p){
-	uint16_t seq = 0;
-	uint8_t flags = 0;
+	PacketHeader h;
 	
-	buffer.reset();
-	p.seek(0, SEEK_SET);
-	if(cc.transform && !cc.transform->remove(p, buffer)) return false;
-	Packet& ref = cc.transform ? buffer : p;
-	
-	if(ref.size() >= (sizeof(seq) + sizeof(flags))){
-		off_t o = p.tell();
-		ref.seek(0, SEEK_SET);
-		ref.read16(seq).read8(flags);
-				
-		if(first_packet){
-			if(flags & PKTFLAG_CONTINUATION){
-				ref.seek(o, SEEK_SET);
-				return false;
-			} else {
-				first_packet = false;
-			}
-		} else if(!isValidPacketHeader(seq, flags)){ //XXX near out of order are valid
-			ref.seek(o, SEEK_SET);
-			return true;
+	if(cc.transform){
+		if(!cc.transform->remove(p, buffer.reset())){
+			return false; // removal of packet transformation failed.
 		}
-
-		if(flags & PKTFLAG_FINISHED){
-			flags &= ~(PKTFLAG_CONTINUATION | PKTFLAG_CONTINUED);
-		}
-		
-		if(!(flags & PKTFLAG_CONTINUATION)){
-			latest.reset();
-		}
-		
-		latest.writeArray(ref.getPointer(), ref.remaining());
-		
-		if(!(flags & PKTFLAG_CONTINUED)){
-			full_packet = true;
-			new_packet = true;
-		} else {
-			full_packet = false;
-		}
-		
-		latest_flags = static_cast<PacketFlags>(flags); // XXX PKTFLAG_OUT_OF_ORDER
-		cc.seq_num = seq;
-		ref.seek(o, SEEK_SET);
-		return true;
 	} else {
-		return false;
+		buffer = p;
 	}
+	
+	if(!h.read(buffer) || h.version != 0){
+		return false; // packet has invalid header / unknown version.
+	}
+	
+	if(packet_history.none()){ // first packet recieved
+		cc.seq_num = h.seq_num;
+		packet_history[0] = 1;
+	} else {
+		int16_t seq_dist = static_cast<int16_t>(h.seq_num - cc.seq_num);
+		
+		if(abs(seq_dist) >= NRG_CONN_PACKET_HISTORY){
+			return true; // packet is out of history range.
+		}
+		
+		// states need to know about retransmissons of the newest packet
+		if(seq_dist < 0 && (h.flags & PKTFLAG_RETRANSMISSION)){
+			return true;
+		} 
+		
+		if(seq_dist > 0){
+			packet_history << seq_dist;
+			packet_history[0] = 1;
+			cc.seq_num = h.seq_num;
+		} else {
+			if(packet_history[-seq_dist]){ // already recieved this packet.
+				return true;
+			} else {
+				packet_history[-seq_dist] = 1;
+			}
+		}
+	}
+	
+	if((h.flags & PKTFLAG_FINISHED) && (cc.seq_num != h.seq_num)){
+		return false; // packet claims end of stream, but there is a newer one...
+	}
+	
+	// do reconstruction here
+	
+	new_packet = true;
+	latest.reset().writeArray(buffer.getPointer(), buffer.remaining());
+	if(cc.seq_num > h.seq_num) h.flags |= PKTFLAG_OUT_OF_ORDER;
+	latest_flags = static_cast<PacketFlags>(h.flags);
+	
+	return true;
 }
 
 bool ConnectionIn::hasNewPacket() const {
@@ -114,7 +104,7 @@ ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
 
 void ConnectionOut::sendPacket(Packet& p, PacketFlags f){
 	uint8_t user_flags = f & (PKTFLAG_STATE_CHANGE | PKTFLAG_STATE_CHANGE_ACK);
-	assert(user_flags == f);
+	uint8_t frag_index = 0;
 	
 	buffer.reset();
 	uint8_t flags = 0;
@@ -128,8 +118,8 @@ void ConnectionOut::sendPacket(Packet& p, PacketFlags f){
 			flags |= PKTFLAG_CONTINUED;
 		}
 		
-		buffer.write16(cc.seq_num++).write8(flags | user_flags);
-		assert(*(buffer.getPointer()-1) == (flags | user_flags));
+		PacketHeader(cc.seq_num++, flags | user_flags, frag_index).write(buffer);
+		
 		buffer.writeArray(p.getPointer(), n);
 		p.seek(n, SEEK_CUR);
 		buffer.seek(0, SEEK_SET);
@@ -139,22 +129,23 @@ void ConnectionOut::sendPacket(Packet& p, PacketFlags f){
 		} else {
 			sock.sendPacket(buffer, cc.remote_addr);
 		}
-		flags = PKTFLAG_CONTINUATION;
+		
+		++frag_index;
+		
 	} while(p.remaining());
+	
 	p.seek(o, SEEK_SET);
 }
 
-bool ConnectionOut::resendLastPacket(void){
-	if(buffer.size() <= sizeof(cc.seq_num)){ //XXX separate Packet for last packet since may be split
-		return false;
-	}
+bool ConnectionOut::resendLastPacket(void){ //XXX consider split packets
+	PacketHeader h;
+
+	buffer.seek(0, SEEK_SET);
+	if(!h.read(buffer)) return false;
+	h.flags |= PKTFLAG_RETRANSMISSION;
 	
-	uint8_t old_flags = 0;
-	
-	buffer.seek(sizeof(cc.seq_num), SEEK_SET);
-	buffer.read8(old_flags);
-	buffer.seek(-1, SEEK_CUR);
-	buffer.write8(old_flags | PKTFLAG_RETRANSMISSION);
+	buffer.seek(0, SEEK_SET);
+	h.write(buffer);
 	    	
 	if(cc.transform){
 		cc.transform->apply(buffer, buffer2.reset());
@@ -169,7 +160,9 @@ void ConnectionOut::sendDisconnect(Packet& p){
 	p.seek(0, SEEK_SET);
 	size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - cc.getHeaderSize());
 
-	buffer.reset().write16(cc.seq_num++).write8(PKTFLAG_FINISHED).writeArray(p.getPointer(), n);
+	buffer.reset();
+	PacketHeader(cc.seq_num++, PKTFLAG_FINISHED).write(buffer);
+	buffer.writeArray(p.getPointer(), n);
 	buffer.seek(0, SEEK_SET);
 	
 	if(cc.transform){
