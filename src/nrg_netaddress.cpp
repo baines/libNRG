@@ -71,7 +71,7 @@ bool NetAddress::resolve(const char* name, const char* port){
 
 		freeaddrinfo(result);
 	}
-	printf("err: %d\n", err);
+
 	return isValid();
 }
 

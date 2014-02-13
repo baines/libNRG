@@ -1,7 +1,10 @@
 #ifdef __linux
 #include <time.h>
-#include <cstdio>
-#include <cstdlib>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <random>
 #include "nrg_os.h"
 
 using namespace nrg;
@@ -14,15 +17,15 @@ uint64_t os::microseconds(){
 }
 
 uint32_t os::random(){
-	uint32_t r = rand();
+	uint32_t i = 0;
 
-	FILE* f = fopen("/dev/urandom", "rb");
-	if(f){
-		fread(&r, sizeof(r), 1, f);
-		fclose(f);
+	int f = open("/dev/urandom", O_RDONLY);
+	if(f > 0 && read(f, &i, sizeof(i)) > 0){
+		close(f);
+		return i;
+	} else {
+		return std::random_device()();
 	}
-	
-	return r;
 }
 
 #endif

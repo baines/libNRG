@@ -1,8 +1,8 @@
 #include "nrg_state_manager.h"
+#include "nrg_os.h"
 
 using namespace nrg;
 using namespace std;
-using namespace std::chrono;
 
 void TransitionState::pre_init(State* old_s, State* new_s){
 	old_state = old_s;
@@ -80,29 +80,26 @@ size_t TransitionState::getTimeoutSeconds() const {
 	return client_mode ? 1 : 10;
 }
 
-StateManager::StateManager(Client* c)
+StateManager::StateManager(Client* c, Server* s, Player* p)
 : state_ptr(nullptr)
-, last_update(system_clock::now())
+, last_update(os::seconds())
 , c(c)
-, s(nullptr)
-, p(nullptr){
+, s(s)
+, p(p){
+
+}
+
+StateManager::StateManager(Client* c)
+: StateManager(c, nullptr, nullptr){
 
 }
 StateManager::StateManager(Server* s)
-: state_ptr(nullptr)
-, last_update(system_clock::now())
-, c(nullptr)
-, s(s)
-, p(nullptr){
+: StateManager(nullptr, s, nullptr){
 
 }
 
 StateManager::StateManager(Player* p)
-: state_ptr(nullptr)
-, last_update(system_clock::now())
-, c(nullptr)
-, s(nullptr)
-, p(p){
+: StateManager(nullptr, nullptr, p){
 
 }
 	
@@ -116,7 +113,7 @@ bool StateManager::onRecvPacket(Packet& packet, PacketFlags f){
 	} else if(!state_ptr){
 		state_ptr = states.back();
 		state_ptr->init(c, s, p);
-		last_update = system_clock::now();
+		last_update = os::seconds();
 	}
 	return state_ptr->onRecvPacket(packet, f);
 }
@@ -127,20 +124,19 @@ bool StateManager::update(ConnectionOut& out){
 	} else if(!state_ptr){
 		state_ptr = states.back();
 		state_ptr->init(c, s, p);
-		last_update = system_clock::now();
+		last_update = os::seconds();
 	}
 	
 	std::underlying_type<StateFlags>::type f = SFLAG_NONE;
 	
-	auto dtime = duration_cast<seconds>(system_clock::now() - last_update);
-	int timeo = state_ptr->getTimeoutSeconds();
-	if(timeo && dtime.count() > timeo){
+	size_t timeo = state_ptr->getTimeoutSeconds();
+	if(timeo && (os::seconds() - last_update) > timeo){
 		f |= SFLAG_TIMED_OUT;
 	}
 	
 	if(state_ptr->needsUpdate() || (f & SFLAG_TIMED_OUT)){
 		StateResult r = state_ptr->update(out, static_cast<StateFlags>(f));
-		last_update = system_clock::now();
+		last_update = os::seconds();
 
 		if(r == STATE_CHANGE && states.size() >= 2){
 			if(state_ptr == &transition){

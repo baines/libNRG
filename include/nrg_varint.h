@@ -2,7 +2,6 @@
 #define NRG_VARINT_H
 #include "nrg_core.h"
 #include <type_traits>
-#include <iostream>
 
 namespace nrg {
 

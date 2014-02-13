@@ -4,13 +4,10 @@
 #include "nrg_state.h"
 #include <type_traits>
 #include <vector>
-#include <chrono>
-#include <iostream>
 
 namespace nrg {
 
 using std::vector;
-using namespace std::chrono;
 
 struct NRG_LIB TransitionState : public State {
 	void pre_init(State* old_s, State* new_s);
@@ -28,6 +25,7 @@ private:
 
 class NRG_LIB StateManager {
 public:
+	StateManager(Client* c, Server* s, Player* p);
 	StateManager(Client* c);
 	StateManager(Server* s);
 	StateManager(Player* p);
@@ -38,7 +36,7 @@ private:
 	vector<State*> states;
 	State* state_ptr;
 	TransitionState transition;
-	time_point<system_clock> last_update;
+	uint32_t last_update;
 	Client* c;
 	Server* s;
 	Player* p;

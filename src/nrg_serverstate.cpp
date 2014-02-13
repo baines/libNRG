@@ -3,7 +3,6 @@
 #include "nrg_os.h"
 #include "nrg_varint.h"
 #include <climits>
-#include <iostream>
 
 using namespace nrg;
 using namespace std;
@@ -23,7 +22,6 @@ ServerHandshakeState::ServerHandshakeState()
 }
 
 bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
-	std::cout << p.remaining() << std::endl;
 	if(p.remaining() == 1){
 		uint8_t v;
 		p.read8(v);
@@ -97,7 +95,7 @@ StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
 	
 	got_packet = false;
 	
-	ping = std::max<int>(0, ((os::microseconds() / 1000) & USHRT_MAX) - c_time);
+	ping = std::max<int>(0, (os::milliseconds() & USHRT_MAX) - c_time);
 
 	if(no_ack){
 		buffer.reset().write16(master_ss.getID());
