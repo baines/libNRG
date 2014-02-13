@@ -3,6 +3,7 @@
 #include "nrg_core.h"
 #include <array>
 #include <iterator>
+#include <utility>
 
 namespace nrg {
 
@@ -65,8 +66,7 @@ public:
 		ssize_t idx;
 	};
 	
-	T& push(T&& t){
-		data[end_idx] = t;
+	T& next(void){
 		T& ret = data[end_idx];
 		end_idx = (end_idx + 1) % data.size();
 		if(end_idx == start_idx){

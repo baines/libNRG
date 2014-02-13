@@ -40,7 +40,7 @@ struct NRG_LIB DeltaSnapshot {
 	void addEntity(Entity* e);
 	void removeEntityById(uint16_t id);
 	void mergeWithNext(const DeltaSnapshot& next);
-	void writeToPacket(Packet& p);
+	void writeToPacket(Packet& p) const;
 	void reset();
 private:
 	struct FieldInfo {

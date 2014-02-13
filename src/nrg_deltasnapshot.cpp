@@ -72,7 +72,7 @@ void DeltaSnapshot::reset(){
 	id = 0;
 }
 
-void DeltaSnapshot::writeToPacket(Packet& p) {
+void DeltaSnapshot::writeToPacket(Packet& p) const {
 	uint8_t section_bits = 0;
 	
 	if(del_count)  section_bits |= SNAPFLAG_DEL_SECTION;
