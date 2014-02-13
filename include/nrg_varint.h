@@ -74,6 +74,12 @@ struct TVarint<T, typename std::enable_if<std::is_unsigned<T>::value>::type> {
 	size_t decode(Packet& p){
 		return detail::varint_decode(p, data);
 	}
+	
+	T quickDecode(Packet& p){
+		T t = 0;
+		detail::varint_decode(p, t);
+		return t;
+	}
 
 	operator T () const { return data; }
 	T get() const { return data; }
@@ -98,9 +104,15 @@ struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 	
 	size_t decode(Packet& p){
 		typename std::make_unsigned<T>::type udata = 0;
-		size_t r = detail::varint_decode(udata, p);
+		size_t r = detail::varint_decode(p, udata);
 		data = detail::varint_zagzig(udata);
 		return r;
+	}
+	
+	T quickDecode(Packet& p){
+		typename std::make_unsigned<T>::type udata = 0;
+		detail::varint_decode(p, udata);
+		return detail::varint_zagzig(udata);
 	}
 	
 	operator T () const { return data; }

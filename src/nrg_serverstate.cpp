@@ -66,7 +66,7 @@ const DeltaSnapshotBuffer& dsb, Input& i, Player& p, int& l)
 
 }
 
-static const size_t NRG_MIN_SPGS_PACKET_LEN = 4;
+static const size_t NRG_MIN_SPGS_PACKET_LEN = 3;
 
 bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;

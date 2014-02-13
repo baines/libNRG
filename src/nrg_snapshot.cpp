@@ -109,8 +109,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 	if(section_bits & SNAPFLAG_DEL_SECTION){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
-			UVarint eid(0);
-			eid.decode(data);
+			uint16_t eid = UVarint().quickDecode(data);
 			if(entities.size() > eid && entities[eid]){
 				Entity*& e = entities[eid];
 				eq.pushEvent(EntityEvent{ ENTITY_DESTROYED, eid, e->getType(), e });
@@ -123,12 +122,10 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 	if(section_bits & SNAPFLAG_FULL_SECTION){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
-			UVarint eid(0);
-			eid.decode(data);
-			UVarint etype(0);
-			etype.decode(data);
+			uint16_t eid = UVarint().quickDecode(data);
+			uint16_t etype = UVarint().quickDecode(data);
 
-			entities.resize(std::max(entities.size(), eid+1), nullptr); // XXX vulnerable to memory DoS
+			entities.resize(std::max<size_t>(entities.size(), eid+1), nullptr); // XXX vulnerable to memory DoS
 			Entity*& e = entities[eid];
 		
 			if(e && e->getType() != etype){
@@ -159,8 +156,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 	if(section_bits & SNAPFLAG_UPD_SECTION){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
-			UVarint eid(0);
-			eid.decode(data);
+			uint16_t eid = UVarint().quickDecode(data);
 			assert(entities.size() > eid && entities[eid]);
 			Entity*& e = entities[eid];
 			FieldBase* f = e->getFirstField();
