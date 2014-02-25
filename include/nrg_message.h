@@ -13,7 +13,8 @@ struct MessageBase {
 	virtual size_t readFromPacket(Packet& p) = 0;
 	virtual void onRecieve() = 0;
 	virtual MessageBase* clone() const = 0;
-	virtual ~MessageBase(){}
+	virtual MessageBase* move_clone() = 0;
+	virtual ~MessageBase(){};
 };
 
 using std::enable_if;
@@ -25,7 +26,10 @@ class Message : public MessageBase {
 	typedef std::tuple<Args...> MsgTuple;
 public:
 	Message(Args... args) : values(args...), on_recieve(){}
-	Message(const std::function<void(const Message&)>& func) : values(), on_recieve(func){}
+	
+	Message(std::function<void(const Message&)>&& func)
+	: values()
+	, on_recieve(std::forward<decltype(func)>(func)){}
 		
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_write(Packet& p) const {
@@ -59,6 +63,10 @@ public:
 	
 	MessageBase* clone() const {
 		return new Message(*this);
+	}
+	
+	MessageBase* move_clone() {
+		return new Message(std::move(*this));
 	}
 	
 	size_t writeToPacket(Packet& p) const {

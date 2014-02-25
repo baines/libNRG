@@ -86,9 +86,10 @@ int main(int argc, char** argv){
 		rserv.bind(c::port);
 	}
 
-	nrg::Client client(nrg::NetAddress((playing_replay || argc < 2) ? c::addr_local : argv[1], c::port), input);
+	nrg::Client client("NRG Ball Duel", 1, input);
 	client.registerEntity(new PlayerEntity(0));
 	client.registerEntity(new BallEntity());
+	client.connect(nrg::NetAddress((playing_replay || argc < 2) ? c::addr_local : argv[1], c::port));
 
 	sf::View view(sf::FloatRect(0, 0, c::screen_w, c::screen_h));
 	sf::RenderWindow window(sf::VideoMode(c::screen_w, c::screen_h), c::client_title);

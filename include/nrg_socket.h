@@ -11,6 +11,9 @@ class NRG_LIB Socket {
 public:
 	Socket(int type, int family = PF_UNSPEC);
 	Socket(int type, const NetAddress& addr);
+	
+	void setFamilyFromAddress(const NetAddress& addr);
+	
 	bool bind(const NetAddress& addr);
 	bool connect(const NetAddress& addr);
 	ssize_t sendPacket(const Packet& p) const;
@@ -33,7 +36,7 @@ public:
 	uint64_t getLastTimestamp() const {
 		return last_timestamp;
 	}
-	~Socket();
+	virtual ~Socket();
 protected:
 	std::unique_ptr<NetAddress> bound_addr, connected_addr;
 	int fd, family, type;

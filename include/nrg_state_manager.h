@@ -11,7 +11,7 @@ using std::vector;
 
 struct NRG_LIB TransitionState : public State {
 	void pre_init(State* old_s, State* new_s);
-	bool init(Client* c, Server* s, Player* p);
+	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
 	StateResult update(ConnectionOut& out, StateFlags f);
@@ -26,9 +26,8 @@ private:
 class NRG_LIB StateManager {
 public:
 	StateManager(Client* c, Server* s, Player* p);
+	StateManager(Server* s, Player* p);
 	StateManager(Client* c);
-	StateManager(Server* s);
-	StateManager(Player* p);
 	void addState(State& s);
 	bool onRecvPacket(Packet& packet, PacketFlags f);
 	bool update(ConnectionOut& out);

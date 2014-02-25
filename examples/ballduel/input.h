@@ -3,7 +3,7 @@
 #include "nrg.h"
 #include "server_game_state.h"
 
-class MyInput : public nrg::Input {
+class MyInput : public nrg::Input<MyInput> {
 public:
 	MyInput() : ypos(this) {}
 	void setGameState(ServerGameState* gs){
@@ -12,7 +12,7 @@ public:
 	void setY(uint16_t y){
 		ypos = y;
 	}
-	void onUpdateNRG(nrg::Player& player){
+	void onUpdate(nrg::Player& player){
 		if(player.getID() == 0){
 			gs->getPlayer1().setY(ypos.get()-(c::paddle_h/2));
 		} else if(player.getID() == 1){

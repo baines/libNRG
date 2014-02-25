@@ -6,9 +6,9 @@ namespace c = constants;
 class ServerGameState {
 public:
 	ServerGameState(nrg::Server& server) : p1(0), p2(c::screen_w-c::paddle_w), ball(), server(server){
-		server.registerEntity(&p1);
-		server.registerEntity(&p2);
-		server.registerEntity(&ball);
+		server.registerEntity(p1);
+		server.registerEntity(p2);
+		server.registerEntity(ball);
 	}
 	void update(){
 		if(server.playerCount() < 2){

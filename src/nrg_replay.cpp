@@ -37,6 +37,7 @@ bool ReplayRecorder::startRecording(const char* filename, int sid, const std::ve
 	file = gzdopen(fd, "wb");
 	if(!file) return false;
 
+/* XXX: needs updating to match current protocol
 	if(sid != -1){
 		Snapshot ss;
 		Packet p;
@@ -44,7 +45,7 @@ bool ReplayRecorder::startRecording(const char* filename, int sid, const std::ve
 			if(*i) ss.addEntity(*i);
 		}
 	
-		p.write16(sid).write32(os::microseconds()/1000).write16(0).write16(0);
+		p.write16(sid).write32(os::milliseconds()).write16(0).write16(0);
 		ss.writeToPacket(p);
 		addPacket(p);
 	}
@@ -52,6 +53,8 @@ bool ReplayRecorder::startRecording(const char* filename, int sid, const std::ve
 	status = STATUS_RECORDING;
 
 	return true;
+*/
+	return false;
 }
 
 bool ReplayRecorder::isRecording() const {
@@ -103,6 +106,8 @@ bool ReplayServer::bind(const char* port){
 }
 
 bool ReplayServer::update(){
+/* XXX: This got broken with recent changes, needs to be updated.
+
 	while(sock.dataPending()){
 		NetAddress addr;
 		sock.recvPacket(buffer.reset(), addr);
@@ -119,7 +124,7 @@ bool ReplayServer::update(){
 		}
 	}
 
-	local_timer = os::microseconds() / 1000;
+	local_timer = os::milliseconds();
 
 	if(handshake.needsUpdate()){
 		handshake.update(con.out, SFLAG_NONE);
@@ -154,5 +159,7 @@ bool ReplayServer::update(){
 		}
 	}
 	return true;
+*/
+	return false;
 }
 

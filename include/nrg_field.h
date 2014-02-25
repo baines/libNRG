@@ -15,6 +15,7 @@ class NRG_LIB FieldBase {
 public:
 	FieldBase(FieldContainer* container);
 	FieldBase(const FieldBase& copy);
+	FieldBase& operator=(const FieldBase& copy);
 	virtual size_t readFromPacket(Packet& p) = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
 	virtual void shiftData() = 0;
@@ -33,8 +34,9 @@ protected:
 struct NRG_LIB FieldContainer {
 	FieldContainer();
 	FieldContainer(const FieldContainer& copy);
-	virtual void markUpdated() = 0;
-	virtual double getClientSnapshotTiming() const { return 0.0; }
+	FieldContainer& operator=(const FieldContainer& copy);
+	virtual void markUpdated(bool b) = 0;
+	virtual float getInterpTimer() const { return 1.0f; }
 	FieldBase* getFirstField() const;
 	size_t getNumFields() const;
 	void addField(FieldBase* f);
@@ -79,11 +81,11 @@ public:
 
 	template<class F>
 	T getInterp(const F& func) const {
-		return func(data, data_next, this->container->getClientSnapshotTiming());
+		return func(data, data_next, this->container->getInterpTimer());
 	}
 
 	T getInterp() const {
-		return lerp<T>()(data, data_next, this->container->getClientSnapshotTiming());
+		return lerp<T>()(data, data_next, this->container->getInterpTimer());
 	}
 private:
 	T data, data_next;
@@ -149,11 +151,11 @@ public:
 	
 	template<class F>
 	T getInterp(size_t index, const F& func) const {
-		return func(data[index], data_next[index], this->container->getClientSnapshotTiming());
+		return func(data[index], data_next[index], this->container->getInterpTimer());
 	}
 
 	T getInterp(size_t index) const {
-		return lerp<T>()(data[index], data_next[index], this->container->getClientSnapshotTiming());
+		return lerp<T>()(data[index], data_next[index], this->container->getInterpTimer());
 	}
 private:
 	T data[N], data_next[N];

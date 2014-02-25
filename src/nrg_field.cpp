@@ -33,7 +33,7 @@ bool FieldBase::wasUpdated() const{
 void FieldBase::setUpdated(bool val){
 	updated = val;
 	if(updated){
-		container->markUpdated();
+		container->markUpdated(true);
 	}
 }
 

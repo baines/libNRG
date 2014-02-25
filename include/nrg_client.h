@@ -9,20 +9,26 @@
 #include "nrg_input.h"
 #include "nrg_message.h"
 #include <vector>
+#include <utility>
 
 namespace nrg {
 
 class NRG_LIB Client {
 public:
-	Client(Input& input = null_input);
-	Client(const NetAddress& server_addr, Input& input = null_input);
-	~Client();
+	Client(const char* game_name, uint32_t game_version, InputBase& input);
+	Client(const char* game_name, uint32_t game_version);
+
 	bool connect(const NetAddress& server_addr);
 	bool isConnected() const;
 	const NetAddress& getAddress() const;
 
 	void registerEntity(Entity* e);
-	void registerMessage(const MessageBase& m);
+	
+	template<class M, class F>
+	void addMessageHandler(const F& f){
+		game_state.registerMessage(M(f));
+	}
+	void sendMessage(const MessageBase& m);
 	
 	bool update();
 	bool pollEvent(Event& e);
@@ -30,9 +36,15 @@ public:
 	
 	void startRecordingReplay(const char* filename);
 	void stopRecordingReplay();
+	
+	InputBase* getInput(){ return input; }
+	EventQueue& getEventQueue(){ return eventq; }
+	UDPSocket& getSock(){ return sock; }
+	
+	virtual ~Client();
 protected:
 	UDPSocket sock;
-	Input& input;
+	InputBase* input;
 	Packet buffer;
 	NetAddress serv_addr;
 	Connection con;

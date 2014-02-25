@@ -93,16 +93,11 @@ StateManager::StateManager(Client* c)
 : StateManager(c, nullptr, nullptr){
 
 }
-StateManager::StateManager(Server* s)
-: StateManager(nullptr, s, nullptr){
+StateManager::StateManager(Server* s, Player* p)
+: StateManager(nullptr, s, p){
 
 }
 
-StateManager::StateManager(Player* p)
-: StateManager(nullptr, nullptr, p){
-
-}
-	
 void StateManager::addState(State& s){
 	states.push_back(&s);
 }

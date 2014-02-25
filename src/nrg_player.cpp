@@ -2,19 +2,16 @@
 
 using namespace nrg;
 
-PlayerImpl::PlayerImpl(uint16_t id, const Server& s, const NetAddress& addr) 
+PlayerImpl::PlayerImpl(uint16_t id, Server& s, const NetAddress& addr) 
 : server(s)
 , addr(addr)
 , sock(s.getSocket())
 , con(addr, sock)
 , buffer(NRG_MAX_PACKET_SIZE)
 , ping(0)
-, state_manager(this)
+, state_manager(nullptr, &s, this)
 , handshake()
-, game_state(s.getSnapshot()
-, s.getDeltaSnapshots()
-, s.getInput()
-, *this, ping)
+, game_state()
 , id(id)
 , connected(true) {
 	state_manager.addState(game_state);

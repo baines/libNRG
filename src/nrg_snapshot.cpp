@@ -7,10 +7,11 @@
 #include <set>
 
 using namespace nrg;
+using namespace std;
 
 namespace {
-	typedef std::map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
-	typedef std::map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
+	typedef map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
+	typedef map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
 	
 	enum {
 		SNAPFLAG_DEL_SECTION  = 0x80,
@@ -86,7 +87,7 @@ void Snapshot::writeToPacket(Packet& p) const {
 }
 
 off_t Snapshot::EntityData::getFieldOffset(int num) const {
-	return std::accumulate(field_sizes.begin(), field_sizes.begin() + num, 0);
+	return accumulate(field_sizes.begin(), field_sizes.begin() + num, 0);
 }
 
 size_t Snapshot::EntityData::getTotalBytes() const {
@@ -99,8 +100,8 @@ bool ClientSnapshot::readFromPacket(Packet& p){
 	return true;
 }
 
-void ClientSnapshot::applyUpdate(std::vector<Entity*>& entities, 
-const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
+void ClientSnapshot::applyUpdate(vector<Entity*>& entities, 
+const map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 	data.seek(0, SEEK_SET);
 	UVarint ecount(0);
 	uint8_t section_bits = 0;
@@ -125,7 +126,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 			uint16_t eid = UVarint().quickDecode(data);
 			uint16_t etype = UVarint().quickDecode(data);
 
-			entities.resize(std::max<size_t>(entities.size(), eid+1), nullptr); // XXX vulnerable to memory DoS
+			entities.resize(max<size_t>(entities.size(), eid+1), nullptr); // XXX vulnerable to memory DoS
 			Entity*& e = entities[eid];
 		
 			if(e && e->getType() != etype){
@@ -149,7 +150,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 			}
 		
 			eq.pushEvent(EntityEvent{ ENTITY_UPDATED, eid, e->getType(), e });
-			e->markUpdated();
+			e->markUpdated(true);
 		}
 	}
 	
@@ -176,7 +177,7 @@ const std::map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		    data.seek(read_pos, SEEK_SET);
 		
 			eq.pushEvent(EntityEvent{ ENTITY_UPDATED, eid, e->getType(), e });
-			e->markUpdated();
+			e->markUpdated(true);
 		}
 	}
 	

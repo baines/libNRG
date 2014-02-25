@@ -9,7 +9,7 @@ namespace nrg {
 
 class PlayerImpl : public Player {
 public:
-	PlayerImpl(uint16_t id, const Server& server, const NetAddress& addr);
+	PlayerImpl(uint16_t id, Server& server, const NetAddress& addr);
 	bool addPacket(Packet& p);
 	bool update();
 	void kick(const char* reason);

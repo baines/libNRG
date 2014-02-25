@@ -25,12 +25,12 @@ private:
 };
 
 class Entity;
-class Input;
+class InputBase;
 
-class NRG_LIB ClientGameState : public State {
+class NRG_LIB ClientGameState : public State, public EntityManager {
 public:
-	ClientGameState(EventQueue& eq, const Socket& s, Input& i);
-	bool init(Client*, Server*, Player*){ return true; }
+	ClientGameState();
+	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
 	size_t getTimeoutSeconds() const { return 1; }
@@ -39,8 +39,9 @@ public:
 
 	void registerEntity(Entity* e);
 	void registerMessage(const MessageBase& m);
+	void registerMessage(MessageBase&& m);
 	
-	double getSnapshotTiming() const;
+	float getInterpTimer() const;
 	const ClientStats& getClientStats() const;
 
 	void startRecordingReplay(const char* filename);
@@ -49,18 +50,19 @@ private:
 	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
 	std::map<uint16_t, MessageBase*> messages;
-	EventQueue& client_eventq;
-	ClientStats* stats;
-	int state_id, timeouts;
+	EventQueue* client_eventq;
+	std::unique_ptr<ClientStats> stats;
+	int timeouts;
 	double ss_timer;
-	uint16_t s_time_ms;
-	uint32_t c_time0_ms, c_time_ms;
+	uint8_t server_seq_prev;
+	uint16_t server_ms_prev;
+	uint32_t client_ms, client_ms_prev, interval;
 	ClientSnapshot snapshot;
 	Packet buffer;
-	const Socket& sock;
-	Input& input;
+	InputBase* input;
 	ReplayRecorder replay;
 	bool got_packet;
+	Client* client;
 };
 
 }

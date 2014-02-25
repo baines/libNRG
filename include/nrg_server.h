@@ -15,40 +15,50 @@
 
 namespace nrg {
 
-class NRG_LIB Server {
+class NRG_LIB Server : public EntityManager {
 public:
-	Server(Input& input = null_input);
-	Server(const NetAddress& bind_addr, Input& input = null_input);
+	Server(const char* game_name, uint32_t game_version, InputBase& input);
+	Server(const char* game_name, uint32_t game_version);
+		
 	bool bind(const NetAddress& addr);
 	bool isBound();
-	size_t playerCount() const;
+	
 	bool update();
 	bool pollEvent(Event& e);
-	~Server();
-
-	void registerEntity(Entity* e);
-	void unregisterEntity(Entity* e);
-	void registerMessage(const MessageBase& m);
-	void markEntityUpdated(Entity* e);
-	Player* getPlayerByID(uint16_t) const;
 	
+	size_t playerCount() const;
+	
+	void setTickRate(uint8_t rate);
+	uint8_t getTickRate() const;
+	
+	void registerEntity(Entity& e);
+	void unregisterEntity(Entity& e);
+	void markEntityUpdated(Entity& e);
+	
+	template<class M, class F>
+	void addMessageHandler(const F& f){
+		messages.insert(make_unique<M>(f));
+	}
+	void broadcastMessage(const MessageBase& m);
+	
+	Player* getPlayerByID(uint16_t) const;
 	const UDPSocket& getSocket() const { return sock; }
 	const Snapshot& getSnapshot() const { return master_snapshot; }
 	const DeltaSnapshotBuffer& getDeltaSnapshots() const { return snaps; }
-	Input& getInput() const { return input; }
+	InputBase* getInput() const { return input; }
+	
+	virtual ~Server();
 protected:
-	void clearEntityUpdated(Entity* e);
 	UDPSocket sock;
 	Packet buffer;
-	Input& input;
+	InputBase* input;
 	EventQueue eventq;
-	typedef std::map<NetAddress, Player*> ClientMap;
-	ClientMap clients;
+	std::map<NetAddress, Player*> clients;
 	Snapshot master_snapshot;
 	DeltaSnapshotBuffer snaps;
 	std::vector<Entity*> entities;
 	std::vector<uint16_t> updated_entities;
-	std::map<uint16_t, MessageBase*> messages;
+	std::map<uint16_t, std::unique_ptr<MessageBase>> messages;
 	IDAssigner<uint16_t> player_ids, entity_ids;
 	uint64_t timer;
 	int interval;

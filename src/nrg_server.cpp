@@ -6,20 +6,46 @@
 using namespace std;
 using namespace nrg;
 
-Server::Server(const NetAddress& bind_addr, Input& input) 
-: sock(bind_addr)
+namespace {
+	typedef map<NetAddress, Player*> ClientMap;
+	
+	static void clearEntityUpdated(Entity* e){
+		e->markUpdated(false);
+	
+		for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
+			f->setUpdated(false);
+		}
+	}
+	
+}
+
+Server::Server(const char* game_name, uint32_t game_version, InputBase& input) 
+: sock()
 , buffer()
-, input(input)
+, input(&input)
 , eventq()
 , clients()
 , timer(nrg::os::microseconds())
-, interval(50000){
-	sock.setNonBlocking(true);
-	bind(bind_addr);
+, interval(NRG_DEFAULT_SERVER_INTERVAL_US){
+
+}
+
+Server::Server(const char* game_name, uint32_t game_version) 
+: sock()
+, buffer()
+, input(nullptr)
+, eventq()
+, clients()
+, timer(nrg::os::microseconds())
+, interval(NRG_DEFAULT_SERVER_INTERVAL_US){
+
 }
 
 bool Server::bind(const NetAddress& addr){
-	return sock.bind(addr) == status::OK;
+	sock.setFamilyFromAddress(addr);
+	sock.setNonBlocking(true);
+	
+	return sock.bind(addr);
 }
 
 bool Server::isBound() {
@@ -28,14 +54,6 @@ bool Server::isBound() {
 
 size_t Server::playerCount() const {
 	return clients.size();
-}
-
-void Server::clearEntityUpdated(Entity* e){
-	e->nrg_updated = false;
-	
-	for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
-		f->setUpdated(false);
-	}
 }
 
 static inline PlayerImpl* IMPL(nrg::Player* p){
@@ -125,33 +143,29 @@ bool Server::pollEvent(Event& e){
 	return eventq.pollEvent(e);
 }
 
-void Server::registerEntity(Entity* e){
-	e->nrg_serv_ptr = this;
+void Server::registerEntity(Entity& e){
+	e.setManager(this);
 	uint16_t id = entity_ids.acquire();
-	e->nrg_id = id;
+	e.setID(id);
 	if(entities.size() <= id){
 		entities.resize(id+1);
 	}
-	entities[id] = e;
-	updated_entities.push_back(e->getID());
+	entities[id] = &e;
+	updated_entities.push_back(e.getID());
 }
 
-void Server::unregisterEntity(Entity* e){
-	if(e && entities[e->nrg_id]){
-		entity_ids.release(e->nrg_id);
-		updated_entities.push_back(e->nrg_id);
-		entities[e->nrg_id] = NULL;
+void Server::unregisterEntity(Entity& e){
+	if(entities[e.getID()]){
+		entity_ids.release(e.getID());
+		updated_entities.push_back(e.getID());
+		entities[e.getID()] = nullptr;
 	}
 }
 
-void Server::registerMessage(const MessageBase& m){
-	messages.insert(std::make_pair(m.getID(), m.clone()));
-}
-
-void Server::markEntityUpdated(Entity* e){
-	if(e && find(updated_entities.begin(), updated_entities.end(), e->getID()) 
+void Server::markEntityUpdated(Entity& e){
+	if(find(updated_entities.begin(), updated_entities.end(), e.getID()) 
 	== updated_entities.end()){
-		updated_entities.push_back(e->getID());
+		updated_entities.push_back(e.getID());
 	}
 }
 
@@ -171,8 +185,8 @@ Server::~Server(){
 
 	for(Entity* e : entities){
 		if(e){
-			e->nrg_serv_ptr = NULL;
-			e->nrg_id = 0;
+			e->setManager(nullptr);
+			e->setID(0);
 		}
 	}
 }

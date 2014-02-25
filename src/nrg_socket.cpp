@@ -29,11 +29,16 @@ Socket::Socket(int type, const NetAddress& a)
 	fd = socket(family, type, 0);
 }
 
+void Socket::setFamilyFromAddress(const NetAddress& na){
+	family = na.family();
+	fd = socket(family, type, 0);
+}
+
 bool Socket::bind(const NetAddress& addr){
 	if(!fd){
 		family = addr.family();
 		fd = socket(family, type, 0);
-	} else if(addr.family() != family) return status::ERROR;
+	} else if(addr.family() != family) return false;
 	socklen_t len = 0;
 	
 	const struct sockaddr* sa = addr.toSockAddr(len);
@@ -49,7 +54,7 @@ bool Socket::connect(const NetAddress& addr){
 	if(!fd){
 		family = addr.family();
 		fd = socket(family, type, 0);
-	} else if(addr.family() != family) return status::ERROR;
+	} else if(addr.family() != family) return false;
 	socklen_t len = 0;
 
 	const struct sockaddr* sa = addr.toSockAddr(len);

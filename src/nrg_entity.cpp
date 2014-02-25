@@ -7,30 +7,23 @@ using namespace nrg;
 Entity::Entity()
 : nrg_id(0)
 , nrg_updated(false)
-, nrg_serv_ptr(NULL)
-, nrg_cgs_ptr(NULL) {
+, manager(nullptr) {
 
 }
 
-void Entity::markUpdated(){
-	if(!nrg_updated) {
-		nrg_updated = true;
-		if(nrg_serv_ptr) {
-			nrg_serv_ptr->markEntityUpdated(this);
-		}
+void Entity::markUpdated(bool b){
+	if(!nrg_updated && b && manager){
+		manager->markEntityUpdated(*this);
 	}
+	nrg_updated = b;
 }
 
 Entity::~Entity(){
-	if(nrg_serv_ptr){
-		nrg_serv_ptr->unregisterEntity(this);
-	}
+	if(manager)	manager->unregisterEntity(*this);
 }
 
-double Entity::getClientSnapshotTiming() const {
-	if(nrg_cgs_ptr){
-		return nrg_cgs_ptr->getSnapshotTiming();
-	} else {
-		return 0.0;
-	}
+float Entity::getInterpTimer() const {
+	return manager ? manager->getInterpTimer() : 1.0;
 }
+
+

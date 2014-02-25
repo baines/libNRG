@@ -3,23 +3,46 @@
 
 using namespace nrg;
 
-Client::Client(const NetAddress& addr, Input& input) 
-: sock(addr)
-, input(input)
+Client::Client(const char* game_name, uint32_t game_version, InputBase& input) 
+: sock()
+, input(&input)
 , buffer()
-, serv_addr(addr)
+, serv_addr()
 , con(serv_addr, sock)
 , eventq()
 , state_manager(this)
 , handshake()
-, game_state(eventq, sock, input), dc_reason() {
+, game_state()
+, dc_reason() {
+	state_manager.addState(game_state);
+	state_manager.addState(handshake);
+}
+
+Client::Client(const char* game_name, uint32_t game_version) 
+: sock()
+, input(nullptr)
+, buffer()
+, serv_addr()
+, con(serv_addr, sock)
+, eventq()
+, state_manager(this)
+, handshake()
+, game_state()
+, dc_reason() {
+	state_manager.addState(game_state);
+	state_manager.addState(handshake);
+}
+
+bool Client::connect(const NetAddress& addr){
+	sock.setFamilyFromAddress(addr);
 	sock.setNonBlocking(true);
 	sock.enableTimestamps(true);
 #ifdef NRG_USE_SO_TIMESTAMP
 	sock.setOption(SOL_SOCKET, SO_TIMESTAMP, 1);
-#endif
-	state_manager.addState(game_state);
-	state_manager.addState(handshake);
+#endif	
+	serv_addr = addr;
+	
+	return sock.connect(serv_addr);
 }
 
 bool Client::update(){
@@ -56,10 +79,6 @@ bool Client::update(){
 
 void Client::registerEntity(Entity* e){
 	game_state.registerEntity(e);
-}
-
-void Client::registerMessage(const MessageBase& m){
-	game_state.registerMessage(m);
 }
 
 bool Client::pollEvent(Event& e){
