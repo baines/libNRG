@@ -10,7 +10,7 @@
 
 namespace nrg {
 
-struct NRG_LIB PacketReadable {
+struct PacketReadable {
 	virtual PacketReadable& read8(uint8_t& v) = 0;
 	virtual PacketReadable& read16(uint16_t& v) = 0;
 	virtual PacketReadable& read32(uint32_t& v) = 0;
@@ -19,16 +19,16 @@ struct NRG_LIB PacketReadable {
 	virtual ~PacketReadable(){}
 };
 
-struct NRG_LIB PacketWritable {
+struct PacketWritable {
 	virtual PacketWritable& write8(const uint8_t& v) = 0;
 	virtual PacketWritable& write16(const uint16_t& v) = 0;
 	virtual PacketWritable& write32(const uint32_t& v) = 0;
 	virtual PacketWritable& write64(const uint64_t& v) = 0;
-	virtual PacketWritable& writeArray(const uint8_t* v, size_t size) = 0;
+	virtual PacketWritable& writeArray(const void* v, size_t size) = 0;
 	virtual ~PacketWritable(){}
 };
 
-class NRG_LIB Packet : public PacketReadable, public PacketWritable {
+class Packet : public PacketReadable, public PacketWritable {
 public:
 	Packet();
 	Packet(size_t initial_size);
@@ -40,7 +40,7 @@ public:
 	PacketWritable& write16(const uint16_t& v);
 	PacketWritable& write32(const uint32_t& v);
 	PacketWritable& write64(const uint64_t& v);
-	PacketWritable& writeArray(const uint8_t* v, size_t size);
+	PacketWritable& writeArray(const void* v, size_t size);
 
 	template<typename T>
 	void writeBE(const T& be_v){
@@ -91,14 +91,14 @@ protected:
 	size_t data_size, used_size;
 };
 
-struct NRG_LIB PacketTransformation {
+struct PacketTransformation {
 	virtual bool apply(Packet& in, Packet& out) = 0;
 	virtual bool remove(Packet& in, Packet& out) = 0;
 };
 
 #ifdef NRG_ENABLE_ZLIB_COMPRESSION
 
-struct NRG_LIB PacketCompressor : PacketTransformation {
+struct  PacketCompressor : PacketTransformation {
 	virtual bool apply(Packet& in, Packet& out);
 	virtual bool remove(Packet& in, Packet& out);
 };

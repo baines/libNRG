@@ -78,9 +78,13 @@ ClientHandshakeState::~ClientHandshakeState(){
 
 }
 
+using namespace std::placeholders;
+
 ClientGameState::ClientGameState() 
-: entities()
+: snap_func(bind(&ClientGameState::SnapFuncImpl, this, _1, _2, _3))
+, entities()
 , entity_types()
+, msg_manager()
 , client_eventq(nullptr)
 , stats(new ClientStatsImpl())
 , timeouts(0)
@@ -160,9 +164,8 @@ bool ClientGameState::onRecvPacket(Packet& p, PacketFlags f){
 		}
 	}
 	
-	snapshot.reset();
-	if(!snapshot.readFromPacket(p)) return false;
-	snapshot.applyUpdate(entities, entity_types, *client_eventq);
+	if(!snapshot.readFromPacket(p, snap_func)) return false;	
+	if(!msg_manager.readFromPacket(p, server_ms)) return false;
 
 	got_packet = true;
 	return true;
@@ -191,11 +194,68 @@ StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
 	static_cast<ClientStatsImpl*>(stats.get())->addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
 
 	buffer.reset().write16(server_ms_prev);
-	TVarint<uint16_t>(now_ms - client_ms).encode(buffer);
+	
+	uint16_t diff_ms = now_ms - client_ms;
+	
+	TVarint<uint16_t>(diff_ms).encode(buffer);
 	if(input) input->writeToPacket(buffer);
+	msg_manager.writeToPacket(buffer, server_ms_prev + diff_ms);
+
 	out.sendPacket(buffer);
 
 	return STATE_CONTINUE;
+}
+
+Entity* ClientGameState::SnapFuncImpl(ClientSnapshot::Action a, uint16_t eid, uint16_t etype){
+	Entity* ret = nullptr;
+	
+	switch(a){
+		case ClientSnapshot::Action::Get: {
+			if(entities.size() > eid){
+				ret = entities[eid];
+			}
+			break;
+		}
+		case ClientSnapshot::Action::Create: {
+			auto i = entity_types.find(etype);
+			if(i != entity_types.end()){
+				Entity* e = i->second->clone();
+				e->setID(eid);
+			
+				if(entities.size() <= eid){
+					entities.resize(eid+1);
+				}
+			
+				ret = entities[eid] = e;
+			
+				e->onCreate(*client);
+				client_eventq->pushEvent(EntityEvent{ ENTITY_CREATED, eid, etype, e });
+			}
+			break;
+		}
+		case ClientSnapshot::Action::Destroy: {
+			if(entities.size() > eid){
+				Entity*& e = entities[eid];
+				if(e){
+					e->onDestroy(*client);
+					client_eventq->pushEvent(EntityEvent{ ENTITY_DESTROYED, eid, e->getType(), e });
+					delete e;
+					e = nullptr;
+				}
+			}
+			break;
+		}
+		case ClientSnapshot::Action::Update: {
+			if(entities.size() > eid){
+				Entity*& e = entities[eid];
+				if(e) e->onUpdate(*client);
+				client_eventq->pushEvent(EntityEvent{ ENTITY_UPDATED, eid, e->getType(), e });
+			}
+			break;
+		}
+	}
+	
+	return ret;
 }
 
 void ClientGameState::registerEntity(Entity* e){
@@ -204,11 +264,16 @@ void ClientGameState::registerEntity(Entity* e){
 }
 
 void ClientGameState::registerMessage(const MessageBase& m){
-	messages.insert(make_pair(m.getID(), m.clone()));
+	msg_manager.addHandler(m);
 }
 
 void ClientGameState::registerMessage(MessageBase&& m){
-	messages.insert(make_pair(m.getID(), m.move_clone()));
+	msg_manager.addHandler(move(m));
+}
+
+void ClientGameState::sendMessage(const MessageBase& m){
+	uint16_t diff_ms = os::milliseconds() - client_ms;
+	msg_manager.addMessage(m, server_ms_prev + diff_ms);
 }
 
 float ClientGameState::getInterpTimer() const {

@@ -13,7 +13,7 @@
 
 namespace nrg {
 
-class NRG_LIB Client {
+class Client {
 public:
 	Client(const char* game_name, uint32_t game_version, InputBase& input);
 	Client(const char* game_name, uint32_t game_version);
@@ -23,26 +23,30 @@ public:
 	const NetAddress& getAddress() const;
 
 	void registerEntity(Entity* e);
-	
+
 	template<class M, class F>
-	void addMessageHandler(const F& f){
-		game_state.registerMessage(M(f));
+	void addMessageHandler(F&& f){
+		game_state.registerMessage(M(std::forward<F>(f)));
 	}
+
 	void sendMessage(const MessageBase& m);
-	
+
 	bool update();
 	bool pollEvent(Event& e);
 	const ClientStats& getStats() const;
-	
+
 	void startRecordingReplay(const char* filename);
 	void stopRecordingReplay();
-	
+
 	InputBase* getInput(){ return input; }
 	EventQueue& getEventQueue(){ return eventq; }
 	UDPSocket& getSock(){ return sock; }
-	
-	virtual ~Client();
-protected:
+
+	void setUserPointer(void* p){ user_pointer = p; }
+	void* getUserPointer() const { return user_pointer; }
+
+	~Client();
+private:
 	UDPSocket sock;
 	InputBase* input;
 	Packet buffer;
@@ -52,6 +56,7 @@ protected:
 	StateManager state_manager;
 	ClientHandshakeState handshake;
 	ClientGameState game_state;
+	void* user_pointer;
 	char dc_reason[NRG_MAX_ERRORMSG_LEN];
 };
 

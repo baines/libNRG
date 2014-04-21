@@ -9,25 +9,25 @@ namespace nrg {
 class EntityManager;
 class Client;
 
-class NRG_LIB Entity : public FieldContainer {
+class Entity : public FieldContainer {
 public:
-	Entity();
-	virtual Entity* clone() = 0;
-	virtual uint16_t getType() const = 0;
+	 Entity();
+	 virtual Entity* clone() = 0;
+	 virtual uint16_t getType() const = 0;
 	
-	virtual void onCreate(Client& c){}
-	virtual void onUpdate(Client& c){}
-	virtual void onDelete(Client& c){}
+	 virtual void onCreate(Client& c){}
+ 	 virtual void onDestroy(Client& c){}
+	 virtual void onUpdate(Client& c){}
 	
 	void markUpdated(bool updated);
 	float getInterpTimer() const;
 	
-	uint16_t getID() const { return nrg_id; }
+	 uint16_t getID() const { return nrg_id; }
 	void setID(int id){ nrg_id = id; }
 	
 	EntityManager* getManager() const { return manager; }
 	void setManager(EntityManager* m){ manager = m; }
-	virtual ~Entity();
+	 virtual ~Entity();
 private:
 	int nrg_id;
 	bool nrg_updated;

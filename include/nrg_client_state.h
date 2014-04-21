@@ -5,12 +5,14 @@
 #include "nrg_replay.h"
 #include "nrg_snapshot.h"
 #include "nrg_message.h"
+#include "nrg_message_manager.h"
 #include <map>
 #include <vector>
+#include <functional>
 
 namespace nrg {
 
-class NRG_LIB ClientHandshakeState : public State {
+class ClientHandshakeState : public State {
 public:
 	ClientHandshakeState();
 	bool init(Client*, Server*, Player*){ return true; }
@@ -27,7 +29,7 @@ private:
 class Entity;
 class InputBase;
 
-class NRG_LIB ClientGameState : public State, public EntityManager {
+class ClientGameState : public State, public EntityManager {
 public:
 	ClientGameState();
 	bool init(Client*, Server*, Player*);
@@ -41,15 +43,19 @@ public:
 	void registerMessage(const MessageBase& m);
 	void registerMessage(MessageBase&& m);
 	
+	void sendMessage(const MessageBase& m);
+	
 	float getInterpTimer() const;
 	const ClientStats& getClientStats() const;
 
 	void startRecordingReplay(const char* filename);
 	void stopRecordingReplay();
 private:
+	std::function<Entity*(ClientSnapshot::Action, uint16_t, uint16_t)> snap_func;
+	Entity* SnapFuncImpl(ClientSnapshot::Action, uint16_t, uint16_t);
 	std::vector<Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
-	std::map<uint16_t, MessageBase*> messages;
+	MessageManager msg_manager;
 	EventQueue* client_eventq;
 	std::unique_ptr<ClientStats> stats;
 	int timeouts;

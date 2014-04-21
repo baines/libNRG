@@ -22,7 +22,7 @@ class Client;
 class Server;
 class Player;
 
-struct NRG_LIB State {
+struct State {
 	virtual bool init(Client* c, Server* s, Player* p) = 0;
 	virtual bool onRecvPacket(Packet& p, PacketFlags f) = 0;
 	virtual bool needsUpdate() const = 0;

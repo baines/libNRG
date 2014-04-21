@@ -3,6 +3,7 @@
 #include "nrg_server.h"
 #include "nrg_server_state.h"
 #include "nrg_state_manager.h"
+#include "nrg_message_manager.h"
 #include "nrg_connection.h"
 
 namespace nrg {
@@ -13,6 +14,10 @@ public:
 	bool addPacket(Packet& p);
 	bool update();
 	void kick(const char* reason);
+	const Server* getServer() const { return &server; }
+	void registerMessageHandler(MessageBase&& m);
+	void registerMessageHandler(const MessageBase& m);
+	void sendMessage(const MessageBase& m);
 	bool isConnected() const;
 	int getPing() const;
 	uint16_t getID() const { return id; }

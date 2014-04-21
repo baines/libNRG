@@ -9,7 +9,7 @@
 
 namespace nrg {
 
-struct NRG_LIB InputBase : public FieldContainer {
+struct InputBase : protected FieldContainer {
 	void markUpdated(bool b);
 	bool readFromPacket(Packet& p);
 	void writeToPacket(Packet& p) const;
@@ -19,7 +19,7 @@ struct NRG_LIB InputBase : public FieldContainer {
 };
 
 template<class CRTP>
-struct NRG_LIB Input : public InputBase {
+struct Input : public InputBase {
 	void addPredictionFunc(std::function<void(CRTP&)>&& func){
 		predict_funcs.push_back(std::move(func));
 	}

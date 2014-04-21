@@ -4,12 +4,13 @@
 #include "nrg_entity.h"
 #include "nrg_event.h"
 #include "nrg_ringbuffer.h"
+#include <functional>
 #include <vector>
 #include <map>
 
 namespace nrg {
 
-class NRG_LIB Snapshot {
+class Snapshot {
 public:
 	Snapshot();
 	Snapshot(uint16_t id);
@@ -19,8 +20,8 @@ public:
 	void removeEntityById(uint16_t id);
 	void writeToPacket(Packet& p) const;
 	void reset();
-protected:
-	struct NRG_LIB EntityData {
+private:
+	struct  EntityData {
 		uint16_t eid, etype;
 		std::vector<size_t> field_sizes;
 		Packet field_data;
@@ -32,7 +33,7 @@ protected:
 	Packet buffer;
 };
 
-struct NRG_LIB DeltaSnapshot {
+struct DeltaSnapshot {
 	DeltaSnapshot() : DeltaSnapshot(0){}
 	DeltaSnapshot(int i);
 	uint16_t getID() const { return id; }
@@ -43,7 +44,7 @@ struct NRG_LIB DeltaSnapshot {
 	void writeToPacket(Packet& p) const;
 	void reset();
 private:
-	struct FieldInfo {
+	struct  FieldInfo {
 		uint16_t entity;
 		uint16_t number;
 		size_t size;
@@ -54,7 +55,7 @@ private:
 		bool operator<(uint16_t v) const { return entity < v; }
 		bool operator==(uint16_t v) const { return entity == v; }
 	};
-	struct EntityInfo {
+	struct  EntityInfo {
 		size_t num_fields;
 		uint16_t id;
 		uint16_t type;
@@ -71,16 +72,11 @@ private:
 	Packet field_data, buffer;
 };
 
-class NRG_LIB ClientSnapshot {
-	typedef std::vector<Entity*> EVec;
-	typedef std::map<uint16_t, Entity*> EMap;
-public:
-	ClientSnapshot() : data() {}
-	bool readFromPacket(Packet& p);
-	void applyUpdate(EVec& entities, const EMap& entity_types, EventQueue& eq);
-	void reset();
-private:
-	Packet data;
+struct ClientSnapshot {
+	enum class Action {	Get, Create, Destroy, Update };
+	typedef std::function<Entity*(Action, uint16_t eid, uint16_t etype)> CSnapFunc;
+
+	bool readFromPacket(Packet& p, const CSnapFunc& f);
 };
 
 typedef RingBuffer<DeltaSnapshot, NRG_NUM_PAST_SNAPSHOTS> DeltaSnapshotBuffer;

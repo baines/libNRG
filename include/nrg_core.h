@@ -9,27 +9,17 @@
 // adapted from http://gcc.gnu.org/wiki/Visibility
 #if defined _WIN32 || defined __CYGWIN__
 	#ifdef BUILDING_NRG
-		#define NRG_LIB __declspec(dllexport)
+		#define NRG_PUBLIC __declspec(dllexport)
 	#else
-		#define NRG_LIB __declspec(dllimport)
+		#define NRG_PUBLIC __declspec(dllimport)
 	#endif
-#elif __GNUC__ >= 4 && defined BUILDING_NRG
-	#define NRG_LIB __attribute__ ((visibility ("default")))
+	#define NRG_PRIVATE
+#elif __GNUC__ >= 4
+	#define NRG_PUBLIC  __attribute__ ((visibility ("default")))
+	#define NRG_PRIVATE __attribute__ ((visibility ("hidden")))
 #else
-	#define NRG_LIB
+	#define NRG_PUBLIC
+	#define NRG_PRIVATE
 #endif
-
-namespace nrg {
-namespace status {
-	enum status_t {
-		OK    =  0,
-		ERROR = -1,
-		NYI   = -2
-	};
-}
-
-typedef enum nrg::status::status_t status_t;
-
-}
 
 #endif

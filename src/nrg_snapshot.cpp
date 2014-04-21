@@ -74,15 +74,19 @@ void Snapshot::reset(){
 }
 
 void Snapshot::writeToPacket(Packet& p) const {
-	p.write8(SNAPFLAG_FULL_SECTION);
-	UVarint(edata.size()).encode(p);
+	if(edata.size()){
+		p.write8(SNAPFLAG_FULL_SECTION);
+		UVarint(edata.size()).encode(p);
 
-	for(EDat_cit i = edata.begin(), j = edata.end(); i!=j; ++i){
-		const EntityData& ed = i->second;
-		UVarint(ed.eid).encode(p);
-		UVarint(ed.etype).encode(p);
+		for(EDat_cit i = edata.begin(), j = edata.end(); i!=j; ++i){
+			const EntityData& ed = i->second;
+			UVarint(ed.eid).encode(p);
+			UVarint(ed.etype).encode(p);
 			
-		p.writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
+			p.writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
+		}
+	} else {
+		p.write8(0);
 	}
 }
 
@@ -94,15 +98,7 @@ size_t Snapshot::EntityData::getTotalBytes() const {
 	return field_data.size() + UVarint(eid).requiredBytes() + UVarint(etype).requiredBytes();
 }
 
-//FIXME: this function should probably be merged with applyUpdate
-bool ClientSnapshot::readFromPacket(Packet& p){
-	data.seek(0, SEEK_SET).writeArray(p.getPointer(), p.remaining());
-	return true;
-}
-
-void ClientSnapshot::applyUpdate(vector<Entity*>& entities, 
-const map<uint16_t, Entity*>& entity_types, EventQueue& eq){
-	data.seek(0, SEEK_SET);
+bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 	UVarint ecount(0);
 	uint8_t section_bits = 0;
 	data.read8(section_bits);
@@ -111,12 +107,7 @@ const map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
 			uint16_t eid = UVarint().quickDecode(data);
-			if(entities.size() > eid && entities[eid]){
-				Entity*& e = entities[eid];
-				eq.pushEvent(EntityEvent{ ENTITY_DESTROYED, eid, e->getType(), e });
-				delete e;
-				e = nullptr;
-			}
+			entity_fn(Action::Destroy, eid, 0);
 		}
 	}
 	
@@ -126,31 +117,23 @@ const map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 			uint16_t eid = UVarint().quickDecode(data);
 			uint16_t etype = UVarint().quickDecode(data);
 
-			entities.resize(max<size_t>(entities.size(), eid+1), nullptr); // XXX vulnerable to memory DoS
-			Entity*& e = entities[eid];
+			Entity* e = entity_fn(Action::Get, eid, 0);
 		
 			if(e && e->getType() != etype){
-				eq.pushEvent(EntityEvent{ ENTITY_DESTROYED, eid, e->getType(), e });
-				delete e;
-				e = nullptr;
+				entity_fn(Action::Destroy, eid, 0);
 			}
 		
 			if(!e){
-				auto it = entity_types.find(etype);
-				assert(it != entity_types.end());
-		
-				e = it->second->clone();
-				e->setID(eid);
-				eq.pushEvent(EntityEvent{ ENTITY_CREATED, eid, etype, e });
+				e = entity_fn(Action::Create, eid, etype);
 			}
 		
 			for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
 				f->readFromPacket(data);
 				f->setUpdated(true);
 			}
-		
-			eq.pushEvent(EntityEvent{ ENTITY_UPDATED, eid, e->getType(), e });
+			
 			e->markUpdated(true);
+			entity_fn(Action::Update, eid, etype);
 		}
 	}
 	
@@ -158,8 +141,10 @@ const map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
 			uint16_t eid = UVarint().quickDecode(data);
-			assert(entities.size() > eid && entities[eid]);
-			Entity*& e = entities[eid];
+			Entity* e = entity_fn(Action::Get, eid, 0);
+			
+			if(!e) return false;
+			
 			FieldBase* f = e->getFirstField();
 			off_t read_pos = data.tell() + 1+(e->getNumFields()-1)/8;
 
@@ -176,15 +161,11 @@ const map<uint16_t, Entity*>& entity_types, EventQueue& eq){
 		
 		    data.seek(read_pos, SEEK_SET);
 		
-			eq.pushEvent(EntityEvent{ ENTITY_UPDATED, eid, e->getType(), e });
 			e->markUpdated(true);
+			entity_fn(Action::Update, eid, e->getType());
 		}
 	}
 	
-	data.seek(0, SEEK_SET);
-}
-
-void ClientSnapshot::reset(){
-	data.reset();
+	return true;
 }
 

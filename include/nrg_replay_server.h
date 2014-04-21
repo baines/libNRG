@@ -7,7 +7,7 @@
 
 namespace nrg {
 
-class NRG_LIB ReplayServer {
+class  ReplayServer {
 public:
 	ReplayServer();
 	bool openReplay(const char* filename);

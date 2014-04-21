@@ -1,9 +1,14 @@
-#ifndef EXAMPLE_ENTITY_H
-#define EXAMPLE_ENTITY_H
+#ifndef ENTITIES_H
+#define ENTITIES_H
+#include <algorithm>
 #include "nrg.h"
 #include <cmath>
 #include "constants.h"
 namespace c = constants;
+
+#ifdef CLIENTSIDE
+#include "client.h"
+#endif
 
 enum MyEntities {
 	PLAYER,
@@ -33,7 +38,11 @@ public:
 	void incScore(){
 		score = score.get() + 1;
 	}
-	uint16_t getScore(){ return score.get(); }
+#ifdef CLIENTSIDE
+	void onCreate(nrg::Client& c){ clientAddEntity(this); }
+	void onUpdate(nrg::Client& c){ clientSetScore((getX() < c::screen_w / 2), score.get()); }
+	void onDestroy(nrg::Client& c){ clientDelEntity(getID()); }
+#endif
 private:
 	nrg::Field<uint16_t> score;
 };
@@ -53,6 +62,10 @@ public:
 		xpos = xpos.get() + xv * speed;
 		ypos = ypos.get() + yv * speed;
 	}
+#ifdef CLIENTSIDE
+	void onCreate(nrg::Client& c){ clientAddEntity(this); }
+	void onDestroy(nrg::Client& c){ clientDelEntity(getID()); }
+#endif
 	float xv, yv, speed;
 };
 

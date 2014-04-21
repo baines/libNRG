@@ -66,7 +66,7 @@ PacketWritable& Packet::write64(const uint64_t& v){
 	return *this;
 }
 
-PacketWritable& Packet::writeArray(const uint8_t* v, size_t size){
+PacketWritable& Packet::writeArray(const void* v, size_t size){
 	while(data_size - (pointer - data) < size){
 		resize();
 	}

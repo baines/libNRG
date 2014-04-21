@@ -1,8 +1,10 @@
 #ifndef NRG_CODEC_H
 #define NRG_CODEC_H
 #include "nrg_core.h"
+#include "nrg_varint.h"
 #include <string>
 #include <type_traits>
+#include <iostream>
 
 namespace nrg {
 
@@ -79,21 +81,23 @@ struct Codec<char[len]> {
 template<>
 struct Codec<std::string> {
 	size_t encode(Packet& p, const std::string& str){
-		p.write<uint32_t>(str.length());
-		p.writeArray(reinterpret_cast<const uint8_t*>(str.c_str()), str.length());
-		return sizeof(uint32_t) + str.length();
+		size_t ret = UVarint(str.length()).encode(p);
+		p.writeArray(str.c_str(), str.length());
+		return ret + str.length();
 	}
 	size_t decode(Packet& p, std::string& str){
-		uint32_t len = 0;
-		if(p.remaining() >= sizeof(uint32_t)){
-			p.read<uint32_t>(len);
-			if(p.remaining() < len) return false;
-			str = std::string(reinterpret_cast<const char*>(p.getPointer()), len);
-			p.seek(len, SEEK_CUR);
-			return sizeof(uint32_t) + len;
-		} else {
-			return 0;
-		}
+		if(!p.remaining()) return 0;
+				
+		UVarint v;
+		size_t read_bytes = 0;
+		
+		if((read_bytes = v.decode(p)) == 0) return 0;
+		if(p.remaining() < v.get()) return 0;
+		
+		str = std::string(reinterpret_cast<const char*>(p.getPointer()), v.get());
+		
+		p.seek(v.get(), SEEK_CUR);
+		return read_bytes + v.get();
 	}
 };
 

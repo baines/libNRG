@@ -8,8 +8,12 @@ objects := $(patsubst %.cpp,$(builddir)/%.o,$(sources))
 includes := -I../include
 
 CXX := g++-4.8
-CXXFLAGS := -pedantic -Wsign-promo -std=c++11 -g -Wall -fPIC -DBUILDING_NRG -fvisibility=hidden -ffast-math \
--fno-exceptions -U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing
+
+CXXFLAGS := -pedantic -Wsign-promo -std=c++11 -g -Wall -fPIC -DBUILDING_NRG \
+-ffast-math -fvisibility-inlines-hidden -fno-exceptions \
+-U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing 
+#-Wl,--version-script=../nrg_symbols.map
+
 LDFLAGS := -lrt -lz -shared -Wl,-soname,$(libname_shared)
 
 all: ../$(libname_shared) ../$(libname_static)

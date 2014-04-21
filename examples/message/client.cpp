@@ -1,22 +1,47 @@
 #include "nrg.h"
+#include <string>
 #include <iostream>
+#include <signal.h>
+
+using namespace nrg;
+using namespace std;
+typedef Message<0, string> TxtMsg;
+
+bool running = true;
+void sig(int){
+	running = false;
+}
 
 int main(void){
-
-	using namespace nrg;
+	signal(SIGINT, &sig);
 	
-	Client client("NRG Message example", 1);
+	Client client("NRG Message Example", 1);
 	
-	typedef Message<0, int, float, uint8_t> TestMsg;
-	
-	client.addMessageHandler<TestMsg>([](const TestMsg& m){
-		std::cout << "Got Test message: " << std::endl
-		          << m.get<0>() << std::endl
-		          << m.get<1>() << std::endl
-		          << m.get<2>() << std::endl;
+	client.addMessageHandler<TxtMsg>([](const TxtMsg& m, uint32_t ts){
+		cout << "[From Server]: " << m.get<0>() << endl;
 	});
 	
 	client.connect(NetAddress("127.0.0.1", "9000"));
+	
+	while(running && client.isConnected()){
+		client.update();
+		
+		struct timeval tv;
+		tv.tv_sec = 0;
+		tv.tv_usec = 500000;
+		
+		int fd = fileno(stdin);
+		
+		fd_set fds;
+		FD_ZERO(&fds);
+		FD_SET(fd, &fds);
+		
+		if(select(fd+1, &fds, nullptr, nullptr, &tv) == 1){
+			string input;
+			getline(cin, input);
+			client.sendMessage(TxtMsg(input));
+		}
+	}
 
 	return 0;
 }

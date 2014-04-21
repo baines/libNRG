@@ -4,20 +4,24 @@
 #include "input.h"
 #include "sprite.h"
 #include "constants.h"
+#include "client.h"
 namespace c = constants;
 
-std::vector<Sprite> sprites;
 bool running = true;
-typedef std::vector<Sprite>::iterator s_it;
 MyInput input;
+std::vector<Sprite> sprites;
 int score1 = 0, score2 = 0;
 sf::String score_str;
 
-bool findSprite(nrg::Entity* e, s_it& i){
-	return (i = std::find(sprites.begin(), sprites.end(), e)) != sprites.end();
+void clientAddEntity(PlayerEntity* e){ sprites.push_back(Sprite(e)); }
+void clientAddEntity(BallEntity* e){ sprites.push_back(Sprite(e)); }
+void clientDelEntity(uint16_t id){
+	sprites.erase(std::remove(sprites.begin(), sprites.end(), id), sprites.end());
 }
+void clientSetScore(bool left_player, int score){
+	int& i = (left_player) ? score1 : score2;
+	i = score;
 
-void updateScore(){
 	char buf[32];
 	snprintf(buf, sizeof(buf), "%3d  -  %-3d", score1, score2);
 	score_str.SetText(buf);
@@ -26,35 +30,11 @@ void updateScore(){
 
 void checkNRGEvents(nrg::Client& c){
 	nrg::Event e;
-	s_it i;
 
 	while(c.pollEvent(e)){
-		switch(e.type){
-		case nrg::ENTITY_CREATED:
-			if(e.entity.etype == PLAYER){
-				sprites.push_back(Sprite(static_cast<PlayerEntity*>(e.entity.pointer)));
-			} else if(e.entity.etype == BALL){
-				sprites.push_back(Sprite(static_cast<BallEntity*>(e.entity.pointer)));
-			}
-			break;
-		case nrg::ENTITY_DESTROYED:
-			if(findSprite(e.entity.pointer, i)) sprites.erase(i);
-			break;
-		case nrg::ENTITY_UPDATED:
-			if(e.entity.etype == PLAYER){
-				PlayerEntity* p = static_cast<PlayerEntity*>(e.entity.pointer);
-				if(p->getX() < c::screen_w / 2){
-					score1 = p->getScore();
-				} else {	
-					score2 = p->getScore();
-				}
-				updateScore();
-			}
-			break;
-		case nrg::DISCONNECTED:
+		if(e.type == nrg::DISCONNECTED){
 			printf("Disconnected. (%s)\n", e.dc.reason);
 			running = false;
-			break;
 		}
 	}
 }
@@ -121,8 +101,8 @@ int main(int argc, char** argv){
 		checkSFMLEvents(window);
 		
 		window.Clear();
-		for(s_it i = sprites.begin(), j = sprites.end(); i!=j; ++i){
-			i->draw(window);
+		for(auto& s : sprites){
+			s.draw(window);
 		}
 		window.Draw(lsprite);
 		window.Draw(score_str);

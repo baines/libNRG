@@ -24,8 +24,7 @@ enum PacketFlags : uint8_t {
 	PKTFLAG_STATE_CHANGE_ACK = 0x20,
 };
 
-struct NRG_LIB ConnectionCommon {
-public:
+struct  ConnectionCommon {
 	ConnectionCommon(const NetAddress& remote_addr);
 	size_t getHeaderSize() const { return 4; }
 	void setTransform(PacketTransformation* transform);
@@ -34,15 +33,15 @@ public:
 	PacketTransformation* transform;
 };
 
-class NRG_LIB ConnectionIn {
+class ConnectionIn {
 public:
 	ConnectionIn(const NetAddress& remote_addr);
 	bool addPacket(Packet& p);
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
 	PacketFlags getLatestPacket(Packet& p);
-	void setTransform(PacketTransformation* transform);
-protected:
+	 void setTransform(PacketTransformation* transform);
+private:
 	ConnectionCommon cc;
 	bool new_packet, full_packet;
 	std::bitset<NRG_CONN_PACKET_HISTORY> packet_history;
@@ -50,20 +49,20 @@ protected:
 	Packet latest, buffer;
 };
 
-class NRG_LIB ConnectionOut {
+class ConnectionOut {
 public:
 	ConnectionOut(const NetAddress& remote_addr, const Socket& sock_out);
 	void sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
 	void sendDisconnect(Packet& extra_data);
-	void setTransform(PacketTransformation* transform);
+	 void setTransform(PacketTransformation* transform);
 	bool resendLastPacket(void);
-protected:
+private:
 	ConnectionCommon cc;
 	const Socket& sock;
 	Packet buffer, buffer2;
 };
 
-struct NRG_LIB Connection {
+struct Connection {
 	Connection(const NetAddress& remote_addr, const Socket& sock_out)
 		: in(remote_addr), out(remote_addr, sock_out){}
 	ConnectionIn in;

@@ -9,7 +9,7 @@ namespace detail {
 	static const size_t MAX_BYTE_SHIFTS = 7;
 }
 
-class NRG_LIB BitWriter {
+class  BitWriter {
 public:
 	BitWriter(Packet& p) : bits(0), count(0), p(p){}
 	void write(bool b){
@@ -44,7 +44,7 @@ private:
 	Packet& p;
 };
 
-class NRG_LIB BitReader {
+class  BitReader {
 public:
 	BitReader(Packet& p) : bits(0), count(0), p(p){}
 	bool read(void){

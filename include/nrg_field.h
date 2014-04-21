@@ -9,9 +9,9 @@
 
 namespace nrg {
 
-class NRG_LIB FieldContainer;
+class FieldContainer;
 
-class NRG_LIB FieldBase {
+class  FieldBase {
 public:
 	FieldBase(FieldContainer* container);
 	FieldBase(const FieldBase& copy);
@@ -31,7 +31,7 @@ protected:
 	bool updated;
 };
 
-struct NRG_LIB FieldContainer {
+struct  FieldContainer {
 	FieldContainer();
 	FieldContainer(const FieldContainer& copy);
 	FieldContainer& operator=(const FieldContainer& copy);
@@ -46,7 +46,7 @@ private:
 };
 
 template<typename T, class Cdc = nrg::Codec<T> >
-class Field : public FieldBase {
+class Field : private FieldBase {
 public:
 	Field(FieldContainer* c) : FieldBase(c), data(), data_next(){}
 	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t), data_next(t){}
@@ -92,7 +92,7 @@ private:
 };
 
 template<typename T, size_t N>
-class Field<T[N]> : public FieldBase {
+class Field<T[N]> : private FieldBase {
 public:
 	Field(FieldContainer* c) : FieldBase(c), data(){}
 	Field(FieldContainer* c, const T (&t)[N]) : FieldBase(c), data(t){}

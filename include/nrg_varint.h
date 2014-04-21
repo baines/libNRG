@@ -30,7 +30,8 @@ typename enable_if<is_unsigned<T>::value, size_t>::type varint_decode(Packet& p,
 	size_t i = 0;
 	uint8_t byte = 0x80;
 	
-	while(i < varint_bytes<T>::value && p.remaining() && (byte & 0x80)){
+	while(i < varint_bytes<T>::value && (byte & 0x80)){
+		if(!p.remaining()) return 0;
 		p.read8(byte);
 		ans |= ((byte & 0x7F) << (i++ * 7));
 	}
@@ -63,7 +64,10 @@ struct TVarint<T, typename std::enable_if<std::is_unsigned<T>::value>::type> {
 	TVarint(const T& t) : data(t){}
 	
 	size_t requiredBytes(void) const {
-		return (data == 0) ? 1 : (log2(data)/7)+1;
+		size_t ret = 1;
+		T tmp = data;
+		while(tmp >>= 7) ++ret;
+		return ret;
 	}
 
 	size_t encode(Packet& p) const {
@@ -93,8 +97,10 @@ struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 	TVarint(const T& t) : data(t){}
 	
 	size_t requiredBytes(void) const {
-		typename std::make_unsigned<T>::type udata = detail::varint_zigzag(data);
-		return !udata ? 1 : (log2(udata)/7)+1;
+		size_t ret = 1;
+		typename std::make_unsigned<T>::type tmp = detail::varint_zigzag(data);
+		while(tmp >>= 7) ++ret;
+		return ret;
 	}
 
 	size_t encode(Packet& p) const {

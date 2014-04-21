@@ -4,7 +4,7 @@
 
 namespace nrg {
 
-class NRG_LIB NetAddress {
+class NetAddress {
 public:
 	NetAddress();
 	NetAddress(const char* name, const char* port);
@@ -24,7 +24,7 @@ public:
 	friend bool operator==(const NetAddress& a, const NetAddress& b);
 	friend bool operator!=(const NetAddress& a, const NetAddress& b);
 	friend bool operator<(const NetAddress& a, const NetAddress& b);
-protected:
+private:
 	char text[INET6_ADDRSTRLEN];
 	struct sockaddr_storage addr;
 	socklen_t addr_len;

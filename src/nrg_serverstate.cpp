@@ -58,6 +58,7 @@ ServerPlayerGameState::ServerPlayerGameState()
 , ack_time(0)
 , c_time(0)
 , buffer()
+, msg_manager()
 , server(nullptr)
 , player(nullptr) {
 
@@ -92,6 +93,8 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 		if(!i->readFromPacket(p)) return false;
 		i->onUpdate(*player);
 	}
+	
+	msg_manager.readFromPacket(p, os::milliseconds());
 
 	return true;
 }
@@ -111,22 +114,32 @@ StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
 
 	if(no_ack){
 		const Snapshot& master = server->getSnapshot();
+		
 		buffer.reset().write16(master.getID()).write8(seq++);
 		UVarint(ping).encode(buffer);
 		master.writeToPacket(buffer);
+		msg_manager.writeToPacket(buffer, os::milliseconds());
+		
 		out.sendPacket(buffer);
 	} else {
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
+		
 		auto ss_r = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
 			return ack_time == s.getID();
 		});
+		
 		if(ss_r != snaps.rend()){
-			auto ss = ss_r.base();
 			snapshot.reset();
-			while(ss != snaps.end()){ snapshot.mergeWithNext(*ss); ++ss; }
+			
+			for(auto ss = ss_r.base(); ss != snaps.end(); ++ss){
+				snapshot.mergeWithNext(*ss);
+			}
+			
 			buffer.reset().write16(snapshot.getID()).write8(seq++);
 			UVarint(ping).encode(buffer);
 			snapshot.writeToPacket(buffer);
+			msg_manager.writeToPacket(buffer, os::milliseconds());
+			
 			out.sendPacket(buffer);
 		} else {
 			return STATE_FAILURE;
@@ -134,3 +147,16 @@ StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
 	}
 	return STATE_CONTINUE;
 }
+
+void ServerPlayerGameState::registerMessageHandler(MessageBase&& m){
+	msg_manager.addHandler(move(m));
+}
+
+void ServerPlayerGameState::registerMessageHandler(const MessageBase& m){
+	msg_manager.addHandler(m);
+}
+
+void ServerPlayerGameState::sendMessage(const MessageBase& m){
+	msg_manager.addMessage(m, os::milliseconds());
+}
+

@@ -13,6 +13,7 @@ Client::Client(const char* game_name, uint32_t game_version, InputBase& input)
 , state_manager(this)
 , handshake()
 , game_state()
+, user_pointer(nullptr)
 , dc_reason() {
 	state_manager.addState(game_state);
 	state_manager.addState(handshake);
@@ -28,6 +29,7 @@ Client::Client(const char* game_name, uint32_t game_version)
 , state_manager(this)
 , handshake()
 , game_state()
+, user_pointer(nullptr)
 , dc_reason() {
 	state_manager.addState(game_state);
 	state_manager.addState(handshake);
@@ -46,6 +48,8 @@ bool Client::connect(const NetAddress& addr){
 }
 
 bool Client::update(){
+	if(!isConnected()) return false;
+	
 	eventq.clear();
 
 	while(sock.dataPending()){
@@ -61,8 +65,10 @@ bool Client::update(){
 				
 				DisconnectEvent de = { DISCONNECTED, dc_reason };
 				eventq.pushEvent(de);
+				
+				sock.disconnect();
 
-				return true;
+				return false;
 			} else {
 				if(!state_manager.onRecvPacket(buffer, f)){
 					puts("RecvPacket failed!");
@@ -77,8 +83,16 @@ bool Client::update(){
 	return b;
 }
 
+bool Client::isConnected() const {
+	return sock.isConnected();
+}
+
 void Client::registerEntity(Entity* e){
 	game_state.registerEntity(e);
+}
+
+void Client::sendMessage(const MessageBase& m){
+	game_state.sendMessage(m);
 }
 
 bool Client::pollEvent(Event& e){

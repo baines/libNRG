@@ -18,14 +18,14 @@ typedef enum {
 	PLAYER_INPUT,
 } EventType;
 
-struct NRG_LIB DisconnectEvent {
+struct  DisconnectEvent {
 	uint8_t type; /* DISCONNECTED */
 	const char* reason;
 };
 
 class Entity;
 
-struct NRG_LIB EntityEvent {
+struct  EntityEvent {
 	uint8_t type; /* ENTITY_{UPDATED, CREATED, DESTROYED} */
 	uint16_t eid;
 	uint16_t etype;
@@ -34,22 +34,22 @@ struct NRG_LIB EntityEvent {
 
 class Player;
 
-struct NRG_LIB PlayerEvent {
+struct  PlayerEvent {
 	uint8_t type; /* PLAYER_{JOIN, LEAVE} */
 	uint16_t id;
 	Player* player;
 };
 
-union NRG_LIB Event {
+union  Event {
 	uint8_t type;
 	DisconnectEvent dc;
 	EntityEvent entity;
-	PlayerEvent join;
+	PlayerEvent player;
 	
 	Event() : type(0){}
 	Event(const DisconnectEvent& e) : dc(e){}
 	Event(const EntityEvent& e) : entity(e){}
-	Event(const PlayerEvent& e) : join(e){}
+	Event(const PlayerEvent& e) : player(e){}
 };
 
 class EventQueue {

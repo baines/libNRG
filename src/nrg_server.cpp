@@ -25,7 +25,10 @@ Server::Server(const char* game_name, uint32_t game_version, InputBase& input)
 , input(&input)
 , eventq()
 , clients()
+, global_msg_handlers()
+, current_player(nullptr)
 , timer(nrg::os::microseconds())
+, user_pointer(nullptr)
 , interval(NRG_DEFAULT_SERVER_INTERVAL_US){
 
 }
@@ -36,7 +39,10 @@ Server::Server(const char* game_name, uint32_t game_version)
 , input(nullptr)
 , eventq()
 , clients()
+, global_msg_handlers()
+, current_player(nullptr)
 , timer(nrg::os::microseconds())
+, user_pointer(nullptr)
 , interval(NRG_DEFAULT_SERVER_INTERVAL_US){
 
 }
@@ -49,11 +55,7 @@ bool Server::bind(const NetAddress& addr){
 }
 
 bool Server::isBound() {
-	return sock.getBoundAddress() != NULL;
-}
-
-size_t Server::playerCount() const {
-	return clients.size();
+	return sock.getBoundAddress() != nullptr;
 }
 
 static inline PlayerImpl* IMPL(nrg::Player* p){
@@ -77,13 +79,19 @@ bool Server::update(){
 			
 			uint16_t pid = player_ids.acquire();
 			auto res = clients.insert(make_pair(addr, nullptr));
-			res.first->second = new PlayerImpl(pid, *this, res.first->first);
-			
-			PlayerEvent e = { PLAYER_JOIN, pid, res.first->second };
-			eventq.pushEvent(e);
-			
 			it = res.first;
+			
+			it->second = new PlayerImpl(pid, *this, res.first->first);
+			
+			for(auto& m : global_msg_handlers){
+				it->second->registerMessageHandler(*m);
+			}
+			
+			PlayerEvent e = { PLAYER_JOIN, pid, it->second };
+			eventq.pushEvent(e);
 		}
+		
+		current_player = it->second;
 		
 		if(!IMPL(it->second)->addPacket(buffer)){
 			it->second->kick("Recieved invalid packet from client.");
@@ -104,7 +112,7 @@ bool Server::update(){
 		if(entities.size() > i){
 			Entity* e = entities[i];
 			
-			if(e != NULL){
+			if(e != nullptr){
 				master_snapshot.addEntity(e);
 				delta_ss.addEntity(e);
 				clearEntityUpdated(e);
@@ -132,6 +140,7 @@ bool Server::update(){
 	}
 
 	for(auto& c : clients){
+		current_player = c.second;
 		if(!IMPL(c.second)->update()){
 			c.second->kick("Client update failed.");
 		}
@@ -141,6 +150,18 @@ bool Server::update(){
 
 bool Server::pollEvent(Event& e){
 	return eventq.pollEvent(e);
+}
+
+size_t Server::playerCount() const {
+	return clients.size();
+}
+
+void Server::setTickRate(uint8_t rate){
+	interval = 1000000 / rate;
+}
+
+uint8_t Server::getTickRate() const {
+	return 1000000 / interval;
 }
 
 void Server::registerEntity(Entity& e){
@@ -166,6 +187,12 @@ void Server::markEntityUpdated(Entity& e){
 	if(find(updated_entities.begin(), updated_entities.end(), e.getID()) 
 	== updated_entities.end()){
 		updated_entities.push_back(e.getID());
+	}
+}
+
+void Server::broadcastMessage(const MessageBase& m){
+	for(auto& c : clients){
+		c.second->sendMessage(m);
 	}
 }
 

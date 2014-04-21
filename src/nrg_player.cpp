@@ -46,6 +46,18 @@ void PlayerImpl::kick(const char* reason){
 	connected = false;
 }
 
+void PlayerImpl::registerMessageHandler(MessageBase&& m){
+	game_state.registerMessageHandler(std::move(m));
+}
+
+void PlayerImpl::registerMessageHandler(const MessageBase& m){
+	game_state.registerMessageHandler(m);
+}
+
+void PlayerImpl::sendMessage(const MessageBase& m){
+	game_state.sendMessage(m);
+}
+
 bool PlayerImpl::isConnected() const {
 	return connected;
 }

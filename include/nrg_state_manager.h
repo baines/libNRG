@@ -9,7 +9,7 @@ namespace nrg {
 
 using std::vector;
 
-struct NRG_LIB TransitionState : public State {
+struct  TransitionState : public State {
 	void pre_init(State* old_s, State* new_s);
 	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
@@ -23,7 +23,7 @@ private:
 	Packet buffer;
 };
 
-class NRG_LIB StateManager {
+class  StateManager {
 public:
 	StateManager(Client* c, Server* s, Player* p);
 	StateManager(Server* s, Player* p);

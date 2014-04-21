@@ -2,16 +2,17 @@
 #define NRG_MESSAGE_H
 #include "nrg_core.h"
 #include "nrg_packet.h"
+#include "nrg_codec.h"
 #include <tuple>
 #include <functional>
 
 namespace nrg {
 
 struct MessageBase {
-	virtual int getID() const = 0;
+	virtual uint16_t getID() const = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
 	virtual size_t readFromPacket(Packet& p) = 0;
-	virtual void onRecieve() = 0;
+	virtual void onRecieve(uint32_t creation_ms) = 0;
 	virtual MessageBase* clone() const = 0;
 	virtual MessageBase* move_clone() = 0;
 	virtual ~MessageBase(){};
@@ -20,16 +21,19 @@ struct MessageBase {
 using std::enable_if;
 using std::tuple_element;
 
-template<int id, typename... Args>
+template<uint16_t id, typename... Args>
 class Message : public MessageBase {
 	static const size_t sz = sizeof...(Args)-1;
 	typedef std::tuple<Args...> MsgTuple;
 public:
 	Message(Args... args) : values(args...), on_recieve(){}
+	Message(Message&&) = default;
+	Message(const Message&) = default;
 	
-	Message(std::function<void(const Message&)>&& func)
+	template<class F>
+	Message(F&& func)
 	: values()
-	, on_recieve(std::forward<decltype(func)>(func)){}
+	, on_recieve(std::forward<F>(func)){}
 		
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_write(Packet& p) const {
@@ -53,12 +57,12 @@ public:
 		+ do_read<n+1>(p);
 	}
 		
-	int getID() const {
+	uint16_t getID() const {
 		return id;
 	}
 	
-	void onRecieve(){
-		if(on_recieve) on_recieve(*this);
+	void onRecieve(uint32_t creation_ms){
+		if(on_recieve) on_recieve(*this, creation_ms);
 	}
 	
 	MessageBase* clone() const {
@@ -89,7 +93,7 @@ public:
 	
 private:
 	MsgTuple values;
-	std::function<void(const Message&)> on_recieve;
+	std::function<void(const Message&, uint32_t)> on_recieve;
 };
 
 }

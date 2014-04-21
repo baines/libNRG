@@ -66,6 +66,14 @@ bool Socket::connect(const NetAddress& addr){
 	}
 }
 
+void Socket::disconnect(){
+	connected_addr = nullptr;
+}
+
+bool Socket::isConnected() const {
+	return bool(connected_addr);
+}
+
 ssize_t Socket::sendPacket(const Packet& p) const {
 	return ::send(fd, p.getBasePointer(), p.size(), 0);
 }

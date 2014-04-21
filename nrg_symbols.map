@@ -1,0 +1,58 @@
+{
+global:
+	extern "C++" {
+		nrg::Client::?Client*;
+		nrg::Client::Client*;
+		nrg::Client::connect*;
+		nrg::Client::getStats*;
+		nrg::Client::pollEvent*;
+		nrg::Client::registerEntity*;
+		nrg::Client::startRecordingReplay*;
+		nrg::Client::stopRecordingReplay*;
+		nrg::Client::update*;
+		nrg::Entity::?Entity*;
+		nrg::Entity::Entity*;
+		nrg::Entity::getInterpTimer*;
+		nrg::Entity::markUpdated*;
+		nrg::FieldBase::FieldBase*;
+		nrg::FieldBase::setUpdated*;
+		nrg::FieldBase::wasUpdated*;
+		nrg::FieldContainer::FieldContainer*;
+		nrg::InputBase::markUpdated*;
+		nrg::NetAddress::family*;
+		nrg::NetAddress::isValid*;
+		nrg::NetAddress::name*;
+		nrg::NetAddress::NetAddress*;
+		nrg::NetAddress::operator*;
+		nrg::NetAddress::port*;
+		nrg::NetAddress::resolve*;
+		nrg::NetAddress::set*;
+		nrg::NetAddress::toSockAddr*;
+		nrg::operator*;
+		nrg::PacketCompressor::apply*;
+		nrg::PacketCompressor::remove*;
+		nrg::Packet::?Packet*;
+		nrg::Packet::resize*;
+		nrg::ReplayServer::bind*;
+		nrg::ReplayServer::openReplay*;
+		nrg::ReplayServer::ReplayServer*;
+		nrg::ReplayServer::update*;
+		nrg::Server::bind*;
+		nrg::Server::getPlayerByID*;
+		nrg::Server::isBound*;
+		nrg::Server::markEntityUpdated*;
+		nrg::Server::playerCount*;
+		nrg::Server::pollEvent*;
+		nrg::Server::registerEntity*;
+		nrg::Server::?Server*;
+		nrg::Server::Server*;
+		nrg::Server::unregisterEntity*;
+		nrg::Server::update*;
+		nrg::Socket::getBoundAddress*;
+		nrg::Socket::?Socket*;
+		nrg::UDPSocket::UDPSocket*;
+		vtable?for?nrg::*
+	};
+local:
+	*;
+};
