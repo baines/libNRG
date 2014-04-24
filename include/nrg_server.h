@@ -41,7 +41,7 @@ public:
 		using namespace std::placeholders;
 		
 		global_msg_handlers.insert(
-			make_unique<M>(std::bind(move(func), _1, _2, ref(current_player)))
+			make_unique<M>(std::bind(forward<F>(func), _1, _2, ref(current_player)))
 		);
 	}
 	void broadcastMessage(const MessageBase& m);
