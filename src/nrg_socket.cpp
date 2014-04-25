@@ -188,9 +188,7 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 		if(use_errqueue && data_ready && (errno == EAGAIN || errno == EWOULDBLOCK)){
 			return checkErrorQueue(addr);
 		} else {
-			Status ret = StatusErr(errno);
-			addr.set(sas);
-			return ret;
+			return StatusErr(errno);
 		}
 	}
 }
@@ -228,13 +226,11 @@ Status Socket::checkErrorQueue(NetAddress& culprit){
 			// For some reason the port in this addr is always 0, but msg.msg_name has the correct one.
 			//struct sockaddr* sa = SO_EE_OFFENDER(err); 
 
-			if(sas.ss_family == AF_UNSPEC){
-				ret = StatusErr(err->ee_errno);
-			} else {
+			if(sas.ss_family != AF_UNSPEC){
 				culprit.set(sas);
 				printf("MSG_ERRQUEUE: [%s:%d]. [%d]\n", culprit.name(), culprit.port(), err->ee_errno);
-				ret = Status(false, err->ee_errno);
 			}
+			ret = StatusErr(err->ee_errno);
 		}
 	}
 	

@@ -4,10 +4,40 @@
 #include "nrg_varint.h"
 #include <limits.h>
 #include <algorithm>
-#include <iostream>
 
 using namespace std;
 using namespace nrg;
+
+namespace {
+	template<class M, class F>
+	static void removeMessagesUntil(Packet& buf, Packet& buf2, Packet*& msg_data
+	, M& msg_metadata, const F& func){
+		size_t bytes_to_remove = 0;
+
+		auto it = find_if(msg_metadata.begin(), msg_metadata.end(), [&](const MessageManager::MessageInfo& m){
+			bool b = func(m);
+			if(!b) bytes_to_remove += m.data_len;
+			return b;
+		});
+	
+		msg_metadata.erase(msg_metadata.begin(), it);
+
+		if(bytes_to_remove > 0){
+			Packet* other_p = (msg_data == &buf) ? &buf2 : &buf;
+		
+			other_p->writeArray(msg_data->getBasePointer() + bytes_to_remove
+				, msg_data->size() - bytes_to_remove
+			);
+		
+			msg_data->reset();
+			msg_data = other_p;
+		
+			for(auto& m : msg_metadata){
+				m.data_offset -= bytes_to_remove;
+			}
+		}
+	}
+}
 
 MessageManager::MessageManager()
 : handlers()
@@ -48,40 +78,14 @@ void MessageManager::addMessage(const MessageBase& m, uint16_t server_ms){
 	msg_metadata.push_back(i);
 }
 
-void MessageManager::removeMessagesUntil(const function<bool(const MessageInfo&)>& func){
-	size_t bytes_to_remove = 0;
-
-	auto it = find_if(msg_metadata.begin(), msg_metadata.end(), [&](const MessageInfo& m){
-		bool b = func(m);
-		if(!b) bytes_to_remove += m.data_len;
-		return b;
-	});
-	
-	msg_metadata.erase(msg_metadata.begin(), it);
-
-	if(bytes_to_remove > 0){
-		Packet* other_p = (msg_data == &buffer) ? &buffer2 : &buffer;
-		
-		other_p->writeArray(msg_data->getBasePointer() + bytes_to_remove
-			, msg_data->size() - bytes_to_remove
-		);
-		
-		msg_data->reset();
-		msg_data = other_p;
-		
-		for(auto& m : msg_metadata){
-			m.data_offset -= bytes_to_remove;
-		}
-	}
-}
-
 void MessageManager::writeToPacket(Packet& p, uint16_t server_ms){
 	p.write8(remote_seq);
 	
 	uint32_t current_ms = os::milliseconds();
 	
 	// remove unacknowledged messages that are too old (> ~1 minute).
-	removeMessagesUntil([=](const MessageInfo& m){
+	removeMessagesUntil(buffer, buffer2, msg_data, msg_metadata, 
+	[=](const MessageInfo& m){
 		return (current_ms - m.local_creation_time_ms) < USHRT_MAX;
 	});
 			
@@ -116,7 +120,8 @@ bool MessageManager::readFromPacket(Packet& p, uint16_t server_ms){
 	p.read8(their_remote_seq);
 	
 	// remove acknowledged messages, so they're not sent any more.
-	removeMessagesUntil([=](const MessageInfo& m){
+	removeMessagesUntil(buffer, buffer2, msg_data, msg_metadata, 
+	[&](const MessageInfo& m){
 		return (their_remote_seq + 1) == m.creation_seq;
 	});
 	

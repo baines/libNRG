@@ -4,7 +4,6 @@
 #include "nrg_varint.h"
 #include <string>
 #include <type_traits>
-#include <iostream>
 
 namespace nrg {
 

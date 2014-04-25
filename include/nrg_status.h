@@ -49,7 +49,7 @@ struct StatusErr : Status {
 static inline const char* strerr_r(int eno, char* buf, size_t sz){
 	auto r = strerror_r(eno, buf, sz);
 	
-	if(std::is_same<decltype(strerror_r), int (*)(int,char*,size_t)>::value){
+	if(std::is_same<decltype(r), int>::value){
 		return buf;
 	} else {
 		return r;

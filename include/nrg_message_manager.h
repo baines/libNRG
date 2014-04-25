@@ -28,7 +28,6 @@ private:
 		uint16_t server_creation_time_ms;
 		uint32_t local_creation_time_ms;
 	};
-	void removeMessagesUntil(const std::function<bool(const MessageInfo&)>&);
 	std::map<uint16_t, std::unique_ptr<MessageBase>> handlers;
 	std::vector<MessageInfo> msg_metadata;
 	Packet *msg_data, buffer, buffer2;

@@ -64,7 +64,6 @@ bool NetAddress::set(const struct sockaddr& s) {
 		o = addr6_off;
 		addr_len = sizeof(struct sockaddr_in6);
 	} else {
-		puts("That's no mo.. sockaddr!");
 		return false;
 	}
 	memcpy(&addr, &s, addr_len);
