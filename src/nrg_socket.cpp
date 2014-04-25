@@ -3,6 +3,7 @@
 #include "nrg_os.h"
 #include <unistd.h>
 #include <sys/time.h>
+#include <linux/errqueue.h>
 
 using namespace nrg;
 using std::unique_ptr;
@@ -14,6 +15,7 @@ Socket::Socket(int type, int family)
 , family(family)
 , type(type)
 , do_timestamp(false)
+, use_errqueue(false)
 , last_timestamp(0) {
 	if(family != PF_UNSPEC) fd = socket(family, type, 0);
 }
@@ -25,6 +27,7 @@ Socket::Socket(int type, const NetAddress& a)
 , family(a.family())
 , type(type)
 , do_timestamp(false)
+, use_errqueue(false)
 , last_timestamp(0) {
 	fd = socket(family, type, 0);
 }
@@ -34,35 +37,39 @@ void Socket::setFamilyFromAddress(const NetAddress& na){
 	fd = socket(family, type, 0);
 }
 
-bool Socket::bind(const NetAddress& addr){
+Status Socket::bind(const NetAddress& addr){
 	if(!fd){
 		family = addr.family();
 		fd = socket(family, type, 0);
-	} else if(addr.family() != family) return false;
-	socklen_t len = 0;
+	} else if(addr.family() != family){
+		return Status("Socket is set to a different family than the address.");
+	}
 	
+	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::bind(fd, sa, len) == 0){
 		bound_addr = unique_ptr<NetAddress>(new NetAddress(addr));
-		return true;
+		return StatusOK();
 	} else {
-		return false;
+		return StatusErr(errno);
 	}
 }
 
-bool Socket::connect(const NetAddress& addr){
+Status Socket::connect(const NetAddress& addr){
 	if(!fd){
 		family = addr.family();
 		fd = socket(family, type, 0);
-	} else if(addr.family() != family) return false;
+	} else if(addr.family() != family){
+		return Status("Socket is set to a different family than the address.");
+	}
+	
 	socklen_t len = 0;
-
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::connect(fd, sa, len) == 0){
 		connected_addr = unique_ptr<NetAddress>(new NetAddress(addr));
-		return true;
+		return StatusOK();
 	} else {
-		return false;
+		return StatusErr(errno);
 	}
 }
 
@@ -74,29 +81,69 @@ bool Socket::isConnected() const {
 	return bool(connected_addr);
 }
 
-ssize_t Socket::sendPacket(const Packet& p) const {
-	return ::send(fd, p.getBasePointer(), p.size(), 0);
+Status Socket::sendPacket(const Packet& p) const {
+	size_t sz = 0, attempts = 0;
+	
+	// send() should send a full datagram, but loop just in case.
+	do {
+		ssize_t res = ::send(fd, p.getBasePointer() + sz, p.size() - sz, 0);
+		if(res == -1){
+			int err = errno;
+			if(attempts++ < 3 && (err == EAGAIN || err == EWOULDBLOCK)){
+				continue;
+			} else {
+				return StatusErr(err);
+			}
+		} else {
+			sz = std::max(sz + res, p.size());
+		}
+	} while(sz < p.size());
+	
+	return StatusOK();
 }
 
-ssize_t Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
+Status Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
+	size_t sz = 0, attempts = 0;
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
-	return ::sendto(fd, p.getBasePointer(), p.size(), 0, sa, len);
+	
+	// sendto() should send a full datagram, but loop just in case.
+	do {
+		ssize_t res = ::sendto(fd, p.getBasePointer() + sz, p.size() - sz, 0, sa, len);
+		if(res == -1){
+			int err = errno;
+			if(attempts++ < 3 && (err == EAGAIN || err == EWOULDBLOCK)){
+				continue;
+			} else {
+				return StatusErr(err);
+			}
+		} else {
+			sz = std::max(sz + res, p.size());
+		}
+	} while(sz < p.size());
+	
+	return StatusOK();
 }
 
-ssize_t Socket::recvPacket(Packet& p) const {
+Status Socket::recvPacket(Packet& p) const {
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
+	
 	ssize_t result = ::recv(fd, buf, NRG_MAX_PACKET_SIZE, 0);
+	
 	if(result > 0){
 		p.writeArray(buf, result);
+		return StatusOK();
+	} else {
+		return StatusErr(errno);
 	}
-	return result;
 }
 
-ssize_t Socket::recvPacket(Packet& p, NetAddress& addr) {
+Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 	struct sockaddr_storage sas = {};
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
 	socklen_t len = sizeof(sas);
+	
+	bool data_ready = dataPending(0);
 
 #ifdef NRG_USE_SO_TIMESTAMP
 	struct msghdr msg = {};
@@ -136,8 +183,62 @@ ssize_t Socket::recvPacket(Packet& p, NetAddress& addr) {
 #endif
 		}
 		addr.set(sas);
+		return StatusOK();
+	} else {
+		if(use_errqueue && data_ready && (errno == EAGAIN || errno == EWOULDBLOCK)){
+			return checkErrorQueue(addr);
+		} else {
+			Status ret = StatusErr(errno);
+			addr.set(sas);
+			return ret;
+		}
 	}
-	return result;
+}
+
+//XXX: Linux/POSIX specific, not sure if there's similar functionality on Windows.
+Status Socket::checkErrorQueue(NetAddress& culprit){
+	struct sockaddr_storage sas = {};
+	uint8_t buf[NRG_MAX_PACKET_SIZE];
+	socklen_t len = sizeof(sas);
+
+	struct msghdr msg = {};
+    struct iovec iov = {};
+
+	char cbuf[512];
+	struct cmsghdr* cmsg = (struct cmsghdr*)cbuf;
+
+	iov.iov_base = buf;
+	iov.iov_len = sizeof(buf);
+
+	msg.msg_name = &sas;
+	msg.msg_namelen = len;
+	msg.msg_iov = &iov;
+	msg.msg_iovlen = 1;
+	msg.msg_control = cmsg;
+	msg.msg_controllen = sizeof(cbuf);
+	
+	ssize_t result = ::recvmsg(fd, &msg, MSG_ERRQUEUE);
+	
+	if(result < 0) return StatusErr(errno);
+	
+	Status ret = StatusOK();
+	for(cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)){
+		if(cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_RECVERR){
+			struct sock_extended_err* err = (struct sock_extended_err*) CMSG_DATA(cmsg);
+			// For some reason the port in this addr is always 0, but msg.msg_name has the correct one.
+			//struct sockaddr* sa = SO_EE_OFFENDER(err); 
+
+			if(sas.ss_family == AF_UNSPEC){
+				ret = StatusErr(err->ee_errno);
+			} else {
+				culprit.set(sas);
+				printf("MSG_ERRQUEUE: [%s:%d]. [%d]\n", culprit.name(), culprit.port(), err->ee_errno);
+				ret = Status(false, err->ee_errno);
+			}
+		}
+	}
+	
+	return ret;
 }
 
 bool Socket::dataPending(int usToBlock) const {
@@ -147,7 +248,7 @@ bool Socket::dataPending(int usToBlock) const {
 	struct timeval tv = { 0, usToBlock };
 
 	if(select(fd+1, &s, NULL, NULL, &tv) == 1){
-		return true;
+		return FD_ISSET(fd, &s);
 	} else {
 		return false;
 	}
@@ -192,6 +293,11 @@ void Socket::setNonBlocking(bool enabled){
 
 void Socket::enableTimestamps(bool enable){
 	do_timestamp = enable;
+}
+
+void Socket::handleUnconnectedICMPErrors(bool enable){
+	use_errqueue = enable;
+	setOption<int>(IPPROTO_IP, IP_RECVERR, enable);
 }
 
 #include <err.h>

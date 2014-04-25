@@ -98,11 +98,12 @@ PacketFlags ConnectionIn::getLatestPacket(Packet& p){
 
 ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
 : cc(na)
-, sock(sock) {
+, sock(sock)
+, last_status(true) {
 
 }
 
-void ConnectionOut::sendPacket(Packet& p, PacketFlags f){
+Status ConnectionOut::sendPacket(Packet& p, PacketFlags f){
 	uint8_t user_flags = f & (PKTFLAG_STATE_CHANGE | PKTFLAG_STATE_CHANGE_ACK);
 	uint8_t frag_index = 0;
 	
@@ -123,25 +124,27 @@ void ConnectionOut::sendPacket(Packet& p, PacketFlags f){
 		buffer.writeArray(p.getPointer(), n);
 		p.seek(n, SEEK_CUR);
 		buffer.seek(0, SEEK_SET);
-		if(cc.transform){
-			cc.transform->apply(buffer, buffer2.reset());
-			sock.sendPacket(buffer2, cc.remote_addr);
-		} else {
-			sock.sendPacket(buffer, cc.remote_addr);
-		}
+		
+		Packet& sendme = cc.transform ? buffer2 : buffer;
+		if(cc.transform) cc.transform->apply(buffer, buffer2.reset());
+		if(!(last_status = sock.sendPacket(sendme, cc.remote_addr))) return last_status;
 		
 		++frag_index;
 		
 	} while(p.remaining());
 	
 	p.seek(o, SEEK_SET);
+
+	return last_status = StatusOK();
 }
 
-bool ConnectionOut::resendLastPacket(void){ //XXX consider split packets
+Status ConnectionOut::resendLastPacket(void){ //XXX consider split packets
 	PacketHeader h;
 
 	buffer.seek(0, SEEK_SET);
-	if(!h.read(buffer)) return false;
+	if(!h.read(buffer)){
+		return last_status = Status("Can't read last packet's header.");
+	}
 	h.flags |= PKTFLAG_RETRANSMISSION;
 	
 	buffer.seek(0, SEEK_SET);
@@ -149,13 +152,13 @@ bool ConnectionOut::resendLastPacket(void){ //XXX consider split packets
 	    	
 	if(cc.transform){
 		cc.transform->apply(buffer, buffer2.reset());
-		return sock.sendPacket(buffer2, cc.remote_addr) > 0;
+		return (last_status = sock.sendPacket(buffer2, cc.remote_addr));
 	} else {
-		return sock.sendPacket(buffer, cc.remote_addr) > 0;
+		return (last_status = sock.sendPacket(buffer, cc.remote_addr));
 	}
 }
 
-void ConnectionOut::sendDisconnect(Packet& p){
+Status ConnectionOut::sendDisconnect(Packet& p){
 	off_t o = p.tell();
 	p.seek(0, SEEK_SET);
 	size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - cc.getHeaderSize());
@@ -164,13 +167,16 @@ void ConnectionOut::sendDisconnect(Packet& p){
 	PacketHeader(cc.seq_num++, PKTFLAG_FINISHED).write(buffer);
 	buffer.writeArray(p.getPointer(), n);
 	buffer.seek(0, SEEK_SET);
-	
+	p.seek(o, SEEK_SET);
+		
 	if(cc.transform){
 		cc.transform->apply(buffer, buffer2.reset());
-		sock.sendPacket(buffer2, cc.remote_addr);
+		return (last_status = sock.sendPacket(buffer2, cc.remote_addr));
 	} else {
-		sock.sendPacket(buffer, cc.remote_addr);
+		return (last_status = sock.sendPacket(buffer, cc.remote_addr));
 	}
+}
 
-	p.seek(o, SEEK_SET);
+Status ConnectionOut::getLastStatus() const {
+	return last_status;
 }

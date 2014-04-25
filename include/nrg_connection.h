@@ -40,7 +40,7 @@ public:
 	const NetAddress& getAddress() const;
 	bool hasNewPacket() const;
 	PacketFlags getLatestPacket(Packet& p);
-	 void setTransform(PacketTransformation* transform);
+	void setTransform(PacketTransformation* transform);
 private:
 	ConnectionCommon cc;
 	bool new_packet, full_packet;
@@ -52,14 +52,16 @@ private:
 class ConnectionOut {
 public:
 	ConnectionOut(const NetAddress& remote_addr, const Socket& sock_out);
-	void sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
-	void sendDisconnect(Packet& extra_data);
-	 void setTransform(PacketTransformation* transform);
-	bool resendLastPacket(void);
+	Status sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
+	Status sendDisconnect(Packet& extra_data);
+	Status resendLastPacket(void);
+	Status getLastStatus() const;
+	void setTransform(PacketTransformation* transform);
 private:
 	ConnectionCommon cc;
 	const Socket& sock;
 	Packet buffer, buffer2;
+	Status last_status;
 };
 
 struct Connection {

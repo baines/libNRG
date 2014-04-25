@@ -54,20 +54,32 @@ bool Client::update(){
 
 	while(sock.dataPending()){
 		NetAddress addr;
-		sock.recvPacket(buffer.reset(), addr);
-		if(addr != serv_addr) continue;
+		Status recv_status = sock.recvPacket(buffer.reset(), addr);
+		
+		if(addr.isValid() && addr != serv_addr) continue;
+		
+		if(!recv_status){
+			const char* msg = recv_status.desc;
+			
+			if(recv_status.type == Status::SystemError){
+				msg = strerr_r(recv_status.sys_errno, dc_reason, sizeof(dc_reason));
+			}
+			
+			printf("Socket::recvPacket returned error %d: %s.\n", recv_status.sys_errno, msg);
+			
+			eventq.pushEvent(DisconnectEvent{ DISCONNECTED, msg });
+			sock.disconnect();
+			return false;
+		}
+		
 		if(con.in.addPacket(buffer) && con.in.hasNewPacket()){
 			PacketFlags f = con.in.getLatestPacket(buffer.reset());
 
 			if(f & PKTFLAG_FINISHED){
 				size_t sz = std::min(sizeof(dc_reason)-1, buffer.remaining());
 				buffer.readArray((uint8_t*)dc_reason, sz);
-				
-				DisconnectEvent de = { DISCONNECTED, dc_reason };
-				eventq.pushEvent(de);
-				
+				eventq.pushEvent(DisconnectEvent{ DISCONNECTED, dc_reason });
 				sock.disconnect();
-
 				return false;
 			} else {
 				if(!state_manager.onRecvPacket(buffer, f)){

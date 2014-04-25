@@ -6,6 +6,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "nrg_status.h"
+
 // adapted from http://gcc.gnu.org/wiki/Visibility
 #if defined _WIN32 || defined __CYGWIN__
 	#ifdef BUILDING_NRG

@@ -50,6 +50,7 @@ Server::Server(const char* game_name, uint32_t game_version)
 bool Server::bind(const NetAddress& addr){
 	sock.setFamilyFromAddress(addr);
 	sock.setNonBlocking(true);
+	sock.handleUnconnectedICMPErrors(true);
 	
 	return sock.bind(addr);
 }
@@ -71,11 +72,13 @@ bool Server::update(){
 	sock.dataPending(blocktime)){
 		
 		NetAddress addr;
-		sock.recvPacket(buffer.reset(), addr);
+		Status recv_status = sock.recvPacket(buffer.reset(), addr);
 		
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
-			printf("new client: %s:%d\n", addr.name(), addr.port());
+			if(!recv_status) continue;
+			
+			printf("New client: %s:%d\n", addr.name(), addr.port());
 			
 			uint16_t pid = player_ids.acquire();
 			auto res = clients.insert(make_pair(addr, nullptr));
@@ -90,13 +93,28 @@ bool Server::update(){
 			PlayerEvent e = { PLAYER_JOIN, pid, it->second };
 			eventq.pushEvent(e);
 		}
-		
-		current_player = it->second;
-		
-		if(!IMPL(it->second)->addPacket(buffer)){
-			it->second->kick("Recieved invalid packet from client.");
+				
+		if(!recv_status){
+			printf("Client quit: %s:%d\n", it->first.name(), it->first.port());
+			
+			player_ids.release(it->second->getID());
+			PlayerEvent e = { PLAYER_LEAVE, it->second->getID(), it->second };
+			eventq.pushEvent(e);
+			
+			delete it->second;
+			clients.erase(it);
+		} else {
+			current_player = it->second;
+			
+			if(!IMPL(it->second)->addPacket(buffer)){
+				it->second->kick("Recieved invalid packet from client.");
+				printf("Client [%s:%d] was kicked.\n", addr.name(), addr.port());
+			}
 		}
 	}
+	
+	//NetAddress addr;
+	//sock.checkForErrors(addr);
 
 	timer = os::microseconds();
 
@@ -126,7 +144,7 @@ bool Server::update(){
 
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; /**/){
 		if(!i->second->isConnected()){
-			printf("client quit: %s:%d\n", i->first.name(), i->first.port());
+			printf("Client quit: %s:%d\n", i->first.name(), i->first.port());
 			
 			player_ids.release(i->second->getID());
 			PlayerEvent e = { PLAYER_LEAVE, i->second->getID(), i->second };
@@ -141,8 +159,19 @@ bool Server::update(){
 
 	for(auto& c : clients){
 		current_player = c.second;
-		if(!IMPL(c.second)->update()){
+		Status s;
+		
+		if(!(s = IMPL(c.second)->update())){
 			c.second->kick("Client update failed.");
+			const NetAddress& na = c.second->getRemoteAddress();
+			const char* errmsg = s.desc;
+			char errbuf[512];
+			
+			if(s.type == Status::SystemError){
+				errmsg = strerr_r(s.sys_errno, errbuf, sizeof(errbuf));
+			}
+			
+			printf("Client [%s:%d] was kicked. (%s)\n", na.name(), na.port(), errmsg);
 		}
 	}
 	return true;

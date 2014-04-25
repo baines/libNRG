@@ -13,6 +13,7 @@ public:
 	NetAddress(const struct sockaddr_storage& s);
 	NetAddress& operator=(const struct sockaddr_storage& s);
 	bool set(const struct sockaddr_storage& s);
+	bool set(const struct sockaddr& s);
 	bool resolve(const char* name, const char* port);
 
 	bool isValid() const;

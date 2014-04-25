@@ -113,9 +113,9 @@ bool StateManager::onRecvPacket(Packet& packet, PacketFlags f){
 	return state_ptr->onRecvPacket(packet, f);
 }
 
-bool StateManager::update(ConnectionOut& out){
+Status StateManager::update(ConnectionOut& out){
 	if(states.empty()){
-		return false;
+		return Status("There are no registered states left.");
 	} else if(!state_ptr){
 		state_ptr = states.back();
 		state_ptr->init(c, s, p);
@@ -145,7 +145,7 @@ bool StateManager::update(ConnectionOut& out){
 		} else if(r & STATE_EXIT_BIT){
 			states.clear();
 			state_ptr = nullptr;
-			return false;	
+			return Status("Current state exited unsuccessfully.");
 		}
 	}
 	

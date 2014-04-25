@@ -55,6 +55,23 @@ bool NetAddress::set(const struct sockaddr_storage& s) {
 	return true;
 }
 
+bool NetAddress::set(const struct sockaddr& s) {
+	off_t o = 0;
+	if(s.sa_family == AF_INET){
+		o = addr_off;
+		addr_len = sizeof(struct sockaddr_in);
+	} else if(s.sa_family == AF_INET6){
+		o = addr6_off;
+		addr_len = sizeof(struct sockaddr_in6);
+	} else {
+		puts("That's no mo.. sockaddr!");
+		return false;
+	}
+	memcpy(&addr, &s, addr_len);
+	inet_ntop(s.sa_family, (char*)&addr + o, text, INET6_ADDRSTRLEN);
+	return true;
+}
+
 bool NetAddress::resolve(const char* name, const char* port){
 	struct addrinfo *result = NULL, hints = {};
 	hints.ai_family = AF_UNSPEC;

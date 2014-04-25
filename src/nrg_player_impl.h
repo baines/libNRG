@@ -12,9 +12,10 @@ class PlayerImpl : public Player {
 public:
 	PlayerImpl(uint16_t id, Server& server, const NetAddress& addr);
 	bool addPacket(Packet& p);
-	bool update();
+	Status update();
 	void kick(const char* reason);
 	const Server* getServer() const { return &server; }
+	const NetAddress& getRemoteAddress() const;
 	void registerMessageHandler(MessageBase&& m);
 	void registerMessageHandler(const MessageBase& m);
 	void sendMessage(const MessageBase& m);

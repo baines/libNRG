@@ -14,24 +14,27 @@ public:
 	
 	void setFamilyFromAddress(const NetAddress& addr);
 	
-	bool bind(const NetAddress& addr);
-	bool connect(const NetAddress& addr);
+	Status bind(const NetAddress& addr);
+	Status connect(const NetAddress& addr);
 	void disconnect();
 	bool isConnected() const;
 	
-	ssize_t sendPacket(const Packet& p) const;
-	ssize_t sendPacket(const Packet& p, const NetAddress& addr) const;
-	ssize_t recvPacket(Packet& p) const;
-	ssize_t recvPacket(Packet& p, NetAddress& addr);
+	Status sendPacket(const Packet& p) const;
+	Status sendPacket(const Packet& p, const NetAddress& addr) const;
+	Status recvPacket(Packet& p) const;
+	Status recvPacket(Packet& p, NetAddress& addr);
 	
 	template<typename T>
 	bool setOption(int level, int name, const T& opt){
 		 return setsockopt(fd, level, name, &opt, sizeof(T)) == 0;
 	}
 	
+	Status checkErrorQueue(NetAddress& culprit);
+		
 	bool dataPending(int usToBlock = 0) const;
 	void setNonBlocking(bool nonblock);
 	void enableTimestamps(bool enable);
+	void handleUnconnectedICMPErrors(bool enable);
 	
 	const std::unique_ptr<NetAddress>& getBoundAddress();
 	const std::unique_ptr<NetAddress>& getBoundAddress() const;
@@ -45,7 +48,7 @@ public:
 private:
 	std::unique_ptr<NetAddress> bound_addr, connected_addr;
 	int fd, family, type;
-	bool do_timestamp;
+	bool do_timestamp, use_errqueue;
 	uint64_t last_timestamp;
 };
 

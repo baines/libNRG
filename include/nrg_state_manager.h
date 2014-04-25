@@ -30,7 +30,7 @@ public:
 	StateManager(Client* c);
 	void addState(State& s);
 	bool onRecvPacket(Packet& packet, PacketFlags f);
-	bool update(ConnectionOut& out);
+	Status update(ConnectionOut& out);
 private:
 	vector<State*> states;
 	State* state_ptr;
