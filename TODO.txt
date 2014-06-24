@@ -1,0 +1,57 @@
+                              LibNRG TODO
+
+! unlagged - look at previous snapshots
+	! uint32_t ts = player.getSnapshots(ss& a, ss& b);
+	! field.getFrom(a, b, ts); [serverside]
+! client prediction
+	! field.setPredictionFunc(...);
+		! store past N input packets somewhere (input / client)
+		! disable interpolation / interp only if input not sent to sv
+		! when input sent, call predict func + set field values
+	! sv ack input ids, compare input[ack] to predicted val in readFromPacket
+		! EITHER:
+			! store list of predictions for each unack'd input
+			! replay only if they don't match
+		! OR:
+			! don't store predictions
+			! replay the predictions even when they were probably correct.
+! pre-login check against game name e.t.c, rate limiting w/ queue
+	! server.setConnectCheck(const function<bool(const char* game, uint32_t vers)>&)
+	! default -> return (strcmp(game, sv_game) == 0 && vers == sv_vers);
+! use set in client for entities, not vector
+
++ Redesign Events to support custom unbounded number, not union.
+	+ Maybe use template style similar to Message
++ Interfaces for GameState + HandshakeState
++ Handshake needs a queue system probably
++ fix connection w/ split packet not arriving in order
+	+ Change header to work like IP, with 4 bits for packet offset
++ allow custom states
+	+ include default in Server, Client, accept pointer which defaults to inner
++ global states for server
++ States can choose next state dynamically instead of static ordering
+	+ Use strings given by states to choose next
++ finish symbol map
++ use pimpl or interfaces to hide implementation
++ More State Funcs:
+	- State::getRecvType()
+		- STATE_RECV_NORMAL
+		- STATE_RECV_RAW
+	- State::getName()
++ reference type specialisation for fields
+	+ pointer too for dynamic arrays?
+
+? UDP Download state
+? Lobby state
+? Auto signal handling stuff
+? Protocol Extension mechanism in handshake?
+? have server game state tell server which entities it knows about
+	? server creates groups for each different set
+	? generated dss for each group
+	? allows culling of entities
+? trait class template stuff
+? put Field in Entity, to share Codec traits
+? template stuff for ids, not hardcoded uint16_t
+? DeltaCompressor functor for fields -> bool compress(T a, T b, R val);
+	? DeltaCompressor::return_type;
+	? FloatToByte -> bool compress(float old, float new, uint8_t out) ...
