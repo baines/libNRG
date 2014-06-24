@@ -6,6 +6,9 @@ This library provides networking functionality than can be used to create
 video-games which are playable over networks such as the internet.
 For an example of one such game look in the examples/ballduel directory.
 
+You can also get the specification and final report I produced about LibNRG at 
+university here: http://abaines.me.uk/other/libnrg/ .
+
 Header files for the library are stored in the include/ directory, and .cpp
 source files along with private header files are stored in the src/ directory.
 
