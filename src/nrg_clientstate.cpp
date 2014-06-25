@@ -21,9 +21,6 @@ namespace {
 	};
 	
 	static const size_t NRG_CGS_HEADER_SIZE = 4;
-	typedef vector<Entity*>::iterator e_it;
-	typedef vector<FieldBase*>::iterator f_it;
-	typedef map<uint16_t, Entity*>::iterator et_it;
 }
 
 ClientHandshakeState::ClientHandshakeState() 
@@ -154,11 +151,10 @@ bool ClientGameState::onRecvPacket(Packet& p, PacketFlags f){
 	// Could maybe store fields instead of entities for better efficiency
 	
 	//TODO: update this when fields.get() is called rather than here.
-	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
-		if(*i == nullptr) continue;
-		
-		(*i)->markUpdated(false);
-		for(FieldBase* f = (*i)->getFirstField(); f; f = f->getNextField()){
+	for(auto& pair : entities){
+	    Entity* e = pair.second;
+		e->markUpdated(false);
+		for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
 			f->shiftData();			
 			f->setUpdated(false);
 		}
@@ -211,8 +207,9 @@ Entity* ClientGameState::SnapFuncImpl(ClientSnapshot::Action a, uint16_t eid, ui
 	
 	switch(a){
 		case ClientSnapshot::Action::Get: {
-			if(entities.size() > eid){
-				ret = entities[eid];
+			auto it = entities.find(eid);
+			if(it != entities.end()){
+				ret = it->second;
 			}
 			break;
 		}
@@ -221,34 +218,30 @@ Entity* ClientGameState::SnapFuncImpl(ClientSnapshot::Action a, uint16_t eid, ui
 			if(i != entity_types.end()){
 				Entity* e = i->second->clone();
 				e->setID(eid);
-			
-				if(entities.size() <= eid){
-					entities.resize(eid+1);
-				}
-			
-				ret = entities[eid] = e;
-			
+
+				ret = entities.emplace(eid, e).first->second;
+
 				e->onCreate(*client);
 				client_eventq->pushEvent(EntityEvent{ ENTITY_CREATED, eid, etype, e });
 			}
 			break;
 		}
 		case ClientSnapshot::Action::Destroy: {
-			if(entities.size() > eid){
-				Entity*& e = entities[eid];
-				if(e){
-					e->onDestroy(*client);
-					client_eventq->pushEvent(EntityEvent{ ENTITY_DESTROYED, eid, e->getType(), e });
-					delete e;
-					e = nullptr;
-				}
+			auto it = entities.find(eid);
+			if(it != entities.end()){
+				Entity*& e = it->second;
+				e->onDestroy(*client);
+				client_eventq->pushEvent(EntityEvent{ ENTITY_DESTROYED, eid, e->getType(), e });
+				delete e;
+				entities.erase(it);
 			}
 			break;
 		}
 		case ClientSnapshot::Action::Update: {
-			if(entities.size() > eid){
-				Entity*& e = entities[eid];
-				if(e) e->onUpdate(*client);
+			auto it = entities.find(eid);
+			if(it != entities.end()){
+				Entity*& e = it->second;
+				e->onUpdate(*client);
 				client_eventq->pushEvent(EntityEvent{ ENTITY_UPDATED, eid, e->getType(), e });
 			}
 			break;
@@ -294,12 +287,10 @@ void ClientGameState::stopRecordingReplay() {
 
 ClientGameState::~ClientGameState(){
 	if(replay.isRecording()) replay.stopRecording();
-	for(e_it i = entities.begin(), j = entities.end(); i != j; ++i){
-		if(*i){
-			delete *i;
-		}
+	for(auto& pair : entities){
+		delete pair.second;
 	}
-	for(et_it i = entity_types.begin(), j = entity_types.end(); i != j; ++i){
-		delete i->second;
+	for(auto& pair : entity_types){
+		delete pair.second;
 	}
 }

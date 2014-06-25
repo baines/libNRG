@@ -53,7 +53,7 @@ public:
 private:
 	std::function<Entity*(ClientSnapshot::Action, uint16_t, uint16_t)> snap_func;
 	Entity* SnapFuncImpl(ClientSnapshot::Action, uint16_t, uint16_t);
-	std::vector<Entity*> entities;
+	std::map<uint16_t, Entity*> entities;
 	std::map<uint16_t, Entity*> entity_types;
 	MessageManager msg_manager;
 	EventQueue* client_eventq;

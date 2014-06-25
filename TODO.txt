@@ -18,7 +18,6 @@
 ! pre-login check against game name e.t.c, rate limiting w/ queue
 	! server.setConnectCheck(const function<bool(const char* game, uint32_t vers)>&)
 	! default -> return (strcmp(game, sv_game) == 0 && vers == sv_vers);
-! use set in client for entities, not vector
 
 + Redesign Events to support custom unbounded number, not union.
 	+ Maybe use template style similar to Message
