@@ -156,7 +156,7 @@ bool MessageManager::readFromPacket(Packet& p, uint16_t server_ms){
 	
 	uint32_t current_ms = os::milliseconds();
 	
-	// read all the messages recieved.
+	// read all the messages received.
 	for(uint32_t i = 0; i < num_msgs; ++i){
 		uint16_t msg_ms = 0;
 		
@@ -182,7 +182,7 @@ bool MessageManager::readFromPacket(Packet& p, uint16_t server_ms){
 		} else {
 			// read the message and invoke the user callback.
 			if(h_it->second->readFromPacket(p) == 0) return false;
-			h_it->second->onRecieve(current_ms - msg_diff_ms);
+			h_it->second->onReceive(current_ms - msg_diff_ms);
 		}
 	}
 	

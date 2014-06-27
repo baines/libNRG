@@ -33,7 +33,7 @@ struct MessageBase {
 	virtual uint16_t getID() const = 0;
 	virtual size_t writeToPacket(Packet& p) const = 0;
 	virtual size_t readFromPacket(Packet& p) = 0;
-	virtual void onRecieve(uint32_t creation_ms) = 0;
+	virtual void onReceive(uint32_t creation_ms) = 0;
 	virtual MessageBase* clone() const = 0;
 	virtual MessageBase* move_clone() = 0;
 	virtual ~MessageBase(){};
@@ -47,14 +47,14 @@ class Message : public MessageBase {
 	static const size_t sz = sizeof...(Args)-1;
 	typedef std::tuple<Args...> MsgTuple;
 public:
-	Message(Args... args) : values(args...), on_recieve(){}
+	Message(Args... args) : values(args...), on_receive(){}
 	Message(Message&&) = default;
 	Message(const Message&) = default;
 	
 	template<class F>
 	Message(F&& func)
 	: values()
-	, on_recieve(std::forward<F>(func)){}
+	, on_receive(std::forward<F>(func)){}
 		
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_write(Packet& p) const {
@@ -82,8 +82,8 @@ public:
 		return id;
 	}
 	
-	void onRecieve(uint32_t creation_ms){
-		if(on_recieve) on_recieve(*this, creation_ms);
+	void onReceive(uint32_t creation_ms){
+		if(on_receive) on_receive(*this, creation_ms);
 	}
 	
 	MessageBase* clone() const {
@@ -114,7 +114,7 @@ public:
 	
 private:
 	MsgTuple values;
-	std::function<void(const Message&, uint32_t)> on_recieve;
+	std::function<void(const Message&, uint32_t)> on_receive;
 };
 
 }
