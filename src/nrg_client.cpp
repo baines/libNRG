@@ -118,11 +118,11 @@ bool Client::update(){
 	
 	bool result = true;
 	
-	uint32_t current_ms = os::milliseconds();
-	if(current_ms - previous_ms > rate_limit_interval_ms){
+//	uint32_t current_ms = os::milliseconds();
+//	if(current_ms - previous_ms > rate_limit_interval_ms){
 		result = state_manager.update(con.out);
-		previous_ms = current_ms;
-	}
+//		previous_ms = current_ms;
+//	}
 	
 	if(!result) puts("State Update failed!");
 	return result;
