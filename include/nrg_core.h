@@ -45,6 +45,12 @@
 	#define NRG_PRIVATE
 #endif
 
+#ifdef DEBUG
+	#define NRG_DEBUG(fmt, ...) do { fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+#else
+	#define NRG_DEBUG(fmt, ...) do { } while(0)
+#endif
+
 namespace nrg {
 
 struct Version {

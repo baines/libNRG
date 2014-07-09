@@ -42,7 +42,8 @@ int main(void){
 
 	server.addMessageHandler<TxtMsg>([&](const TxtMsg& m, uint32_t ts, Player* p){
 		stringstream ss;
-		ss << "<Player " << p->getID() << ">: " << m.get<0>();
+		ss << "<Player " << p->getID() << ">: ";
+		for(char c : m.get<0>()){ if(c && isprint(c)) ss << c; }
 		server.broadcastMessage(TxtMsg(ss.str()));
 	});
 
@@ -53,7 +54,7 @@ int main(void){
 		while(server.pollEvent(e)){
 			if(e.type == PLAYER_JOIN){
 				stringstream ss;
-				ss << "Welcome, Player " << e.player.id << ".";
+				ss << "Player " << e.player.id << " has joined.";
 				server.broadcastMessage(TxtMsg(ss.str()));
 			}
 			if(e.type == PLAYER_LEAVE){

@@ -129,7 +129,7 @@ bool Server::update(){
 			
 			if(!IMPL(it->second)->addPacket(buffer)){
 				it->second->kick("Recieved invalid packet from client.");
-				printf("Client [%s:%d] was kicked.\n", addr.name(), addr.port());
+				printf("Client [%s:%d] was kicked (invalid packet).\n", addr.name(), addr.port());
 			}
 		}
 	}

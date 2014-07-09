@@ -39,7 +39,7 @@ struct PacketHeader {
 	, flags(flags)
 	, version(0)
 	, size(4)
-	, frag_index(0){
+	, frag_index(frag_index){
 	
 	}
 

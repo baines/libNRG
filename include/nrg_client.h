@@ -55,6 +55,8 @@ public:
 	bool update();
 	bool pollEvent(Event& e);
 	const ClientStats& getStats() const;
+	
+	void setPacketRateLimit(uint32_t packets_per_sec);
 
 	void startRecordingReplay(const char* filename);
 	void stopRecordingReplay();
@@ -77,6 +79,8 @@ private:
 	StateManager state_manager;
 	ClientHandshakeState handshake;
 	ClientGameState game_state;
+	uint32_t rate_limit_interval_ms;
+	uint32_t previous_ms;
 	void* user_pointer;
 	char dc_reason[NRG_MAX_ERRORMSG_LEN];
 };

@@ -115,9 +115,7 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 		i->onUpdate(*player);
 	}
 	
-	msg_manager.readFromPacket(p, os::milliseconds());
-
-	return true;
+	return msg_manager.readFromPacket(p, os::milliseconds());
 }
 
 bool ServerPlayerGameState::needsUpdate() const {

@@ -26,6 +26,7 @@
 #include "nrg_packet.h"
 #include "nrg_socket.h"
 #include <bitset>
+#include <array>
 
 namespace nrg {
 
@@ -68,6 +69,13 @@ private:
 	std::bitset<NRG_CONN_PACKET_HISTORY> packet_history;
 	PacketFlags latest_flags;
 	Packet latest, buffer;
+	struct ReassemblyInfo {
+		ReassemblyInfo() : data(), age(-1), continued(false){}
+		Packet data;
+		int age;
+		bool continued;
+	};
+	std::array<ReassemblyInfo, NRG_CONN_PACKET_HISTORY> reassembly_buf;
 };
 
 class ConnectionOut {
@@ -81,7 +89,7 @@ public:
 private:
 	ConnectionCommon cc;
 	const Socket& sock;
-	Packet buffer, buffer2;
+	Packet buffer, buffer2, last;
 	Status last_status;
 };
 

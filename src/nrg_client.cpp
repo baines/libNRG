@@ -21,6 +21,7 @@
 */
 #include "nrg_client.h"
 #include "nrg_config.h"
+#include "nrg_os.h"
 
 using namespace nrg;
 
@@ -34,6 +35,8 @@ Client::Client(const char* game_name, uint32_t game_version, InputBase& input)
 , state_manager(this)
 , handshake()
 , game_state()
+, rate_limit_interval_ms(100)
+, previous_ms(os::milliseconds())
 , user_pointer(nullptr)
 , dc_reason() {
 	state_manager.addState(game_state);
@@ -50,6 +53,8 @@ Client::Client(const char* game_name, uint32_t game_version)
 , state_manager(this)
 , handshake()
 , game_state()
+, rate_limit_interval_ms(100)
+, previous_ms(os::milliseconds())
 , user_pointer(nullptr)
 , dc_reason() {
 	state_manager.addState(game_state);
@@ -111,9 +116,20 @@ bool Client::update(){
 		}
 	}
 	
-	bool b = state_manager.update(con.out);
-	if(!b) puts("State Update failed!");
-	return b;
+	bool result = true;
+	
+	uint32_t current_ms = os::milliseconds();
+	if(current_ms - previous_ms > rate_limit_interval_ms){
+		result = state_manager.update(con.out);
+		previous_ms = current_ms;
+	}
+	
+	if(!result) puts("State Update failed!");
+	return result;
+}
+
+void Client::setPacketRateLimit(uint32_t packets_per_sec){
+	rate_limit_interval_ms = 1 + 999 / std::max(1u, packets_per_sec);
 }
 
 bool Client::isConnected() const {
