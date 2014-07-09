@@ -59,13 +59,13 @@ bool ServerHandshakeState::needsUpdate() const {
 	return send_response;
 }
 
-StateResult ServerHandshakeState::update(ConnectionOut& out, StateFlags f){
+StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 	if(f & SFLAG_TIMED_OUT){
 		return STATE_FAILURE;
 	} else {
 		Packet p(1);
 		p.write8(HS_ACCEPTED);
-		out.sendPacket(p, PKTFLAG_STATE_CHANGE);
+		out.enqueuePacket(p, PKTFLAG_STATE_CHANGE);
 		send_response = false;
 		return STATE_CHANGE;
 	}
@@ -122,7 +122,7 @@ bool ServerPlayerGameState::needsUpdate() const {
 	return snapshot.getID() != server->getSnapshot().getID() && got_packet;
 }
 
-StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
+StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f){
 	if(f & SFLAG_TIMED_OUT){
 		return STATE_FAILURE;
 	}
@@ -139,7 +139,7 @@ StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
 		master.writeToPacket(buffer);
 		msg_manager.writeToPacket(buffer, os::milliseconds());
 		
-		out.sendPacket(buffer);
+		out.enqueuePacket(buffer);
 	} else {
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
 		
@@ -159,7 +159,7 @@ StateResult ServerPlayerGameState::update(ConnectionOut& out, StateFlags f){
 			snapshot.writeToPacket(buffer);
 			msg_manager.writeToPacket(buffer, os::milliseconds());
 			
-			out.sendPacket(buffer);
+			out.enqueuePacket(buffer);
 		} else {
 			return STATE_FAILURE;
 		}

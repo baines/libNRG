@@ -31,11 +31,12 @@ Client::Client(const char* game_name, uint32_t game_version, InputBase& input)
 , buffer()
 , serv_addr()
 , con(serv_addr, sock)
+, state_con(con.out)
 , eventq()
 , state_manager(this)
 , handshake()
 , game_state()
-, rate_limit_interval_ms(100)
+, rate_limit_interval_ms(10)
 , previous_ms(os::milliseconds())
 , user_pointer(nullptr)
 , dc_reason() {
@@ -49,6 +50,7 @@ Client::Client(const char* game_name, uint32_t game_version)
 , buffer()
 , serv_addr()
 , con(serv_addr, sock)
+, state_con(con.out)
 , eventq()
 , state_manager(this)
 , handshake()
@@ -116,16 +118,20 @@ bool Client::update(){
 		}
 	}
 	
-	bool result = true;
+	state_con.update();
 	
-//	uint32_t current_ms = os::milliseconds();
-//	if(current_ms - previous_ms > rate_limit_interval_ms){
-		result = state_manager.update(con.out);
-//		previous_ms = current_ms;
-//	}
+	if(!state_manager.update(state_con)){
+		puts("State Update failed!");
+		return false;
+	}
 	
-	if(!result) puts("State Update failed!");
-	return result;
+	uint32_t current_ms = os::milliseconds();
+	if(current_ms - previous_ms > rate_limit_interval_ms){
+		state_con.sendAllPackets();
+		previous_ms = current_ms;
+	}
+	
+	return true;
 }
 
 void Client::setPacketRateLimit(uint32_t packets_per_sec){

@@ -34,7 +34,7 @@ struct ServerHandshakeState : public State {
 	bool init(Client*, Server*, Player*){ return true; }
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
-	StateResult update(ConnectionOut& out, StateFlags f);
+	StateResult update(StateConnectionOut& out, StateFlags f);
 private:
 	bool send_response;
 };
@@ -45,7 +45,7 @@ public:
 	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
-	StateResult update(ConnectionOut& out, StateFlags f);
+	StateResult update(StateConnectionOut& out, StateFlags f);
 	void registerMessageHandler(MessageBase&& m);
 	void registerMessageHandler(const MessageBase& m);
 	void sendMessage(const MessageBase& m);

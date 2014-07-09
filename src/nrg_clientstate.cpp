@@ -65,7 +65,7 @@ bool ClientHandshakeState::needsUpdate() const {
 	return (phase != HS_WAITING);
 }
 	
-StateResult ClientHandshakeState::update(ConnectionOut& out, StateFlags f){
+StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 	StateResult res;
 	
 	if(f & SFLAG_TIMED_OUT){
@@ -79,7 +79,7 @@ StateResult ClientHandshakeState::update(ConnectionOut& out, StateFlags f){
 		timeouts = 0;
 		if(phase == HS_NOT_STARTED){
 			buffer.reset().write8(HS_CLIENT_SYN);
-			out.sendPacket(buffer);
+			out.enqueuePacket(buffer);
 			phase = HS_WAITING;
 			res = STATE_CONTINUE;
 		} else if(phase == HS_ACCEPTED){
@@ -192,7 +192,7 @@ bool ClientGameState::needsUpdate() const {
 	return got_packet;
 }
 	
-StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
+StateResult ClientGameState::update(StateConnectionOut& out, StateFlags f){
 	if(f & SFLAG_TIMED_OUT){
 		if(++timeouts > 5){
 			return STATE_FAILURE;
@@ -218,7 +218,7 @@ StateResult ClientGameState::update(ConnectionOut& out, StateFlags f){
 	if(input) input->writeToPacket(buffer);
 	msg_manager.writeToPacket(buffer, server_ms_prev + diff_ms);
 
-	out.sendPacket(buffer);
+	out.enqueuePacket(buffer);
 
 	return STATE_CONTINUE;
 }

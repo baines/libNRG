@@ -28,6 +28,7 @@ PlayerImpl::PlayerImpl(uint16_t id, Server& s, const NetAddress& addr)
 , addr(addr)
 , sock(s.getSocket())
 , con(addr, sock)
+, state_con(con.out)
 , buffer(NRG_MAX_PACKET_SIZE)
 , ping(0)
 , state_manager(nullptr, &s, this)
@@ -58,7 +59,8 @@ bool PlayerImpl::addPacket(Packet& p){
 }
 
 Status PlayerImpl::update(){
-	if(!state_manager.update(con.out)){
+	state_con.update();
+	if(!state_manager.update(state_con) || !state_con.sendAllPackets()){
 		return Status("Client update failed.");
 	} else {
 		return con.out.getLastStatus();

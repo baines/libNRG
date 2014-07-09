@@ -40,7 +40,7 @@ public:
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
 	size_t getTimeoutSeconds() const { return 2; }
-	StateResult update(ConnectionOut& out, StateFlags f);
+	StateResult update(StateConnectionOut& out, StateFlags f);
 	~ClientHandshakeState();
 private:
 	Packet buffer;
@@ -57,7 +57,7 @@ public:
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
 	size_t getTimeoutSeconds() const { return 1; }
-	StateResult update(ConnectionOut& out, StateFlags f);
+	StateResult update(StateConnectionOut& out, StateFlags f);
 	~ClientGameState();
 
 	void registerEntity(Entity* e);

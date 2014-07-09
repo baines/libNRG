@@ -75,6 +75,7 @@ private:
 	Packet buffer;
 	NetAddress serv_addr;
 	Connection con;
+	StateConnectionOutImpl state_con;
 	EventQueue eventq;
 	StateManager state_manager;
 	ClientHandshakeState handshake;

@@ -19,47 +19,59 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#ifndef NRG_STATE_MANAGER
-#define NRG_STATE_MANAGER
-#include "nrg_core.h"
 #include "nrg_state.h"
-#include <type_traits>
-#include <vector>
 
-namespace nrg {
+using namespace nrg;
 
-struct TransitionState : public State {
-	void pre_init(State* old_s, State* new_s);
-	bool init(Client*, Server*, Player*);
-	bool onRecvPacket(Packet& p, PacketFlags f);
-	bool needsUpdate() const;
-	StateResult update(StateConnectionOut& out, StateFlags f);
-	size_t getTimeoutSeconds() const;
-private:
-	int timeouts;
-	bool client_mode, starting, resend, done;
-	State *old_state, *new_state;
-	Packet buffer;
-};
-
-class StateManager {
-public:
-	StateManager(Client* c, Server* s, Player* p);
-	StateManager(Server* s, Player* p);
-	StateManager(Client* c);
-	void addState(State& s);
-	bool onRecvPacket(Packet& packet, PacketFlags f);
-	Status update(StateConnectionOut& out);
-private:
-	std::vector<State*> states;
-	State* state_ptr;
-	TransitionState transition;
-	uint32_t last_update;
-	Client* c;
-	Server* s;
-	Player* p;
-};
+StateConnectionOutImpl::StateConnectionOutImpl(ConnectionOut& out)
+: out(out)
+, isready(true)
+, resend(false)
+, packet_queue(){
 
 }
 
-#endif
+bool StateConnectionOutImpl::ready(){
+	return isready;
+}
+
+bool StateConnectionOutImpl::enqueuePacket(Packet& p, PacketFlags f){
+	if(!isready){
+		return false;
+	} else {
+		packet_queue.push_back(std::make_pair(p, f));
+		return true;
+	}
+}
+
+void StateConnectionOutImpl::resendLastPacket(){
+	if(packet_queue.empty()){
+		resend = true;
+	}
+}
+
+Status StateConnectionOutImpl::sendAllPackets(){
+	if(resend){
+		out.resendLastPacket();
+		resend = false;
+	}
+	
+	Status result = StatusOK();
+	
+	for(auto& pair : packet_queue){
+		Status s = out.sendPacket(pair.first, pair.second);
+		if(!s){
+			result = s;
+			break;
+		}
+	}
+	
+	packet_queue.clear();
+	
+	return result;
+}
+
+void StateConnectionOutImpl::update(){
+	isready = packet_queue.empty();
+}
+

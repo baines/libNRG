@@ -64,12 +64,12 @@ bool TransitionState::needsUpdate() const {
 	}
 }
 
-StateResult TransitionState::update(ConnectionOut& out, StateFlags f){
+StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 	StateResult r = STATE_FAILURE;
 	
 	if(client_mode){
 		if(starting){
-			out.sendPacket(buffer, PKTFLAG_STATE_CHANGE_ACK);
+			out.enqueuePacket(buffer, PKTFLAG_STATE_CHANGE_ACK);
 			starting = false;
 			r = STATE_CONTINUE;
 		} else if(done){
@@ -134,7 +134,7 @@ bool StateManager::onRecvPacket(Packet& packet, PacketFlags f){
 	return state_ptr->onRecvPacket(packet, f);
 }
 
-Status StateManager::update(ConnectionOut& out){
+Status StateManager::update(StateConnectionOut& out){
 	if(states.empty()){
 		return Status("There are no registered states left.");
 	} else if(!state_ptr){

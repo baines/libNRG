@@ -43,14 +43,34 @@ class Client;
 class Server;
 class Player;
 
+struct StateConnectionOut {
+	virtual bool ready() = 0;
+	virtual bool enqueuePacket(Packet& p, PacketFlags f = PKTFLAG_NONE) = 0;
+	virtual void resendLastPacket() = 0;
+};
+
 struct State {
 	virtual bool init(Client* c, Server* s, Player* p) = 0;
 	virtual bool onRecvPacket(Packet& p, PacketFlags f) = 0;
 	virtual bool needsUpdate() const = 0;
 	virtual size_t getTimeoutSeconds() const { return 10; }
-	virtual StateResult update(ConnectionOut& out, StateFlags f = SFLAG_NONE) = 0;
+	virtual StateResult update(StateConnectionOut& out, StateFlags f = SFLAG_NONE) = 0;
 	virtual ~State(){}
 };
+
+struct StateConnectionOutImpl : StateConnectionOut {
+	StateConnectionOutImpl(ConnectionOut& out);
+	bool ready();
+	bool enqueuePacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
+	void resendLastPacket();
+	Status sendAllPackets();
+	void update();
+private:
+	ConnectionOut& out;
+	bool isready, resend;
+	std::vector<std::pair<Packet, PacketFlags>> packet_queue;
+};
+
 
 }
 

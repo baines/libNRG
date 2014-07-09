@@ -48,6 +48,7 @@ protected:
 	const NetAddress& addr;
 	const UDPSocket& sock;
 	Connection con;
+	StateConnectionOutImpl state_con;
 	Packet buffer;
 	
 	int ping;
