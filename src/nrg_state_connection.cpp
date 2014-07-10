@@ -26,52 +26,38 @@ using namespace nrg;
 StateConnectionOutImpl::StateConnectionOutImpl(ConnectionOut& out)
 : out(out)
 , isready(true)
-, resend(false)
-, packet_queue(){
+, sent(false){
 
+}
+
+void StateConnectionOutImpl::reset(bool ready_to_send){
+	isready = ready_to_send;
+	sent = false;
+}
+
+bool StateConnectionOutImpl::sentPackets(){
+	return sent;
 }
 
 bool StateConnectionOutImpl::ready(){
 	return isready;
 }
 
-bool StateConnectionOutImpl::enqueuePacket(Packet& p, PacketFlags f){
-	if(!isready){
-		return false;
+Status StateConnectionOutImpl::sendPacket(Packet& p, PacketFlags f){
+	if(isready){
+		sent = true;
+		return out.sendPacket(p, f);
 	} else {
-		packet_queue.push_back(std::make_pair(p, f));
-		return true;
+		return Status("Not ready to send packet.");
 	}
 }
 
-void StateConnectionOutImpl::resendLastPacket(){
-	if(packet_queue.empty()){
-		resend = true;
+Status StateConnectionOutImpl::resendLastPacket(){
+	if(isready){
+		sent = true;
+		return out.resendLastPacket();
+	} else {
+		return Status("Not ready to send packet.");
 	}
-}
-
-Status StateConnectionOutImpl::sendAllPackets(){
-	if(resend){
-		out.resendLastPacket();
-		resend = false;
-	}
-	
-	Status result = StatusOK();
-	
-	for(auto& pair : packet_queue){
-		Status s = out.sendPacket(pair.first, pair.second);
-		if(!s){
-			result = s;
-			break;
-		}
-	}
-	
-	packet_queue.clear();
-	
-	return result;
-}
-
-void StateConnectionOutImpl::update(){
-	isready = packet_queue.empty();
 }
 

@@ -79,7 +79,7 @@ StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 		timeouts = 0;
 		if(phase == HS_NOT_STARTED){
 			buffer.reset().write8(HS_CLIENT_SYN);
-			out.enqueuePacket(buffer);
+			out.sendPacket(buffer);
 			phase = HS_WAITING;
 			res = STATE_CONTINUE;
 		} else if(phase == HS_ACCEPTED){
@@ -218,7 +218,7 @@ StateResult ClientGameState::update(StateConnectionOut& out, StateFlags f){
 	if(input) input->writeToPacket(buffer);
 	msg_manager.writeToPacket(buffer, server_ms_prev + diff_ms);
 
-	out.enqueuePacket(buffer);
+	out.sendPacket(buffer);
 
 	return STATE_CONTINUE;
 }

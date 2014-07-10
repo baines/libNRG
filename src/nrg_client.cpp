@@ -118,20 +118,20 @@ bool Client::update(){
 		}
 	}
 	
-	state_con.update();
-	
-	if(!state_manager.update(state_con)){
-		puts("State Update failed!");
-		return false;
-	}
-	
 	uint32_t current_ms = os::milliseconds();
-	if(current_ms - previous_ms > rate_limit_interval_ms){
-		state_con.sendAllPackets();
+	state_con.reset(current_ms - previous_ms > rate_limit_interval_ms);
+
+	bool result = state_manager.update(state_con);
+	
+	if(state_con.sentPackets()){
 		previous_ms = current_ms;
 	}
+		
+	if(!result){
+		puts("State Update failed!");
+	}
 	
-	return true;
+	return result;
 }
 
 void Client::setPacketRateLimit(uint32_t packets_per_sec){

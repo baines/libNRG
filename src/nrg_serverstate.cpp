@@ -65,7 +65,7 @@ StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 	} else {
 		Packet p(1);
 		p.write8(HS_ACCEPTED);
-		out.enqueuePacket(p, PKTFLAG_STATE_CHANGE);
+		out.sendPacket(p, PKTFLAG_STATE_CHANGE);
 		send_response = false;
 		return STATE_CHANGE;
 	}
@@ -139,7 +139,7 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 		master.writeToPacket(buffer);
 		msg_manager.writeToPacket(buffer, os::milliseconds());
 		
-		out.enqueuePacket(buffer);
+		out.sendPacket(buffer);
 	} else {
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
 		
@@ -159,7 +159,7 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 			snapshot.writeToPacket(buffer);
 			msg_manager.writeToPacket(buffer, os::milliseconds());
 			
-			out.enqueuePacket(buffer);
+			out.sendPacket(buffer);
 		} else {
 			return STATE_FAILURE;
 		}

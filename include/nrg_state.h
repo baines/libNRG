@@ -45,8 +45,8 @@ class Player;
 
 struct StateConnectionOut {
 	virtual bool ready() = 0;
-	virtual bool enqueuePacket(Packet& p, PacketFlags f = PKTFLAG_NONE) = 0;
-	virtual void resendLastPacket() = 0;
+	virtual Status sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE) = 0;
+	virtual Status resendLastPacket() = 0;
 };
 
 struct State {
@@ -60,15 +60,15 @@ struct State {
 
 struct StateConnectionOutImpl : StateConnectionOut {
 	StateConnectionOutImpl(ConnectionOut& out);
+	void reset(bool ready_to_send);
+	bool sentPackets();
+	
 	bool ready();
-	bool enqueuePacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
-	void resendLastPacket();
-	Status sendAllPackets();
-	void update();
+	Status sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
+	Status resendLastPacket();
 private:
 	ConnectionOut& out;
-	bool isready, resend;
-	std::vector<std::pair<Packet, PacketFlags>> packet_queue;
+	bool isready, sent;
 };
 
 

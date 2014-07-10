@@ -69,7 +69,7 @@ StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 	
 	if(client_mode){
 		if(starting){
-			out.enqueuePacket(buffer, PKTFLAG_STATE_CHANGE_ACK);
+			out.sendPacket(buffer, PKTFLAG_STATE_CHANGE_ACK);
 			starting = false;
 			r = STATE_CONTINUE;
 		} else if(done){

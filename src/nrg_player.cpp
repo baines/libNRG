@@ -59,8 +59,8 @@ bool PlayerImpl::addPacket(Packet& p){
 }
 
 Status PlayerImpl::update(){
-	state_con.update();
-	if(!state_manager.update(state_con) || !state_con.sendAllPackets()){
+	state_con.reset(true);
+	if(!state_manager.update(state_con)){
 		return Status("Client update failed.");
 	} else {
 		return con.out.getLastStatus();
