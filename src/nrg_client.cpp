@@ -55,7 +55,7 @@ Client::Client(const char* game_name, uint32_t game_version)
 , state_manager(this)
 , handshake()
 , game_state()
-, rate_limit_interval_ms(100)
+, rate_limit_interval_ms(10)
 , previous_ms(os::milliseconds())
 , user_pointer(nullptr)
 , dc_reason() {

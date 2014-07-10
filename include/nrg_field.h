@@ -115,8 +115,12 @@ private:
 template<typename T, size_t N>
 class Field<T[N]> : private FieldBase {
 public:
-	Field(FieldContainer* c) : FieldBase(c), data(){}
-	Field(FieldContainer* c, const T (&t)[N]) : FieldBase(c), data(t){}
+	Field(FieldContainer* c) : FieldBase(c), data(){
+		updated_indices.set();
+	}
+	Field(FieldContainer* c, const T (&t)[N]) : FieldBase(c), data(t){
+		updated_indices.set();
+	}
 
 	//TODO: read/write whole array if (index, val) pairs will take up more space
 	virtual size_t readFromPacket(Packet& p){

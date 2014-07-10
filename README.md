@@ -45,6 +45,9 @@ There are also nrg::Messages which are more like traditional one-shot packets.
 Other stuff worth mentioning
 ----------------------------
 
++ Loosely based on Quake III Arena's style of networking.
++ Client runs 1 tick behind the server and can interpolate between the latest 2
+snapshots it recieved.
 + Automatic endian conversion.
 + Variable length integer support.
 + Only sends changes in data when necessary.
