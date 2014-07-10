@@ -122,29 +122,44 @@ public:
 		updated_indices.set();
 	}
 
-	//TODO: read/write whole array if (index, val) pairs will take up more space
 	virtual size_t readFromPacket(Packet& p){
-		index_t count;		
+		index_t count;
 		p.read<index_t>(count);
-		for(size_t i = 0; i < count+1; ++i){
-			index_t k;
-			T v;
-			p.read<index_t>(k);
-			p.read<T>(v);
-			data_next[k] = v;
+		size_t uic = count + 1;
+		
+		if(uic * (sizeof(index_t) + sizeof(T)) > N * sizeof(T)){
+			for(size_t i = 0; i < N; ++i){
+				p.read<T>(data_next[i]);
+			}
+			return sizeof(index_t) + N * sizeof(T);
+		} else {
+			for(size_t i = 0; i < uic; ++i){
+				index_t k;
+				p.read<index_t>(k);
+				p.read<T>(data_next[k]);
+			}
+			return sizeof(index_t) + (uic * (sizeof(index_t) + sizeof(T)));
 		}
-		return sizeof(index_t) + (count * (sizeof(index_t) + sizeof(T)));
 	}
 
 	virtual size_t writeToPacket(Packet& p) const {
-		p.write<index_t>(updated_indices.count()-1);
-		for(size_t i = 0; i < N; ++i){
-			if(updated_indices[i]){
-				p.write<index_t>(i);
+		size_t uic = updated_indices.count();
+		p.write<index_t>(uic-1);
+		
+		if(uic * (sizeof(index_t) + sizeof(T)) > N * sizeof(T)){
+			for(size_t i = 0; i < N; ++i){
 				p.write<T>(data[i]);
 			}
+			return sizeof(index_t) + (N * sizeof(T));
+		} else {
+			for(size_t i = 0; i < N; ++i){
+				if(updated_indices[i]){
+					p.write<index_t>(i);
+					p.write<T>(data[i]);
+				}
+			}
+			return sizeof(index_t) + (uic * (sizeof(index_t) + sizeof(T)));
 		}
-		return sizeof(index_t) + (updated_indices.count() * (sizeof(index_t) + sizeof(T)));
 	}
 
 	virtual void shiftData(){
