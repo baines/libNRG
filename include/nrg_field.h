@@ -136,7 +136,11 @@ public:
 			for(size_t i = 0; i < uic; ++i){
 				index_t k;
 				p.read<index_t>(k);
-				p.read<T>(data_next[k]);
+				if(k < N){
+					p.read<T>(data_next[k]);
+				} else { // out of bounds for some reason, don't crash.
+					p.seek(SEEK_CUR, sizeof(T));
+				}
 			}
 			return sizeof(index_t) + (uic * (sizeof(index_t) + sizeof(T)));
 		}
