@@ -66,7 +66,7 @@ public:
 	
 	void sendMessage(const MessageBase& m);
 	
-	float getInterpTimer() const;
+	double getInterpTimer() const;
 	const ClientStats& getClientStats() const;
 
 	void startRecordingReplay(const char* filename);

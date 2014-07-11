@@ -69,7 +69,7 @@ StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 	
 	if(client_mode){
 		if(starting){
-			out.sendPacket(buffer, PKTFLAG_STATE_CHANGE_ACK);
+			if(!out.sendPacket(buffer, PKTFLAG_STATE_CHANGE_ACK)) return STATE_CONTINUE;
 			starting = false;
 			r = STATE_CONTINUE;
 		} else if(done){
@@ -84,7 +84,7 @@ StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 		}
 	} else {
 		if(resend){
-			out.resendLastPacket();
+			if(!out.resendLastPacket()) return STATE_CONTINUE;
 			resend = false;
 			r = STATE_CONTINUE;
 		} else if(f & SFLAG_TIMED_OUT || !done){

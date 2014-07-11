@@ -27,7 +27,7 @@ namespace nrg {
 
 template<class T>
 struct lerp {
-	T operator()(float one, float two, const double& x) const {
+	T operator()(double one, double two, const double& x) const {
 		return one + (two - one) * x;
 	}
 };

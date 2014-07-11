@@ -52,8 +52,9 @@ public:
 private:
 	DeltaSnapshot snapshot;
 	bool no_ack;
-	bool got_packet;
+	int unackd_updates;
 	uint8_t seq;
+	uint16_t last_sent_id;
 	uint16_t ack_time;
 	uint16_t c_time;
 	Packet buffer;

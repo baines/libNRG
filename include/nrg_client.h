@@ -57,6 +57,7 @@ public:
 	const ClientStats& getStats() const;
 	
 	void setPacketRateLimit(uint32_t packets_per_sec);
+	uint32_t getPacketRateLimit(void);
 
 	void startRecordingReplay(const char* filename);
 	void stopRecordingReplay();

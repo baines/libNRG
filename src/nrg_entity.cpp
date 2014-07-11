@@ -43,7 +43,7 @@ Entity::~Entity(){
 	if(manager)	manager->unregisterEntity(*this);
 }
 
-float Entity::getInterpTimer() const {
+double Entity::getInterpTimer() const {
 	return manager ? manager->getInterpTimer() : 1.0;
 }
 

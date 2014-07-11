@@ -57,7 +57,7 @@ struct  FieldContainer {
 	FieldContainer(const FieldContainer& copy);
 	FieldContainer& operator=(const FieldContainer& copy);
 	virtual void markUpdated(bool b) = 0;
-	virtual float getInterpTimer() const { return 1.0f; }
+	virtual double getInterpTimer() const { return 1.0; }
 	FieldBase* getFirstField() const;
 	size_t getNumFields() const;
 	void addField(FieldBase* f);
@@ -167,7 +167,7 @@ public:
 	}
 
 	virtual void shiftData(){
-		memcpy(data, data_next, N*sizeof(T));
+		memcpy(data, data_next, N * sizeof(T));
 	}
 
 	virtual void setUpdated(bool updated){

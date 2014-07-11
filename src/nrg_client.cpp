@@ -124,7 +124,7 @@ bool Client::update(){
 	bool result = state_manager.update(state_con);
 	
 	if(state_con.sentPackets()){
-		previous_ms = current_ms;
+		previous_ms = current_ms - ((current_ms - previous_ms) - rate_limit_interval_ms);
 	}
 		
 	if(!result){
@@ -136,6 +136,10 @@ bool Client::update(){
 
 void Client::setPacketRateLimit(uint32_t packets_per_sec){
 	rate_limit_interval_ms = 1 + 999 / std::max(1u, packets_per_sec);
+}
+
+uint32_t Client::getPacketRateLimit(void){
+	return 1000 / rate_limit_interval_ms;
 }
 
 bool Client::isConnected() const {

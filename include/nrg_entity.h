@@ -41,7 +41,7 @@ public:
 	 virtual void onUpdate(Client& c){}
 	
 	void markUpdated(bool updated);
-	float getInterpTimer() const;
+	double getInterpTimer() const;
 	
 	 uint16_t getID() const { return nrg_id; }
 	void setID(int id){ nrg_id = id; }
@@ -60,7 +60,7 @@ class InputBase;
 struct EntityManager {
 	virtual void markEntityUpdated(Entity& e){}
 	virtual void unregisterEntity(Entity& e){}
-	virtual float getInterpTimer() const { return 1.0f; }
+	virtual double getInterpTimer() const { return 1.0; }
 	virtual bool supportsPrediction() const { return false; }
 	virtual InputBase* getInput() const { return nullptr; }
 };

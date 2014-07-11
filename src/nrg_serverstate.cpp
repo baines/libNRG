@@ -74,8 +74,9 @@ StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 ServerPlayerGameState::ServerPlayerGameState()
 : snapshot()
 , no_ack(true)
-, got_packet(true)
+, unackd_updates(0)
 , seq(0)
+, last_sent_id(0)
 , ack_time(0)
 , c_time(0)
 , buffer()
@@ -101,7 +102,6 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
 	if(f & PKTFLAG_OUT_OF_ORDER) return true;
 
-	got_packet = true;
 	no_ack = false;
 
 	p.read16(ack_time);
@@ -115,11 +115,13 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 		i->onUpdate(*player);
 	}
 	
+	unackd_updates = 0;
+	
 	return msg_manager.readFromPacket(p, os::milliseconds());
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
-	return snapshot.getID() != server->getSnapshot().getID() && got_packet;
+	return snapshot.getID() != server->getSnapshot().getID() && unackd_updates < 3;
 }
 
 StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f){
@@ -127,12 +129,13 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 		return STATE_FAILURE;
 	}
 	
-	got_packet = false;
+	unackd_updates++;
 	
 	int ping = std::max<int>(0, (os::milliseconds() & USHRT_MAX) - c_time);
 
 	if(no_ack){
 		const Snapshot& master = server->getSnapshot();
+		last_sent_id = master.getID();
 		
 		buffer.reset().write16(master.getID()).write8(seq++);
 		UVarint(ping).encode(buffer);
@@ -149,12 +152,19 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 		
 		if(ss_r != snaps.rend()){
 			snapshot.reset();
-			
+
 			for(auto ss = ss_r.base(); ss != snaps.end(); ++ss){
 				snapshot.mergeWithNext(*ss);
 			}
 			
-			buffer.reset().write16(snapshot.getID()).write8(seq++);
+			auto last_it = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
+				return last_sent_id == s.getID();
+			});
+			
+			seq += distance(last_it.base(), snaps.end());
+			last_sent_id = snapshot.getID();
+			
+			buffer.reset().write16(snapshot.getID()).write8(seq);
 			UVarint(ping).encode(buffer);
 			snapshot.writeToPacket(buffer);
 			msg_manager.writeToPacket(buffer, os::milliseconds());

@@ -134,9 +134,6 @@ bool Server::update(){
 		}
 	}
 	
-	//NetAddress addr;
-	//sock.checkForErrors(addr);
-
 	timer = os::microseconds();
 
 	// generate snapshot

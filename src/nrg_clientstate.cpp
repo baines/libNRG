@@ -79,7 +79,7 @@ StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 		timeouts = 0;
 		if(phase == HS_NOT_STARTED){
 			buffer.reset().write8(HS_CLIENT_SYN);
-			out.sendPacket(buffer);
+			if(!out.sendPacket(buffer)) return STATE_CONTINUE;
 			phase = HS_WAITING;
 			res = STATE_CONTINUE;
 		} else if(phase == HS_ACCEPTED){
@@ -148,18 +148,20 @@ bool ClientGameState::onRecvPacket(Packet& p, PacketFlags f){
 
 	uint16_t server_ms = 0;
 	p.read16(server_ms);
+		
+	uint8_t server_seq = 0;
+	p.read8(server_seq);
+	
+	if(got_packet){
+		int dropped = server_seq - server_seq_prev;
+		interval = uint16_t(server_ms - server_ms_prev) / uint8_t(dropped);
+
+		while(--dropped > 0) stats_impl.addSnapshotStat(-1);
+	}
 	
 	client_ms_prev = client_ms;
 	client_ms = client->getSock().getLastTimestamp() / 1000;
 	
-	uint8_t server_seq = 0;
-	p.read8(server_seq);
-
-	if(got_packet){
-		int dropped = server_seq - server_seq_prev;
-		interval = uint16_t(server_ms - server_ms_prev) / uint8_t(server_seq - server_seq_prev);
-		while(--dropped > 0) stats_impl.addSnapshotStat(-1);
-	}
 	server_ms_prev = server_ms;
 	server_seq_prev = server_seq;
 
@@ -176,7 +178,7 @@ bool ClientGameState::onRecvPacket(Packet& p, PacketFlags f){
 	    Entity* e = pair.second;
 		e->markUpdated(false);
 		for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
-			f->shiftData();			
+			f->shiftData();
 			f->setUpdated(false);
 		}
 	}
@@ -208,7 +210,8 @@ StateResult ClientGameState::update(StateConnectionOut& out, StateFlags f){
 	int32_t n = max<int32_t>((now_ms - interval) - client_ms_prev, 0);
 	ss_timer = n / double(client_ms - client_ms_prev);
 	
-	static_cast<ClientStatsImpl*>(stats.get())->addInterpStat(ss_timer <= 1.0 ? 1 : ss_timer);
+	static_cast<ClientStatsImpl*>(stats.get())->addInterpStat(
+		ss_timer <= 1.0 ? 1 : (ss_timer - 1.0) * 16.0);
 
 	buffer.reset().write16(server_ms_prev);
 	
@@ -290,7 +293,7 @@ void ClientGameState::sendMessage(const MessageBase& m){
 	msg_manager.addMessage(m, server_ms_prev + diff_ms);
 }
 
-float ClientGameState::getInterpTimer() const {
+double ClientGameState::getInterpTimer() const {
 	return ss_timer;
 }
 
