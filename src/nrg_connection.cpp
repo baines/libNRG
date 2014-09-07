@@ -81,7 +81,7 @@ bool ConnectionIn::addPacket(Packet& p){
 		} 
 		
 		if(seq_dist > 0){ // new packet
-			packet_history << seq_dist;
+			packet_history <<= seq_dist;
 			packet_history[0] = 1;
 			cc.seq_num = h.seq_num;
 			
