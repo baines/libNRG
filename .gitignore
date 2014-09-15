@@ -5,4 +5,11 @@
 /examples/t2
 /examples/*/game_server
 /examples/*/game_client
-/libnrg.a
+/libnrg.creator
+/libnrg.config
+/libnrg.files
+/libnrg.includes
+/libnrg.creator.*
+*.exe
+*.dll
+*.a

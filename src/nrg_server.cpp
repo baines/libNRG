@@ -51,7 +51,7 @@ Server::Server(const char* game_name, uint32_t game_version, InputBase& input)
 , timer(nrg::os::microseconds())
 , user_pointer(nullptr)
 , interval(NRG_DEFAULT_SERVER_INTERVAL_US){
-
+	os::init();
 }
 
 Server::Server(const char* game_name, uint32_t game_version) 
@@ -65,7 +65,7 @@ Server::Server(const char* game_name, uint32_t game_version)
 , timer(nrg::os::microseconds())
 , user_pointer(nullptr)
 , interval(NRG_DEFAULT_SERVER_INTERVAL_US){
-
+	os::init();
 }
 
 bool Server::bind(const NetAddress& addr){

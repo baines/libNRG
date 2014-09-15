@@ -13,9 +13,9 @@ game in the examples/ballduel directory. You can also get a good overview from
 the LibNRG specification and final report that I produced at university here:
 http://abaines.me.uk/other/libnrg/ .
 
-LibNRG currently only compiles on Linux, and requires zlib unless you comment
-out the #define NRG_ENABLE_ZLIB_COMPRESSION line in include/nrg_config.h. It
-also requires a recent compiler with c++11 support, like gcc-4.7 or newer.
+LibNRG currently compiles on Linux or Windows (via mingw). It requires a recent 
+compiler with c++11 support, like gcc-4.7 or newer, or i686-w64-mingw32-g++ 
+v4.7+ for windows.
 
 The library is also licensed under the zlib open source license, so you can use 
 it in commercial games, statically link it, or make modifications under the 

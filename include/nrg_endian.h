@@ -21,7 +21,7 @@
 */
 #ifndef NRG_ENDIAN_H
 #define NRG_ENDIAN_H
-#include <endian.h>
+//#include <endian.h>
 /* adapted from http://stackoverflow.com/questions/809902/64-bit-ntohl-in-c */
 
 #if defined(__BYTE_ORDER__)

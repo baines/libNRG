@@ -42,7 +42,7 @@ public:
 	void writeToPacket(Packet& p) const;
 	void reset();
 private:
-	struct  EntityData {
+	struct EntityData {
 		uint16_t eid, etype;
 		std::vector<size_t> field_sizes;
 		Packet field_data;

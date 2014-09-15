@@ -25,6 +25,11 @@
 
 namespace nrg {
 namespace os {
+
+	Status init(void);
+
+	void uninit(void);
+
 	uint64_t microseconds();
 	
 	inline uint64_t milliseconds(){
@@ -36,6 +41,7 @@ namespace os {
 	}
 	
 	uint32_t random();
+
 }
 }
 

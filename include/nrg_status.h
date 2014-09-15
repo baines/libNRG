@@ -68,6 +68,10 @@ struct StatusErr : Status {
 
 // portability wrapper for both GNU and XSI strerror_r versions.
 static inline const char* strerr_r(int eno, char* buf, size_t sz){
+#ifdef _WIN32
+	strerror_s(buf, sz, eno);
+	return buf;
+#else
 	auto r = strerror_r(eno, buf, sz);
 	
 	if(std::is_same<decltype(r), int>::value){
@@ -75,6 +79,7 @@ static inline const char* strerr_r(int eno, char* buf, size_t sz){
 	} else {
 		return r;
 	}
+#endif
 }
 
 }

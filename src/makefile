@@ -1,20 +1,29 @@
+ifdef WINDOWS
+    suffix_shared := dll
+    suffix_static := mingw.a
+    CXX := i686-w64-mingw32-g++
+    LDFLAGS := -shared -lws2_32
+else
+    CXX := g++
+    CXXFLAGS := -fPIC
+    #-Wl,--version-script=../nrg_symbols.map
+    suffix_shared := so.0
+    suffix_static := a
+    LDFLAGS := -lrt -lz -shared -Wl,-soname,$(libname_shared)
+endif
+
 builddir := ../build
 libname := libnrg
-libname_shared := $(libname).so.0
-libname_static := $(libname).a
+libname_shared := $(libname).$(suffix_shared)
+libname_static := $(libname).$(suffix_static)
 headers := $(wildcard *.h) $(wildcard ../include/*.h)
 sources := $(wildcard *.cpp)
 objects := $(patsubst %.cpp,$(builddir)/%.o,$(sources))
 includes := -I../include
 
-CXX := g++-4.8
-
-CXXFLAGS := -pedantic -Wsign-promo -std=c++11 -g -Wall -fPIC -DBUILDING_NRG \
+CXXFLAGS += -pedantic -Wsign-promo -std=c++11 -g -Wall -DBUILDING_NRG \
 -ffast-math -fvisibility-inlines-hidden -fno-exceptions \
 -U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing 
-#-Wl,--version-script=../nrg_symbols.map
-
-LDFLAGS := -lrt -lz -shared -Wl,-soname,$(libname_shared)
 
 all: ../$(libname_shared) ../$(libname_static)
 

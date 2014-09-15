@@ -24,9 +24,9 @@
 #include "nrg_snapshot.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+//#include <sys/types.h>
+//#include <sys/stat.h>
+//#include <fcntl.h>
 
 using namespace nrg;
 
@@ -48,6 +48,7 @@ ReplayRecorder::ReplayRecorder()
 }
 
 bool ReplayRecorder::startRecording(const char* filename, int sid, const std::vector<Entity*>& ents){
+/* XXX: needs updating to match current protocol
 	if(isRecording()) stopRecording();
 
 	int fd = open(filename, O_WRONLY | O_CREAT, 00640);
@@ -58,7 +59,7 @@ bool ReplayRecorder::startRecording(const char* filename, int sid, const std::ve
 	file = gzdopen(fd, "wb");
 	if(!file) return false;
 
-/* XXX: needs updating to match current protocol
+
 	if(sid != -1){
 		Snapshot ss;
 		Packet p;
@@ -83,14 +84,14 @@ bool ReplayRecorder::isRecording() const {
 }
 
 void ReplayRecorder::stopRecording() {
-	gzclose(file);
+	//gzclose(file);
 	status = STATUS_STOPPED;
 }
 
 void ReplayRecorder::addPacket(Packet& p){
-	uint32_t sz = p.size();
-	gzwrite(file, &sz, sizeof(sz));
-	gzwrite(file, p.getBasePointer(), sz);
+	//uint32_t sz = p.size();
+	//gzwrite(file, &sz, sizeof(sz));
+	//gzwrite(file, p.getBasePointer(), sz);
 }
 
 ReplayServer::ReplayServer() 
@@ -109,7 +110,7 @@ ReplayServer::ReplayServer()
 }
 
 bool ReplayServer::openReplay(const char* filename){
-	int fd = open(filename, O_RDONLY);
+/*	int fd = open(filename, O_RDONLY);
 
 	char buff[sizeof(header)];
 	read(fd, buff, sizeof(header));
@@ -119,11 +120,14 @@ bool ReplayServer::openReplay(const char* filename){
 
 	file = gzdopen(fd, "rb");
 	return file != NULL;
+*/
+	return false;
 }
 
 bool ReplayServer::bind(const char* port){
-	bind_addr.resolve("127.0.0.1", port);
-	return sock.bind(bind_addr);
+	//bind_addr.resolve("127.0.0.1", port);
+	//return sock.bind(bind_addr);
+	return false;
 }
 
 bool ReplayServer::update(){

@@ -23,7 +23,12 @@
 #define NRG_REPLAY_H
 #include "nrg_core.h"
 #include "nrg_entity.h"
+
+#ifdef NRG_ENABLE_ZLIB_COMPRESSION
 #include <zlib.h>
+#else
+typedef void* gzFile;
+#endif
 
 namespace nrg {
 

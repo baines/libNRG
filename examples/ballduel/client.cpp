@@ -32,7 +32,7 @@ bool running = true;
 MyInput input;
 std::vector<Sprite> sprites;
 int score1 = 0, score2 = 0;
-sf::String score_str;
+sf::Text score_str;
 
 void clientAddEntity(PlayerEntity* e){ sprites.push_back(Sprite(e)); }
 void clientAddEntity(BallEntity* e){ sprites.push_back(Sprite(e)); }
@@ -45,8 +45,8 @@ void clientSetScore(bool left_player, int score){
 
 	char buf[32];
 	snprintf(buf, sizeof(buf), "%3d  -  %-3d", score1, score2);
-	score_str.SetText(buf);
-	score_str.SetCenter(score_str.GetRect().GetWidth()/2, 0);
+	score_str.setString(buf);
+	score_str.setOrigin(score_str.getGlobalBounds().width/2, 0);
 }
 
 void checkNRGEvents(nrg::Client& c){
@@ -60,9 +60,9 @@ void checkNRGEvents(nrg::Client& c){
 	}
 }
 
-void handleSFMLKeyPress(const sf::Key::Code key){
+void handleSFMLKeyPress(const sf::Keyboard::Key key){
 	switch(key){
-	case sf::Key::Escape:
+	case sf::Keyboard::Escape:
 		running = false;
 		break;
 	}
@@ -70,10 +70,10 @@ void handleSFMLKeyPress(const sf::Key::Code key){
 
 void checkSFMLEvents(sf::RenderWindow& win){
 	sf::Event e;
-	while(win.GetEvent(e)){
-		if(e.Type == sf::Event::Closed) running = false;
-		if(e.Type == sf::Event::KeyPressed) handleSFMLKeyPress(e.Key.Code);
-		if(e.Type == sf::Event::MouseMoved){ input.setY(e.MouseMove.Y); }
+	while(win.pollEvent(e)){
+		if(e.type == sf::Event::Closed) running = false;
+		if(e.type == sf::Event::KeyPressed) handleSFMLKeyPress(e.key.code);
+		if(e.type == sf::Event::MouseMoved){ input.setY(e.mouseMove.y); }
 	}
 }
 
@@ -92,24 +92,27 @@ int main(int argc, char** argv){
 	client.registerEntity(new BallEntity());
 	client.connect(nrg::NetAddress((playing_replay || argc < 2) ? c::addr_local : argv[1], c::port));
 
-	sf::View view(sf::FloatRect(0, 0, c::screen_w, c::screen_h));
 	sf::RenderWindow window(sf::VideoMode(c::screen_w, c::screen_h), c::client_title);
-	window.SetView(view);
-	window.UseVerticalSync(true);
-	window.SetFramerateLimit(c::fps_limit);
+	window.setVerticalSyncEnabled(true);
+	window.setFramerateLimit(c::fps_limit);
 	
-	score_str.SetX(c::screen_w / 2);
+	sf::Font score_font;
+	score_font.loadFromFile("FreeSans.ttf");
+	
+	score_str.setFont(score_font);
+	score_str.setPosition(c::screen_w / 2, 0);
 
 	uint32_t tex[64*64];
 
-	sf::Image lagometer;
-	lagometer.SetSmooth(false);
-	lagometer.LoadFromPixels(64, 64, client.getStats().toRGBATexture(tex));
+	sf::Texture lagometer;
+	lagometer.create(64, 64);
+	lagometer.setSmooth(false);
+	
 	sf::Sprite lsprite(lagometer);
-	lsprite.SetColor(c::lag_col);
-	lsprite.SetScale(c::lag_scale, c::lag_scale);
-	lsprite.SetCenter(c::lag_centre, c::lag_centre);
-	lsprite.SetPosition(c::screen_w, c::screen_h);
+	lsprite.setColor(c::lag_col);
+	lsprite.setScale(c::lag_scale, c::lag_scale);
+	lsprite.setOrigin(c::lag_centre, c::lag_centre);
+	lsprite.setPosition(c::screen_w, c::screen_h);
 
 	if(!playing_replay && argc > 2) client.startRecordingReplay(argv[2]);
 	
@@ -117,20 +120,20 @@ int main(int argc, char** argv){
 		if(playing_replay) rserv.update();
 		running = client.update();
 		
-		lagometer.LoadFromPixels(64, 64, client.getStats().toRGBATexture(tex));
+		lagometer.update(client.getStats().toRGBATexture(tex));
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
 		
-		window.Clear();
+		window.clear();
 		for(auto& s : sprites){
 			s.draw(window);
 		}
-		window.Draw(lsprite);
-		window.Draw(score_str);
-		window.Display();
+		window.draw(lsprite);
+		window.draw(score_str);
+		window.display();
 	}
 
-	window.Close();
+	window.close();
 	
 	return 0;
 }

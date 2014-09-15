@@ -31,9 +31,6 @@ using namespace nrg;
 using namespace std;
 
 namespace {
-	typedef map<uint16_t, Snapshot::EntityData>::iterator EDat_it;
-	typedef map<uint16_t, Snapshot::EntityData>::const_iterator EDat_cit;
-	
 	enum {
 		SNAPFLAG_DEL_SECTION  = 0x80,
 		SNAPFLAG_FULL_SECTION = 0x40,
@@ -85,7 +82,7 @@ void Snapshot::addEntity(Entity* e){
 
 
 void Snapshot::removeEntityById(uint16_t id){
-	EDat_it it = edata.find(id);
+	auto it = edata.find(id);
 	if(it != edata.end()) edata.erase(it);
 }
 
@@ -99,7 +96,7 @@ void Snapshot::writeToPacket(Packet& p) const {
 		p.write8(SNAPFLAG_FULL_SECTION);
 		UVarint(edata.size()).encode(p);
 
-		for(EDat_cit i = edata.begin(), j = edata.end(); i!=j; ++i){
+		for(auto i = edata.begin(), j = edata.end(); i!=j; ++i){
 			const EntityData& ed = i->second;
 			UVarint(ed.eid).encode(p);
 			UVarint(ed.etype).encode(p);

@@ -19,16 +19,25 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-#ifdef __linux
+
+#include "nrg_os.h"
+#include <random>
+using namespace nrg;
+
+#if defined(__linux)
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <random>
-#include "nrg_os.h"
 
-using namespace nrg;
+Status os::init(void){
+	return StatusOK();
+}
+
+void os::uninit(void){
+
+}
 
 uint64_t os::microseconds(){
 	struct timespec t = {};
@@ -55,5 +64,54 @@ uint32_t os::random(){
 	return i;
 }
 
+#elif defined(_WIN32)
+
+static bool inited = false;
+static uint64_t perf_freq = 1;
+
+Status os::init(void){
+	if(!inited){
+		LARGE_INTEGER f;
+		QueryPerformanceFrequency(&f);
+		perf_freq = (double)f.QuadPart / 1000000;
+
+		WSADATA stuff;
+
+		if(WSAStartup(MAKEWORD(2,2), &stuff) != 0){
+			return Status("WSAStartup Failed");
+		} else {
+			inited = true;
+			return StatusOK();
+		}
+	} else {
+		return StatusOK();
+	}
+}
+
+void os::uninit(void){
+	if(inited){
+		WSACleanup();
+		inited = false;
+	}
+}
+
+uint64_t os::microseconds(){
+	LARGE_INTEGER perf_count;
+	QueryPerformanceCounter(&perf_count);
+
+	return perf_count.QuadPart / perf_freq;
+}
+
+uint32_t os::random(){
+	uint32_t i = 0;
+
+	uint64_t t = os::microseconds();
+	uint32_t h = t >> 32, l = static_cast<uint32_t>(t);
+
+	std::seed_seq({ l, h, static_cast<uint32_t>(rand_r(&l))})
+	.generate(&i, (&i)+1);
+
+	return i;
+}
+
 #endif
-//TODO Windows

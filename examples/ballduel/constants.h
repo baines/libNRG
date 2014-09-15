@@ -50,8 +50,8 @@ namespace constants {
 	
 #ifdef CLIENTSIDE
 	static const sf::Color lag_col(0xff, 0xff, 0xff, 0xcc);
-	static const sf::Shape ball(sf::Shape::Rectangle(0, 0, ball_size, ball_size, sf::Color::White));
-	static const sf::Shape paddle(sf::Shape::Rectangle(0, 0, paddle_w, paddle_h, sf::Color::White));
+	static const sf::RectangleShape ball(sf::Vector2f(ball_size, ball_size));
+	static const sf::RectangleShape paddle(sf::Vector2f(paddle_w, paddle_h));
 #endif
 }
 

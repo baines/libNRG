@@ -54,12 +54,12 @@ public:
 		}
 		
 		const iterator& operator++(void){
-			if(idx != buff->end_idx) idx = (idx + 1) % buff->data.size();
+			if(idx != (ssize_t)buff->end_idx) idx = (idx + 1) % buff->data.size();
 			return *this;
 		}
 		
 		const iterator& operator--(void){
-			if(idx != buff->start_idx) --idx;
+			if(idx != (ssize_t)buff->start_idx) --idx;
 			if(idx < 0) idx = buff->data.size()-1;
 			return *this;
 		}

@@ -40,6 +40,7 @@ Client::Client(const char* game_name, uint32_t game_version, InputBase& input)
 , previous_ms(os::milliseconds())
 , user_pointer(nullptr)
 , dc_reason() {
+	os::init();
 	state_manager.addState(game_state);
 	state_manager.addState(handshake);
 }
@@ -59,6 +60,7 @@ Client::Client(const char* game_name, uint32_t game_version)
 , previous_ms(os::milliseconds())
 , user_pointer(nullptr)
 , dc_reason() {
+	os::init();
 	state_manager.addState(game_state);
 	state_manager.addState(handshake);
 }

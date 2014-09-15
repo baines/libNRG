@@ -21,13 +21,27 @@
 */
 #ifndef NRG_CORE_H
 #define NRG_CORE_H
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
+#ifdef _WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include "windows.h"
+	#include "winsock2.h"
+	#include "ws2tcpip.h"
+	typedef int socklen_t;
+#else
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <sys/time.h>
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+#endif
+#include "stdint.h"
 #include "nrg_status.h"
+
+#ifndef INET6_ADDRSTRLEN
+#define INET6_ADDRSTRLEN 46
+#endif
 
 // adapted from http://gcc.gnu.org/wiki/Visibility
 #if defined _WIN32 || defined __CYGWIN__

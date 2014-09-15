@@ -46,15 +46,15 @@ public:
 	void draw(sf::RenderWindow& win){
 		if(type == BALL){
 			if(entity->getX() != (c::screen_w - c::ball_size) / 2) interp = true;
-			if(abs(entity->getX() - s.GetPosition().x) > c::screen_w / 4) interp = false;
+			if(abs(entity->getX() - s.getPosition().x) > c::screen_w / 4) interp = false;
 		}
 	
 		if(interp){
-			s.SetPosition(entity->getXI(), entity->getYI());
+			s.setPosition(entity->getXI(), entity->getYI());
 		} else {
-			s.SetPosition(entity->getX(), entity->getY());
+			s.setPosition(entity->getX(), entity->getY());
 		}
-		win.Draw(s);
+		win.draw(s);
 	}
 
 	bool operator==(uint16_t id){
@@ -62,7 +62,7 @@ public:
 	}
 private:
 	bool interp;
-	sf::Shape s;
+	sf::RectangleShape s;
 	EntityBase* entity;
 	uint16_t type;
 };

@@ -22,9 +22,9 @@
 #include "nrg_socket.h"
 #include "nrg_config.h"
 #include "nrg_os.h"
-#include <unistd.h>
-#include <sys/time.h>
-#include <linux/errqueue.h>
+#ifdef NRG_ENABLE_MSG_ERRQUEUE
+    #include <linux/errqueue.h>
+#endif
 
 using namespace nrg;
 using std::unique_ptr;
@@ -104,10 +104,11 @@ bool Socket::isConnected() const {
 
 Status Socket::sendPacket(const Packet& p) const {
 	size_t sz = 0, attempts = 0;
-	
+
 	// send() should send a full datagram, but loop just in case.
 	do {
-		ssize_t res = ::send(fd, p.getBasePointer() + sz, p.size() - sz, 0);
+		const char* ptr = reinterpret_cast<const char*>(p.getBasePointer() + sz);
+		ssize_t res = ::send(fd, ptr, p.size() - sz, 0);
 		if(res == -1){
 			int err = errno;
 			if(attempts++ < 3 && (err == EAGAIN || err == EWOULDBLOCK)){
@@ -127,10 +128,11 @@ Status Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
 	size_t sz = 0, attempts = 0;
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
-	
+
 	// sendto() should send a full datagram, but loop just in case.
 	do {
-		ssize_t res = ::sendto(fd, p.getBasePointer() + sz, p.size() - sz, 0, sa, len);
+		const char* ptr = reinterpret_cast<const char*>(p.getBasePointer() + sz);
+		ssize_t res = ::sendto(fd, ptr, p.size() - sz, 0, sa, len);
 		if(res == -1){
 			int err = errno;
 			if(attempts++ < 3 && (err == EAGAIN || err == EWOULDBLOCK)){
@@ -147,7 +149,7 @@ Status Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
 }
 
 Status Socket::recvPacket(Packet& p) const {
-	uint8_t buf[NRG_MAX_PACKET_SIZE];
+	char buf[NRG_MAX_PACKET_SIZE];
 	
 	ssize_t result = ::recv(fd, buf, NRG_MAX_PACKET_SIZE, 0);
 	
@@ -161,7 +163,7 @@ Status Socket::recvPacket(Packet& p) const {
 
 Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 	struct sockaddr_storage sas = {};
-	uint8_t buf[NRG_MAX_PACKET_SIZE];
+	char buf[NRG_MAX_PACKET_SIZE];
 	socklen_t len = sizeof(sas);
 	
 	bool data_ready = dataPending(0);
@@ -215,7 +217,9 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 }
 
 //XXX: Linux/POSIX specific, not sure if there's similar functionality on Windows.
+
 Status Socket::checkErrorQueue(NetAddress& culprit){
+#ifdef NRG_ENABLE_MSG_ERRQUEUE
 	struct sockaddr_storage sas = {};
 	uint8_t buf[NRG_MAX_PACKET_SIZE];
 	socklen_t len = sizeof(sas);
@@ -256,6 +260,9 @@ Status Socket::checkErrorQueue(NetAddress& culprit){
 	}
 	
 	return ret;
+#else
+	return StatusOK();
+#endif
 }
 
 bool Socket::dataPending(int usToBlock) const {
@@ -290,14 +297,19 @@ const std::unique_ptr<NetAddress>& Socket::getBoundAddress(){
 }
 
 Socket::~Socket(){
-	if(fd >= 0) close(fd);
+	if(fd >= 0){
+#ifdef _WIN32
+		closesocket(fd);
+#else
+		close(fd);
+#endif
+	}
 }
 
 #if defined __WIN32
-#include <Winsock2.h>
 void Socket::setNonBlocking(bool enabled){
 	u_long l = enabled ? 1 : 0;
-	ioctlsocket(fd, FIONBIO, &i);
+	ioctlsocket(fd, FIONBIO, &l);
 }
 #else
 #include <fcntl.h>
@@ -313,12 +325,11 @@ void Socket::enableTimestamps(bool enable){
 }
 
 void Socket::handleUnconnectedICMPErrors(bool enable){
+#ifdef NRG_ENABLE_MSG_ERRQUEUE
 	use_errqueue = enable;
 	setOption<int>(IPPROTO_IP, IP_RECVERR, enable);
+#endif
 }
-
-#include <err.h>
-#include <netinet/ip.h>
 
 UDPSocket::UDPSocket(int family)
 : Socket(SOCK_DGRAM, family){

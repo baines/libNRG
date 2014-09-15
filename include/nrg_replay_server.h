@@ -24,7 +24,12 @@
 #include "nrg_core.h"
 #include "nrg_socket.h"
 #include "nrg_server_state.h"
-#include <zlib.h>
+
+#ifdef NRG_ENABLE_ZLIB_COMPRESSION
+	#include <zlib.h>
+#else
+	typedef void* gzFile;
+#endif
 
 namespace nrg {
 
