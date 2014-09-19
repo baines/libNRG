@@ -15,30 +15,27 @@
 		! OR:
 			! don't store predictions
 			! replay the predictions even when they were probably correct.
-! pre-login check against game name e.t.c, rate limiting w/ queue
-	! server.setConnectCheck(const function<bool(const char* game, uint32_t vers)>&)
-	! default -> return (strcmp(game, sv_game) == 0 && vers == sv_vers);
+! login rate limiting w/ queue
 
 + Redesign Events to support custom unbounded number, not union.
 	+ Maybe use template style similar to Message
 + Interfaces for GameState + HandshakeState
 + Handshake needs a queue system probably
-+ fix connection w/ split packet not arriving in order
-	+ Change header to work like IP, with 4 bits for packet offset
 + allow custom states
 	+ include default in Server, Client, accept pointer which defaults to inner
 + global states for server
 + States can choose next state dynamically instead of static ordering
-	+ Use strings given by states to choose next
+	+ Use strings given by states to choose next?
 + finish symbol map
 + use pimpl or interfaces to hide implementation
-+ More State Funcs:
++ More State Funcs: (necessary?)
 	- State::getRecvType()
 		- STATE_RECV_NORMAL
 		- STATE_RECV_RAW
 	- State::getName()
 + reference type specialisation for fields
 	+ pointer too for dynamic arrays?
++ logging system
 
 ? UDP Download state
 ? Lobby state

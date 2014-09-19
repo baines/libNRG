@@ -25,7 +25,7 @@
 
 using namespace nrg;
 
-Client::Client(const char* game_name, uint32_t game_version, InputBase& input) 
+Client::Client(const std::string& game_name, uint32_t game_version, InputBase& input) 
 : sock()
 , input(&input)
 , buffer()
@@ -38,14 +38,16 @@ Client::Client(const char* game_name, uint32_t game_version, InputBase& input)
 , game_state()
 , rate_limit_interval_ms(10)
 , previous_ms(os::milliseconds())
+, game_name(game_name)
+, game_version(game_version)
+, player_id(-1)
 , user_pointer(nullptr)
 , dc_reason() {
-	os::init();
 	state_manager.addState(game_state);
 	state_manager.addState(handshake);
 }
 
-Client::Client(const char* game_name, uint32_t game_version) 
+Client::Client(const std::string& game_name, uint32_t game_version) 
 : sock()
 , input(nullptr)
 , buffer()
@@ -58,9 +60,11 @@ Client::Client(const char* game_name, uint32_t game_version)
 , game_state()
 , rate_limit_interval_ms(10)
 , previous_ms(os::milliseconds())
+, game_name(game_name)
+, game_version(game_version)
+, player_id(-1)
 , user_pointer(nullptr)
 , dc_reason() {
-	os::init();
 	state_manager.addState(game_state);
 	state_manager.addState(handshake);
 }
@@ -170,6 +174,11 @@ void Client::startRecordingReplay(const char* filename){
 
 void Client::stopRecordingReplay(){
 	game_state.stopRecordingReplay();
+}
+
+void Client::setServerParams(const Version& lib_v, uint32_t game_v, uint16_t pid){
+	player_id = pid;
+	// TODO: store and use server version info.
 }
 
 Client::~Client(){

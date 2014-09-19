@@ -25,32 +25,37 @@
 using namespace nrg;
 
 nrg::Version nrg::getLibVersion(void){
-	return Version(0, 0, 0);
+	return Version(0, 0, 1);
 }
 
-bool Version::operator>(const Version& v){
+bool nrg::isVersionCompatible(const Version& v) {
+	// TODO: matrix of compatible versions, for now just assume only equal versions are compatible
+	return v == getLibVersion();
+}
+
+bool Version::operator>(const Version& v) const {
 	return (v_major == v.v_major) ? ((v_minor == v.v_minor) 
 	? v_patch > v.v_patch : v_minor > v.v_minor) : v_major > v.v_major;
 }
 
-bool Version::operator<(const Version& v){
+bool Version::operator<(const Version& v) const {
 	return (v_major == v.v_major) ? ((v_minor == v.v_minor) 
 	? v_patch < v.v_patch : v_minor < v.v_minor) : v_major < v.v_major;
 }
 
-bool Version::operator>=(const Version& v){
+bool Version::operator>=(const Version& v) const {
 	return !(*this < v);
 }
 
-bool Version::operator<=(const Version& v){
+bool Version::operator<=(const Version& v) const {
 	return !(*this > v);
 }
 
-bool Version::operator==(const Version& v){
+bool Version::operator==(const Version& v) const {
 	return v_major == v.v_major && v_minor == v.v_minor && v_patch == v.v_patch;
 }
 
-bool Version::operator!=(const Version& v){
+bool Version::operator!=(const Version& v) const {
 	return !(*this == v);
 }
 

@@ -35,34 +35,61 @@ using namespace std;
 
 namespace {
 	enum {
-		HS_NOT_STARTED = -1,
-		HS_WAITING     = 0,
-		HS_CLIENT_SYN  = 1,
-		HS_ACCEPTED    = 1	
+		PHASE_NOT_STARTED = -1,
+		PHASE_WAITING     = 0,
+		PHASE_ACCEPTED    = 1,
+		PHASE_REJECTED    = 2
 	};
-	
+		
 	static const size_t NRG_CGS_HEADER_SIZE = 4;
 }
 
 ClientHandshakeState::ClientHandshakeState() 
-: phase(HS_NOT_STARTED)
+: phase(PHASE_NOT_STARTED)
 , timeouts(0){
 
 }
 
+bool ClientHandshakeState::init(Client* c, Server* s, Player* p){
+	client = c;
+	return c != nullptr;
+}
+
 bool ClientHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
-	if(phase == HS_WAITING && p.remaining()){
-		uint8_t i = 0;
-		p.read8(i);
-		phase = i;
+	if(phase != PHASE_WAITING || !p.remaining()) return false;
+	
+	uint8_t server_response = 0;
+	p.read8(server_response);
+	
+	Version v;
+	
+	if(p.remaining() <= sizeof(Version) + sizeof(uint32_t)){
+		return false;
+	}
+	
+	p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
+	
+	uint32_t server_game_ver = 0;
+	
+	p.read32(server_game_ver);
+	
+	if(server_response == HS_ACCEPTED && p.remaining() == sizeof(uint16_t)){
+		uint16_t our_player_id = 0;
+		p.read16(our_player_id);
+		
+		client->setServerParams(v, server_game_ver, our_player_id);
+		
+		phase = PHASE_ACCEPTED;
 		return true;
 	} else {
+		// TODO: notify client which response we got somehow.
+		phase = PHASE_REJECTED;
 		return false;
 	}
 }
 	
 bool ClientHandshakeState::needsUpdate() const {
-	return (phase != HS_WAITING);
+	return (phase != PHASE_WAITING);
 }
 	
 StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
@@ -77,12 +104,17 @@ StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 		}
 	} else {
 		timeouts = 0;
-		if(phase == HS_NOT_STARTED){
-			buffer.reset().write8(HS_CLIENT_SYN);
+		if(phase == PHASE_NOT_STARTED){
+			Version v = getLibVersion();
+			buffer.reset().write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
+			
+			Codec<std::string>().encode(buffer, client->getGameName());
+			buffer.write32(client->getGameVersion());
+			
 			if(!out.sendPacket(buffer)) return STATE_CONTINUE;
-			phase = HS_WAITING;
+			phase = PHASE_WAITING;
 			res = STATE_CONTINUE;
-		} else if(phase == HS_ACCEPTED){
+		} else if(phase == PHASE_ACCEPTED){
 			res = STATE_CHANGE;
 		} else {
 			res = STATE_FAILURE;

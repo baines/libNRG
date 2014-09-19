@@ -30,44 +30,89 @@
 using namespace nrg;
 using namespace std;
 
-namespace {
-	enum {
-		HS_NOT_STARTED = -1,
-		HS_WAITING     = 0,
-		HS_CLIENT_SYN  = 1,
-		HS_ACCEPTED    = 1	
-	};
+ServerHandshakeState::ServerHandshakeState() 
+: server(nullptr)
+, player(nullptr)
+, response(HS_NONE)
+, packet() {
+
 }
 
-ServerHandshakeState::ServerHandshakeState() 
-: send_response(false){
-
+bool ServerHandshakeState::init(Client* c, Server* s, Player* p){
+	assert(s != nullptr);
+	assert(p != nullptr);
+	server = s;
+	player = p;
+	
+	response = HS_NONE;
+	
+	return true;
 }
 
 bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
-	if(p.remaining() == 1){
-		uint8_t v;
-		p.read8(v);
-		if(v == HS_CLIENT_SYN) send_response = true;
-		return true;
-	} else {
-		return false;	
+	Version v;
+	
+	if(p.remaining() <= sizeof(Version)){
+		return false;
 	}
-}
-
-bool ServerHandshakeState::needsUpdate() const {
-	return send_response;
+	
+	p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
+	
+	if(!isVersionCompatible(v)){
+		response = HS_WRONG_LIB_VERSION;
+		return true;
+	}
+	
+	std::string client_game;
+	Codec<std::string>().decode(p, client_game);
+	
+	if(client_game != server->getGameName()){
+		response = HS_WRONG_GAME;
+		return true;
+	}
+	
+	uint32_t client_game_ver = 0;
+	if(p.remaining() < sizeof(client_game_ver)){
+		return false;
+	}
+	
+	p.read32(client_game_ver);
+	if(!server->isGameVersionCompatible(client_game_ver)){
+		response = HS_WRONG_GAME_VERSION;
+		return true;
+	}
+	
+	if(server->isFull()){
+		response = HS_SERVER_FULL;
+		return true;
+	}
+	
+	response = HS_ACCEPTED;
+	return true;
 }
 
 StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
-	if(f & SFLAG_TIMED_OUT){
-		return STATE_FAILURE;
+	packet.reset();
+	packet.write8(response);
+	
+	Version v = getLibVersion();
+	packet.write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
+	
+	uint32_t game_v = server->getGameVersion();
+	packet.write32(game_v);
+	
+	if(response == HS_ACCEPTED){
+		packet.write16(player->getID());
+		if(out.sendPacket(packet)){
+			server->pushEvent(PlayerEvent { PLAYER_JOIN, player->getID(), player });
+			const NetAddress& addr = player->getRemoteAddress();
+			printf("Client connected: [%s:%d]\n", addr.getIP(), addr.getPort());
+			return STATE_CHANGE;
+		} else {
+			return STATE_CONTINUE;
+		}
 	} else {
-		Packet p(1);
-		p.write8(HS_ACCEPTED);
-		out.sendPacket(p, PKTFLAG_STATE_CHANGE);
-		send_response = false;
-		return STATE_CHANGE;
+		return STATE_FAILURE;
 	}
 }
 

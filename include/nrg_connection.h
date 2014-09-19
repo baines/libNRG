@@ -24,6 +24,7 @@
 #include "nrg_core.h"
 #include "nrg_netaddress.h"
 #include "nrg_packet.h"
+#include "nrg_packet_header.h"
 #include "nrg_socket.h"
 #include <bitset>
 #include <array>
@@ -48,7 +49,6 @@ enum PacketFlags : uint8_t {
 
 struct  ConnectionCommon {
 	ConnectionCommon(const NetAddress& remote_addr);
-	size_t getHeaderSize() const { return 4; }
 	void setTransform(PacketTransformation* transform);
 	const NetAddress& remote_addr;
 	uint16_t seq_num;
@@ -87,9 +87,11 @@ public:
 	Status getLastStatus() const;
 	void setTransform(PacketTransformation* transform);
 private:
+	Status sendPacketWithHeader(Packet& p, PacketHeader h);
 	ConnectionCommon cc;
 	const Socket& sock;
 	Packet buffer, buffer2, last;
+	PacketHeader last_header;
 	Status last_status;
 };
 

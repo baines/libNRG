@@ -24,14 +24,14 @@
 
 class Sprite {
 public:
-	Sprite(sf::Image i, ExampleEntity* e) : s(i), entity(e){ 
+	Sprite(ExampleEntity* e) : s(sf::Vector2f(16, 16)), entity(e){ 
 		update(true);
 	}
 	void update(bool interp){
-		s.SetPosition(entity->getX(interp), entity->getY(interp));
+		s.setPosition(entity->getX(interp), entity->getY(interp));
 	}
 	void draw(sf::RenderWindow& win){
-		win.Draw(s);
+		win.draw(s);
 	}
 	bool operator==(nrg::Entity* e){
 		if(e->getType() != entity->getType()){
@@ -41,7 +41,7 @@ public:
 		}
 	}
 private:
-	sf::Sprite s;
+	sf::RectangleShape s;
 	ExampleEntity* entity;
 };
 

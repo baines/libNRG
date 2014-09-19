@@ -38,9 +38,31 @@ namespace {
 		}
 	}
 	
+	static bool default_ver_func(uint32_t a, uint32_t b){
+		return a == b;
+	}
+	
+	static bool default_con_check(Server& s, Packet& p){
+		const std::string& actual_name = s.getGameName();
+		
+		if(p.remaining() < PacketHeader::size + sizeof(Version) + actual_name.size() + sizeof(uint32_t)){
+			return false;
+		}
+		
+		p.seek(PacketHeader::size + sizeof(Version), SEEK_SET);
+		std::string given_name;
+		Codec<std::string>().decode(p, given_name);
+		p.seek(0, SEEK_SET);
+		
+		if(given_name != actual_name){
+			return false;
+		} else {
+			return true;
+		}
+	}
 }
 
-Server::Server(const char* game_name, uint32_t game_version, InputBase& input) 
+Server::Server(const std::string& game_name, uint32_t game_version, InputBase& input) 
 : sock()
 , buffer()
 , input(&input)
@@ -49,12 +71,17 @@ Server::Server(const char* game_name, uint32_t game_version, InputBase& input)
 , global_msg_handlers()
 , current_player(nullptr)
 , timer(nrg::os::microseconds())
+, game_name(game_name)
+, game_version(game_version)
+, max_players(0)
+, version_func(&default_ver_func)
+, connect_check(&default_con_check)
 , user_pointer(nullptr)
 , interval(NRG_DEFAULT_SERVER_INTERVAL_US){
-	os::init();
+
 }
 
-Server::Server(const char* game_name, uint32_t game_version) 
+Server::Server(const std::string& game_name, uint32_t game_version) 
 : sock()
 , buffer()
 , input(nullptr)
@@ -63,9 +90,14 @@ Server::Server(const char* game_name, uint32_t game_version)
 , global_msg_handlers()
 , current_player(nullptr)
 , timer(nrg::os::microseconds())
+, game_name(game_name)
+, game_version(game_version)
+, max_players(0)
+, version_func(&default_ver_func)
+, connect_check(&default_con_check)
 , user_pointer(nullptr)
 , interval(NRG_DEFAULT_SERVER_INTERVAL_US){
-	os::init();
+
 }
 
 bool Server::bind(const NetAddress& addr){
@@ -99,7 +131,10 @@ bool Server::update(){
 		if(it == clients.end()){
 			if(!recv_status) continue;
 			
-			printf("New client: %s:%d\n", addr.name(), addr.port());
+			// test if the packet is roughly of the right format before allocating a new player
+			if(!connect_check(*this, buffer)) continue;
+			
+			printf("Client connecting: [%s:%d]\n", addr.getIP(), addr.getPort());
 			
 			uint16_t pid = player_ids.acquire();
 			auto res = clients.insert(make_pair(addr, nullptr));
@@ -110,13 +145,10 @@ bool Server::update(){
 			for(auto& m : global_msg_handlers){
 				it->second->registerMessageHandler(*m);
 			}
-			
-			PlayerEvent e = { PLAYER_JOIN, pid, it->second };
-			eventq.pushEvent(e);
 		}
 				
 		if(!recv_status){
-			printf("Client quit: %s:%d\n", it->first.name(), it->first.port());
+			printf("Client quit: [%s:%d]\n", it->first.getIP(), it->first.getPort());
 			
 			player_ids.release(it->second->getID());
 			PlayerEvent e = { PLAYER_LEAVE, it->second->getID(), it->second };
@@ -129,7 +161,7 @@ bool Server::update(){
 			
 			if(!IMPL(it->second)->addPacket(buffer)){
 				it->second->kick("Recieved invalid packet from client.");
-				printf("Client [%s:%d] was kicked (invalid packet).\n", addr.name(), addr.port());
+				printf("Client [%s:%d] was kicked (invalid packet).\n", addr.getIP(), addr.getPort());
 			}
 		}
 	}
@@ -162,7 +194,7 @@ bool Server::update(){
 
 	for(ClientMap::iterator i = clients.begin(), j = clients.end(); i != j; /**/){
 		if(!i->second->isConnected()){
-			printf("Client quit: %s:%d\n", i->first.name(), i->first.port());
+			printf("Client quit: %s:%d\n", i->first.getIP(), i->first.getPort());
 			
 			player_ids.release(i->second->getID());
 			PlayerEvent e = { PLAYER_LEAVE, i->second->getID(), i->second };
@@ -189,7 +221,7 @@ bool Server::update(){
 				errmsg = strerr_r(s.sys_errno, errbuf, sizeof(errbuf));
 			}
 			
-			printf("Client [%s:%d] was kicked. (%s)\n", na.name(), na.port(), errmsg);
+			printf("Client [%s:%d] was kicked. (%s)\n", na.getIP(), na.getPort(), errmsg);
 		}
 	}
 	return true;
@@ -197,6 +229,10 @@ bool Server::update(){
 
 bool Server::pollEvent(Event& e){
 	return eventq.pollEvent(e);
+}
+
+void Server::pushEvent(const Event& e){
+	eventq.pushEvent(e);
 }
 
 size_t Server::playerCount() const {
@@ -249,6 +285,10 @@ Player* Server::getPlayerByID(uint16_t id) const {
 		return p.second->getID() == id;
 	});
 	return i == clients.end() ? nullptr : i->second;
+}
+
+bool Server::isGameVersionCompatible(uint32_t client_ver) const {
+	return version_func(game_version, client_ver);
 }
 
 Server::~Server(){

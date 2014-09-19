@@ -29,7 +29,6 @@ struct PacketHeader {
 	: seq_num(0)
 	, flags(0)
 	, version(0)
-	, size(4)
 	, frag_index(0){
 	
 	}
@@ -38,33 +37,33 @@ struct PacketHeader {
 	: seq_num(seq)
 	, flags(flags)
 	, version(0)
-	, size(4)
 	, frag_index(frag_index){
 	
 	}
 
-	bool valid();
 	bool read(Packet& p){
 		if(p.remaining() >= size){
 			uint8_t ver_idx = 0;
 			p.read8(ver_idx).read8(flags).read16(seq_num);
 			
-			version = ver_idx >> 6;
-			frag_index = ver_idx & 0x3F;
+			version = ver_idx >> 7;
+			frag_index = ver_idx & 0x1F;
 			return true;
 		} else {
 			return false;
 		}
 	}
 	void write(Packet& p){
-		p.write8((version << 6) | (frag_index & 0x3F));
+		p.write8((version << 7) | (frag_index & 0x1F));
 		p.write8(flags);
 		p.write16(seq_num);
 	}
 
 	uint16_t seq_num;
 	uint8_t flags;
-	uint32_t version, size, frag_index;
+	uint32_t version, frag_index;
+	
+	static const size_t size = 4;
 };
 
 }

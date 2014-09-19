@@ -21,7 +21,7 @@ sources := $(wildcard *.cpp)
 objects := $(patsubst %.cpp,$(builddir)/%.o,$(sources))
 includes := -I../include
 
-CXXFLAGS += -pedantic -Wsign-promo -std=c++11 -g -Wall -DBUILDING_NRG \
+CXXFLAGS += -Wuninitialized -pedantic -Wsign-promo -std=c++11 -g -Wall -DBUILDING_NRG \
 -ffast-math -fvisibility-inlines-hidden -fno-exceptions \
 -U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing 
 

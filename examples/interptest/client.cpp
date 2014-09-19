@@ -25,8 +25,7 @@
 #include "sprite.h"
 
 std::vector<Sprite> sprites;
-sf::Image img;
-sf::String interp_str;
+sf::Text interp_str;
 bool running = true;
 bool interp = true;
 typedef std::vector<Sprite>::iterator s_it;
@@ -43,7 +42,7 @@ void checkNRGEvents(nrg::Client& c){
 		switch(e.type){
 		case nrg::ENTITY_CREATED:
 			if(e.entity.etype == EXAMPLE){
-				sprites.push_back(Sprite(img, static_cast<ExampleEntity*>(e.entity.pointer)));
+				sprites.push_back(Sprite(static_cast<ExampleEntity*>(e.entity.pointer)));
 			}
 			break;
 		case nrg::ENTITY_DESTROYED:
@@ -58,15 +57,15 @@ void checkNRGEvents(nrg::Client& c){
 }
 
 void updateText(){
-	interp_str.SetText(interp ? "Interpolation: On." : "Interpolation: Off.");
+	interp_str.setString(interp ? "Interpolation: On." : "Interpolation: Off.");
 }
 
-void handleSFMLKeyPress(const sf::Key::Code key){
+void handleSFMLKeyPress(const sf::Keyboard::Key key){
 	switch(key){
-	case sf::Key::Escape:
+	case sf::Keyboard::Escape:
 		running = false;
 		break;
-	case sf::Key::I:
+	case sf::Keyboard::I:
 		interp = !interp;
 		updateText();
 		break;
@@ -75,9 +74,9 @@ void handleSFMLKeyPress(const sf::Key::Code key){
 
 void checkSFMLEvents(sf::RenderWindow& win){
 	sf::Event e;
-	while(win.GetEvent(e)){
-		if(e.Type == sf::Event::Closed) running = false;
-		if(e.Type == sf::Event::KeyPressed) handleSFMLKeyPress(e.Key.Code);
+	while(win.pollEvent(e)){
+		if(e.type == sf::Event::Closed) running = false;
+		if(e.type == sf::Event::KeyPressed) handleSFMLKeyPress(e.key.code);
 	}
 }
 
@@ -88,8 +87,12 @@ int main(int argc, char** argv){
 	client.connect(nrg::NetAddress("127.0.0.1", "4000"));
 	
 	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
-	window.UseVerticalSync(true);
-	img.Create(16, 16, sf::Color::White);
+	window.setVerticalSyncEnabled(true);
+	
+	sf::Font f;
+	f.loadFromFile("FreeSans.ttf");
+	interp_str.setFont(f);
+	
 	updateText();
 
 	while(running){
@@ -98,16 +101,16 @@ int main(int argc, char** argv){
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
 		
-		window.Clear();
-		window.Draw(interp_str);
+		window.clear();
+		window.draw(interp_str);
 		for(s_it i = sprites.begin(), j = sprites.end(); i!=j; ++i){
 			i->update(interp);	
 			i->draw(window);
 		}
-		window.Display();
+		window.display();
 	}
 
-	window.Close();
+	window.close();
 	
 	return 0;
 }

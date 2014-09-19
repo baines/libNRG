@@ -39,6 +39,15 @@ enum StateFlags : uint32_t {
 	SFLAG_TIMED_OUT = 0x01
 };
 
+enum HS_Reponses : int8_t {
+	HS_WRONG_LIB_VERSION  = -1,
+	HS_WRONG_GAME         = -2,
+	HS_WRONG_GAME_VERSION = -3,
+	HS_SERVER_FULL        = -4,
+	HS_NONE               = 0,
+	HS_ACCEPTED           = 1
+};
+
 class Client;
 class Server;
 class Player;

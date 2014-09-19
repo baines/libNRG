@@ -31,12 +31,15 @@ namespace nrg {
 
 struct ServerHandshakeState : public State {
 	ServerHandshakeState();
-	bool init(Client*, Server*, Player*){ return true; }
+	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
-	bool needsUpdate() const;
+	bool needsUpdate() const { return true; }
 	StateResult update(StateConnectionOut& out, StateFlags f);
 private:
-	bool send_response;
+	Server* server;
+	Player* player;
+	int8_t response;
+	Packet packet;
 };
 
 class ServerPlayerGameState : public State {

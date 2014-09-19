@@ -36,8 +36,8 @@ namespace nrg {
 
 class Client {
 public:
-	Client(const char* game_name, uint32_t game_version, InputBase& input);
-	Client(const char* game_name, uint32_t game_version);
+	Client(const std::string& game_name, uint32_t game_version, InputBase& input);
+	Client(const std::string& game_name, uint32_t game_version);
 
 	bool connect(const NetAddress& server_addr);
 	bool isConnected() const;
@@ -62,12 +62,17 @@ public:
 	void startRecordingReplay(const char* filename);
 	void stopRecordingReplay();
 
-	InputBase* getInput(){ return input; }
-	EventQueue& getEventQueue(){ return eventq; }
-	UDPSocket& getSock(){ return sock; }
+	InputBase*         getInput()       { return input; }
+	EventQueue&        getEventQueue()  { return eventq; }
+	UDPSocket&         getSock()        { return sock; }
+	const std::string& getGameName()    { return game_name; }
+	const uint32_t     getGameVersion() { return game_version; }
+	const int          getPlayerID()    { return player_id; }
 
-	void setUserPointer(void* p){ user_pointer = p; }
-	void* getUserPointer() const { return user_pointer; }
+	void  setUserPointer(void* p) { user_pointer = p; }
+	void* getUserPointer() const  { return user_pointer; }
+	
+	void setServerParams(const Version& lib_v, uint32_t game_v, uint16_t pid); 
 
 	~Client();
 private:
@@ -83,6 +88,9 @@ private:
 	ClientGameState game_state;
 	uint32_t rate_limit_interval_ms;
 	uint32_t previous_ms;
+	std::string game_name;
+	uint32_t game_version;
+	int player_id;
 	void* user_pointer;
 	char dc_reason[NRG_MAX_ERRORMSG_LEN];
 };

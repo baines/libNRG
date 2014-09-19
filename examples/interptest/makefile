@@ -7,7 +7,7 @@ game_server: server.cpp example_entity.h ../../libnrg.a
 	$(CXX) -std=c++0x -I../../include $< ../../libnrg.a -lrt -lz -o $@ 
 
 game_client: client.cpp example_entity.h sprite.h ../../libnrg.a
-	$(CXX) -std=c++0x -I../../include $< ../../libnrg.a -lsfml-graphics -lrt -lz -o $@
+	$(CXX) -std=c++0x -I../../include $< ../../libnrg.a -lsfml-graphics -lsfml-window -lsfml-system -lrt -lz -o $@
 
 clean:
 	$(RM) game_server game_client

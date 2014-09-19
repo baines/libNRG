@@ -25,6 +25,7 @@
 #include "nrg_os.h"
 #include <climits>
 #include <cstdlib>
+#include <cassert>
 
 using namespace nrg;
 using namespace std;
@@ -111,6 +112,11 @@ bool ConnectionIn::addPacket(Packet& p){
 	
 	// reconstruct packets that were split into multiple fragments.
 	if(h.frag_index > 0 || (h.flags & PKTFLAG_CONTINUED)){
+	
+		if(h.frag_index >= reassembly_buf.size()){
+			return false;
+		}
+		
 		ReassemblyInfo& frag = reassembly_buf[h.frag_index];
 		
 		if(frag.age >= 0 && packet_age > frag.age){
@@ -175,76 +181,67 @@ ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
 }
 
 Status ConnectionOut::sendPacket(Packet& p, PacketFlags f){
-	uint8_t frag_index = 0;
-	
 	off_t o = p.tell();
 	p.seek(0, SEEK_SET);
 	
 	last.reset().writeArray(p.getBasePointer(), p.size());
+	last_header = PacketHeader(cc.seq_num++, f & ~PKTFLAG_OUT_OF_ORDER);
+	
+	sendPacketWithHeader(p, last_header);
+	
+	p.seek(o, SEEK_SET);
+	
+	return last_status;
+}
 
+Status ConnectionOut::sendPacketWithHeader(Packet& p, PacketHeader h){
+	assert(&p != &buffer);
+	
 	do {
-		size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - cc.getHeaderSize());
-		uint8_t flags = f & ~PKTFLAG_OUT_OF_ORDER;
-		
-		if(p.remaining() > NRG_MAX_PACKET_SIZE - cc.getHeaderSize()){
-			flags |= PKTFLAG_CONTINUED;
+		size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - PacketHeader::size);
+
+		if(p.remaining() > NRG_MAX_PACKET_SIZE - PacketHeader::size){
+			h.flags |= PKTFLAG_CONTINUED;
+		}
+
+		h.write(buffer.reset());
+		buffer.writeArray(p.getPointer(), n);
+	
+		if(cc.transform) cc.transform->apply(buffer, buffer2.reset());
+	
+		Packet& sendme = cc.transform ? buffer2 : buffer;
+		last_status = sock.sendPacket(sendme, cc.remote_addr);
+		if(!last_status){
+			return last_status;
 		}
 		
-		PacketHeader(cc.seq_num++, flags, frag_index).write(buffer.reset());
-		buffer.writeArray(p.getPointer(), n);
-		buffer.seek(0, SEEK_SET);
 		p.seek(n, SEEK_CUR);
-		
-		Packet& sendme = cc.transform ? buffer2 : buffer;
-		if(cc.transform) cc.transform->apply(buffer, buffer2.reset());
-		if(!(last_status = sock.sendPacket(sendme, cc.remote_addr))) return last_status;
-		
-		++frag_index;
+		++h.frag_index;
 		
 	} while(p.remaining());
 	
-	p.seek(o, SEEK_SET);
-
 	return last_status = StatusOK();
 }
 
 Status ConnectionOut::resendLastPacket(void){
-	PacketHeader h;
-
-	last.seek(0, SEEK_SET);
-	if(!h.read(last)){
-		return last_status = Status("Can't read last packet's header.");
-	}
+	PacketHeader h(last_header);
+	h.flags |= PKTFLAG_RETRANSMISSION;
 	
-	buffer.reset().writeArray(last.getPointer(), last.remaining());
-	
-	uint16_t seq_save = cc.seq_num;
-
-	cc.seq_num = h.seq_num;
-	PacketFlags f = static_cast<PacketFlags>(h.flags | PKTFLAG_RETRANSMISSION);
-	Status s = sendPacket(buffer, f);
-	cc.seq_num = seq_save;
-	
-	return s;
+	return sendPacketWithHeader(last, h);
 }
 
 Status ConnectionOut::sendDisconnect(Packet& p){
 	off_t o = p.tell();
 	p.seek(0, SEEK_SET);
-	size_t n = std::min(p.remaining(), NRG_MAX_PACKET_SIZE - cc.getHeaderSize());
 
-	last.reset();
-	PacketHeader(cc.seq_num++, PKTFLAG_FINISHED).write(last);
-	last.writeArray(p.getPointer(), n);
-	last.seek(0, SEEK_SET);
+	last.reset().writeArray(p.getPointer(), p.remaining());
+	last_header = PacketHeader(cc.seq_num++, PKTFLAG_FINISHED);
+
+	sendPacketWithHeader(last.seek(0, SEEK_SET), last_header);
+
 	p.seek(o, SEEK_SET);
-		
-	if(cc.transform){
-		cc.transform->apply(last, buffer.reset());
-		return (last_status = sock.sendPacket(buffer, cc.remote_addr));
-	} else {
-		return (last_status = sock.sendPacket(last, cc.remote_addr));
-	}
+	
+	return last_status;
 }
 
 Status ConnectionOut::getLastStatus() const {

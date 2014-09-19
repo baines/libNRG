@@ -38,16 +38,19 @@ namespace nrg {
 
 class Server : public EntityManager {
 public:
-	Server(const char* game_name, uint32_t game_version, InputBase& input);
-	Server(const char* game_name, uint32_t game_version);
+	Server(const std::string& game_name, uint32_t game_version, InputBase& input);
+	Server(const std::string& game_name, uint32_t game_version);
 
 	bool bind(const NetAddress& addr);
 	bool isBound();
 
 	bool update();
 	bool pollEvent(Event& e);
-
+	void pushEvent(const Event& e);
+	
 	size_t playerCount() const;
+	void setMaxPlayers(uint16_t val) { max_players = val; }
+	bool isFull() const { return max_players == 0 ? false : playerCount() >= max_players; }
 
 	void setTickRate(uint8_t rate);
 	uint8_t getTickRate() const;
@@ -68,13 +71,23 @@ public:
 	void broadcastMessage(const MessageBase& m);
 
 	Player* getPlayerByID(uint16_t) const;
-	const UDPSocket& getSocket() const { return sock; }
-	const Snapshot& getSnapshot() const { return master_snapshot; }
+	
+	const UDPSocket&           getSocket() const         { return sock; }
+	const Snapshot&            getSnapshot() const       { return master_snapshot; }
 	const DeltaSnapshotBuffer& getDeltaSnapshots() const { return snaps; }
-	InputBase* getInput() const { return input; }
+	InputBase*                 getInput() const          { return input; }
+	const std::string&         getGameName()             { return game_name; }
+	const uint32_t             getGameVersion()          { return game_version; }
+	
+	template<class F>
+	void setVersionComparison(F&& func){
+		version_func = std::forward<F>(func);
+	}
+	
+	bool isGameVersionCompatible(uint32_t client_ver) const;
 
-	void setUserPointer(void* p){ user_pointer = p; }
-	void* getUserPointer() const { return user_pointer; }
+	void  setUserPointer(void* p) { user_pointer = p; }
+	void* getUserPointer() const  { return user_pointer; }
 
 	virtual ~Server();
 private:
@@ -91,6 +104,11 @@ private:
 	IDAssigner<uint16_t> player_ids, entity_ids;
 	Player* current_player;
 	uint64_t timer;
+	std::string game_name;
+	uint32_t game_version;
+	uint16_t max_players;
+	std::function<bool(uint32_t, uint32_t)> version_func;
+	std::function<bool(Server& s, Packet& p)> connect_check;
 	void* user_pointer;
 	int interval;
 };

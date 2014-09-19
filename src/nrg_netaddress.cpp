@@ -35,53 +35,44 @@ NetAddress::NetAddress()
 
 }
 
-NetAddress::NetAddress(const char* name, const char* port) : text(), addr(), addr_len(0) {
+NetAddress::NetAddress(const char* name, const char* port)
+: text()
+, addr()
+, addr_len(0) {
 	resolve(name, port);
 }
 
-NetAddress::NetAddress(const struct sockaddr_in& in) : addr_len(sizeof(in)) {
+NetAddress::NetAddress(const struct sockaddr_in& in)
+: addr_len(sizeof(in)) {
 	memcpy(&addr, &in, addr_len);
-	getnameinfo((sockaddr*)&in, addr_len, text, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
 }
 
-NetAddress::NetAddress(const struct sockaddr_in6& in6) : addr_len(sizeof(in6)) {
+NetAddress::NetAddress(const struct sockaddr_in6& in6)
+: addr_len(sizeof(in6)) {
 	memcpy(&addr, &in6, addr_len);
-	getnameinfo((sockaddr*)&in6, addr_len, text, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
 }
 
-NetAddress& NetAddress::operator=(const struct sockaddr_storage& s){
-	set(s);
-	return *this;
-}
-
-NetAddress::NetAddress(const struct sockaddr_storage& s){
-	set(s);
-}
-
-bool NetAddress::set(const struct sockaddr_storage& s) {
+NetAddress::NetAddress(const struct sockaddr_storage& s)
+: text()
+, addr(s)
+, addr_len(0){
 	if(s.ss_family == AF_INET){
 		addr_len = sizeof(struct sockaddr_in);
 	} else if(s.ss_family == AF_INET6){
 		addr_len = sizeof(struct sockaddr_in6);
-	} else {
-		return false;
 	}
-	addr = s;
-	getnameinfo((sockaddr*)&s, addr_len, text, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
-	return true;
 }
 
-bool NetAddress::set(const struct sockaddr& s) {
+NetAddress::NetAddress(const struct sockaddr& s)
+: text()
+, addr()
+, addr_len(0){
 	if(s.sa_family == AF_INET){
 		addr_len = sizeof(struct sockaddr_in);
 	} else if(s.sa_family == AF_INET6){
 		addr_len = sizeof(struct sockaddr_in6);
-	} else {
-		return false;
 	}
 	memcpy(&addr, &s, addr_len);
-	getnameinfo((sockaddr*)&s, addr_len, text, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
-	return true;
 }
 
 bool NetAddress::resolve(const char* name, const char* port){
@@ -99,7 +90,6 @@ bool NetAddress::resolve(const char* name, const char* port){
 	if((err = getaddrinfo(name, port, hintp, &result)) == 0){
 		addr_len = result->ai_addrlen;
 		memcpy(&addr, result->ai_addr, addr_len);
-		getnameinfo((sockaddr*)&addr, addr_len, text, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
 
 		freeaddrinfo(result);
 	}
@@ -111,15 +101,26 @@ bool NetAddress::isValid() const {
 	return addr_len != 0;
 }
 
-const char* NetAddress::name() const {
+const char* NetAddress::getIP() const {
+	if(!*text){
+		getnameinfo(
+			reinterpret_cast<const sockaddr*>(&addr),
+			addr_len,
+			text,
+			INET6_ADDRSTRLEN,
+			NULL,
+			0,
+			NI_NUMERICHOST
+		);
+	}
 	return text;
 }
 
-int NetAddress::family() const {
+int NetAddress::getFamily() const {
 	return addr.ss_family;
 }
 
-uint16_t NetAddress::port() const {
+uint16_t NetAddress::getPort() const {
 	if(addr.ss_family == AF_INET){
 		return ntoh(reinterpret_cast<const struct sockaddr_in*>(&addr)->sin_port);
 	} else if(addr.ss_family == AF_INET6){

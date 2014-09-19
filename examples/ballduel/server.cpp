@@ -40,7 +40,7 @@ int main(int argc, char** argv){
 	nrg::Server server("NRG Ball Duel", 1, input);
 	if(server.bind(nrg::NetAddress(c::addr_listen, c::port))){
 		const auto& addr = server.getSocket().getBoundAddress();
-		printf("bound to %s:%hu\n", addr->name(), addr->port());
+		printf("bound to %s:%hu\n", addr->getIP(), addr->getPort());
 		ServerGameState gs(server);
 		input.setGameState(&gs);
 

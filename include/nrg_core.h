@@ -68,24 +68,33 @@
 namespace nrg {
 
 struct Version {
-	uint32_t v_major, v_minor, v_patch;
+	uint16_t v_major, v_minor, v_patch;
 	
-	Version(uint32_t a, uint32_t b, uint32_t c)
+	Version()
+	: v_major(0)
+	, v_minor(0)
+	, v_patch(0){
+	
+	}
+	
+	Version(uint16_t a, uint16_t b, uint16_t c)
 	: v_major(a)
 	, v_minor(b)
 	, v_patch(c){
 	
 	}
 
-	bool operator>(const Version&);
-	bool operator<(const Version&);
-	bool operator>=(const Version&);
-	bool operator<=(const Version&);
-	bool operator==(const Version&);
-	bool operator!=(const Version&);
+	bool operator>(const Version&) const ;
+	bool operator<(const Version&) const ;
+	bool operator>=(const Version&) const ;
+	bool operator<=(const Version&) const ;
+	bool operator==(const Version&) const ;
+	bool operator!=(const Version&) const ;
 };
 
 Version getLibVersion(void);
+
+bool isVersionCompatible(const Version& v);
 
 }
 

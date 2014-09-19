@@ -45,7 +45,7 @@ Socket::Socket(int type, const NetAddress& a)
 : bound_addr()
 , connected_addr()
 , fd(0)
-, family(a.family())
+, family(a.getFamily())
 , type(type)
 , do_timestamp(false)
 , use_errqueue(false)
@@ -54,15 +54,15 @@ Socket::Socket(int type, const NetAddress& a)
 }
 
 void Socket::setFamilyFromAddress(const NetAddress& na){
-	family = na.family();
+	family = na.getFamily();
 	fd = socket(family, type, 0);
 }
 
 Status Socket::bind(const NetAddress& addr){
 	if(!fd){
-		family = addr.family();
+		family = addr.getFamily();
 		fd = socket(family, type, 0);
-	} else if(addr.family() != family){
+	} else if(addr.getFamily() != family){
 		return Status("Socket is set to a different family than the address.");
 	}
 	
@@ -78,9 +78,9 @@ Status Socket::bind(const NetAddress& addr){
 
 Status Socket::connect(const NetAddress& addr){
 	if(!fd){
-		family = addr.family();
+		family = addr.getFamily();
 		fd = socket(family, type, 0);
-	} else if(addr.family() != family){
+	} else if(addr.getFamily() != family){
 		return Status("Socket is set to a different family than the address.");
 	}
 	
@@ -205,7 +205,7 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 			}
 #endif
 		}
-		addr.set(sas);
+		addr = sas;
 		return StatusOK();
 	} else {
 		if(use_errqueue && data_ready && (errno == EAGAIN || errno == EWOULDBLOCK)){
@@ -252,8 +252,8 @@ Status Socket::checkErrorQueue(NetAddress& culprit){
 			//struct sockaddr* sa = SO_EE_OFFENDER(err); 
 
 			if(sas.ss_family != AF_UNSPEC){
-				culprit.set(sas);
-				printf("MSG_ERRQUEUE: [%s:%d]. [%d]\n", culprit.name(), culprit.port(), err->ee_errno);
+				culprit = sas;
+				printf("MSG_ERRQUEUE: [%s:%d]. [%d]\n", culprit.getIP(), culprit.getPort(), err->ee_errno);
 			}
 			ret = StatusErr(err->ee_errno);
 		}

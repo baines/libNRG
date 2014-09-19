@@ -36,13 +36,14 @@ namespace nrg {
 class ClientHandshakeState : public State {
 public:
 	ClientHandshakeState();
-	bool init(Client*, Server*, Player*){ return true; }
+	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
 	bool needsUpdate() const;
 	size_t getTimeoutSeconds() const { return 2; }
 	StateResult update(StateConnectionOut& out, StateFlags f);
 	~ClientHandshakeState();
 private:
+	Client* client;
 	Packet buffer;
 	int phase, timeouts;
 };
