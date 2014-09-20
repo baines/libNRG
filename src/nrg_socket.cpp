@@ -279,11 +279,7 @@ bool Socket::dataPending(int usToBlock) const {
 }
 
 const std::unique_ptr<NetAddress>& Socket::getBoundAddress() const {
-	return bound_addr;
-}
-
-const std::unique_ptr<NetAddress>& Socket::getBoundAddress(){
-	if(bound_addr){
+	if(!bound_addr){
 		struct sockaddr_storage sas = {}, sas_zero = {};
 		socklen_t len = sizeof(sas);
 		if(getsockname(fd, (struct sockaddr*)&sas, &len) == 0){

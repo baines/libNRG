@@ -42,7 +42,7 @@ public:
 	Server(const std::string& game_name, uint32_t game_version);
 
 	bool bind(const NetAddress& addr);
-	bool isBound();
+	bool isBound() const;
 
 	bool update();
 	bool pollEvent(Event& e);

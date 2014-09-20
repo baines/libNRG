@@ -108,7 +108,7 @@ bool Server::bind(const NetAddress& addr){
 	return sock.bind(addr);
 }
 
-bool Server::isBound() {
+bool Server::isBound() const {
 	return sock.getBoundAddress() != nullptr;
 }
 
@@ -121,8 +121,8 @@ bool Server::update(){
 
 	uint64_t blocktime;
 
-	while(blocktime = max<int>(0, interval - (os::microseconds() - timer)),
-	sock.dataPending(blocktime)){
+	while(blocktime = max<int>(0, interval - (os::microseconds() - timer))
+	, sock.dataPending(blocktime)){
 		
 		NetAddress addr;
 		Status recv_status = sock.recvPacket(buffer.reset(), addr);
@@ -197,8 +197,7 @@ bool Server::update(){
 			printf("Client quit: %s:%d\n", i->first.getIP(), i->first.getPort());
 			
 			player_ids.release(i->second->getID());
-			PlayerEvent e = { PLAYER_LEAVE, i->second->getID(), i->second };
-			eventq.pushEvent(e);
+			eventq.pushEvent(PlayerEvent { PLAYER_LEAVE, i->second->getID(), i->second });
 
 			delete i->second;
 			clients.erase(i++);

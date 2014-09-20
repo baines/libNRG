@@ -227,7 +227,7 @@ Status ConnectionOut::resendLastPacket(void){
 	PacketHeader h(last_header);
 	h.flags |= PKTFLAG_RETRANSMISSION;
 	
-	return sendPacketWithHeader(last, h);
+	return sendPacketWithHeader(last.seek(0, SEEK_SET), h);
 }
 
 Status ConnectionOut::sendDisconnect(Packet& p){

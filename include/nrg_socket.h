@@ -57,7 +57,6 @@ public:
 	void enableTimestamps(bool enable);
 	void handleUnconnectedICMPErrors(bool enable);
 	
-	const std::unique_ptr<NetAddress>& getBoundAddress();
 	const std::unique_ptr<NetAddress>& getBoundAddress() const;
 	const std::unique_ptr<NetAddress>& getConnectedAddress() const {
 		return connected_addr;
@@ -67,7 +66,7 @@ public:
 	}
 	virtual ~Socket();
 private:
-	std::unique_ptr<NetAddress> bound_addr, connected_addr;
+	mutable std::unique_ptr<NetAddress> bound_addr, connected_addr;
 	int fd, family, type;
 	bool do_timestamp, use_errqueue;
 	uint64_t last_timestamp;
