@@ -1,0 +1,27 @@
+var classnrg_1_1Client =
+[
+    [ "Client", "classnrg_1_1Client.html#aa9a36ed25f0f554d10d918fabbfd5338", null ],
+    [ "Client", "classnrg_1_1Client.html#adb2670675449024b78270ad2d01dfe04", null ],
+    [ "~Client", "classnrg_1_1Client.html#ab18043135c64009a616ae6b8f9affac9", null ],
+    [ "addMessageHandler", "classnrg_1_1Client.html#a0fd6a44acbe02cd657f6c2e333b885a9", null ],
+    [ "connect", "classnrg_1_1Client.html#ac3ac16d024ce59b01db7e7e80f157416", null ],
+    [ "getConnectedAddress", "classnrg_1_1Client.html#a555d78cdb08f97af4072f97a3e0fb9de", null ],
+    [ "getEventQueue", "classnrg_1_1Client.html#a2c01392985b80bb0f2eb02d4a6554eef", null ],
+    [ "getGameName", "classnrg_1_1Client.html#a5a03cb53f8055b8754127ef1ce5a7699", null ],
+    [ "getGameVersion", "classnrg_1_1Client.html#a2805f0abc98b2910f6c4e84924be473a", null ],
+    [ "getInput", "classnrg_1_1Client.html#a587de3d39db9aec3f18de57d35e1d7d0", null ],
+    [ "getPacketRateLimit", "classnrg_1_1Client.html#ad4a300762050ecdd2253a049bc00c3b1", null ],
+    [ "getPlayerID", "classnrg_1_1Client.html#a75f048e6c93984d78610472753530480", null ],
+    [ "getSock", "classnrg_1_1Client.html#a8ab6edc76abddce94eac51c1f349fe07", null ],
+    [ "getStats", "classnrg_1_1Client.html#a1f1357518d368be5997585a02ec03bc1", null ],
+    [ "getUserPointer", "classnrg_1_1Client.html#abe813ca36a0fe26028bf4a0b669c6b70", null ],
+    [ "isConnected", "classnrg_1_1Client.html#ae544439ab11ea703a88e23a41f72faca", null ],
+    [ "pollEvent", "classnrg_1_1Client.html#ab4af43bae6ec23fdfca015bfe556527c", null ],
+    [ "registerEntity", "classnrg_1_1Client.html#a2ce0bcd31bc26712b6c28dd822c18591", null ],
+    [ "sendMessage", "classnrg_1_1Client.html#a979eb7f98b00f361f8f3d6346a1a867a", null ],
+    [ "setPacketRateLimit", "classnrg_1_1Client.html#ab53ab85a72a66a3e346b74ffc7165cc9", null ],
+    [ "setUserPointer", "classnrg_1_1Client.html#a65eeae79686ad93e18e4b63b73951626", null ],
+    [ "startRecordingReplay", "classnrg_1_1Client.html#ae58c3af061d0e0e2f960ece376dc1b48", null ],
+    [ "stopRecordingReplay", "classnrg_1_1Client.html#ae6f7b9b8d20155bc1f80dfce7464b03b", null ],
+    [ "update", "classnrg_1_1Client.html#adc0c98d1e2c18e9162949268f2bf72b6", null ]
+];

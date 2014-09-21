@@ -1,0 +1,5 @@
+var structnrg_1_1Codec_3_01T_00_01typename_01enable__if_3_01has__encode__decode_3_01T_01_4_1_1value_01_4_1_1type_01_4 =
+[
+    [ "decode", "structnrg_1_1Codec_3_01T_00_01typename_01enable__if_3_01has__encode__decode_3_01T_01_4_1_1value_01_4_1_1type_01_4.html#aa5f6b222fb003e2ae32f077eed774ce5", null ],
+    [ "encode", "structnrg_1_1Codec_3_01T_00_01typename_01enable__if_3_01has__encode__decode_3_01T_01_4_1_1value_01_4_1_1type_01_4.html#ac03c8dddf82fed49883efbaf3b50370b", null ]
+];
