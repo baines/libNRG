@@ -8,24 +8,24 @@ University.
 This library provides a high-level of abstraction over UDP networking that can
 be used to implement client / server online multi-player in video games.
 
-There isn't proper documentation for it yet, but there is a full working example
-game in the examples/ballduel directory. You can also get a good overview from 
-the LibNRG specification and final report that I produced at university here:
-http://abaines.me.uk/other/libnrg/ .
-
 LibNRG currently compiles on Linux or Windows (via mingw). It requires a recent 
 compiler with c++11 support, like gcc-4.7 or newer, or i686-w64-mingw32-g++ 
 v4.7+ for windows.
 
-The library is also licensed under the zlib open source license, so you can use 
-it in commercial games, statically link it, or make modifications under the 
-terms of this license. See LICENSE.txt in this directory for more details.
-
 There's still a lot of limitations and things I would like to change / improve 
-with the library, so I wouldn't recommend using it in any serious projects yet.
+with the library, so I wouldn't recommend using it in any *serious* projects yet.
 
-Using the entity abstraction
-----------------------------
+Documentation
+-------------
+
+There is an initial Doxygen API reference available at **http://abaines.me.uk/libNRG/**
+however it is currently rather incomplete.
+
+There's a full working example game too in the examples/ballduel directory,
+that's probably of more use at the moment.
+
+Basic Usage
+-----------
 
 You basically make a class that inherits from nrg::Entity or EntityHelper, put
 some nrg::Fields in it, and then the server will automatically send any changes
@@ -40,7 +40,17 @@ e.g.
     	[ e.t.c. ]
     };
 
-There are also nrg::Messages which are more like traditional one-shot packets.
+There are also nrg::Messages which are more like traditional one-shot packets, 
+check out the examples directory for more complete example code.
+
+License
+--------
+
+It's **zlib** licensed, so statically linking / modifying / redistributing is fine
+as long as you don't claim you made the original version, and you call your
+version something else. See LICENSE.txt for the proper license text.
+
+I'm also happy to take pull requests / patches / suggestions.
 
 Other stuff worth mentioning
 ----------------------------
