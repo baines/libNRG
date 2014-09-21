@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains classes related to nrg's Entity data-replication abstraction
+ */
 #ifndef NRG_ENTITY_H
 #define NRG_ENTITY_H
 #include "nrg_core.h"
@@ -30,25 +33,45 @@ namespace nrg {
 class EntityManager;
 class Client;
 
+/** Abstract class to be inherited by users of the library which acts as a container of one or more Fields */
 class Entity : public FieldContainer {
 public:
-	 Entity();
-	 virtual Entity* clone() = 0;
-	 virtual uint16_t getType() const = 0;
+
+	/** Default Constructor */
+	Entity();
 	
-	 virtual void onCreate(Client& c){}
- 	 virtual void onDestroy(Client& c){}
-	 virtual void onUpdate(Client& c){}
+	/** Returns an identical copy of the derived class of this Entity */
+	virtual Entity* clone() = 0;
 	
+	/** Returns this entity's user-defined type identifier */
+	virtual uint16_t getType() const = 0;
+	
+	/** Returns this Entity's ID assigned by the library */
+	uint16_t getID() const { return nrg_id; }
+	
+	/** @{ */
+	/** Virtual function called on the client-side when the Entity is created */
+	virtual void onCreate(Client& c){}
+	/** Virtual function called on the client-side just before the Entity is destroyed */
+ 	virtual void onDestroy(Client& c){}
+ 	/** Virtual function called on the client-side when the Entity is updated */
+	virtual void onUpdate(Client& c){}
+	/** @} */
+
+	/** Standard Destructor */
+	virtual ~Entity();
+	
+	/** @cond INTERNAL_USE_ONLY */
 	void markUpdated(bool updated);
 	double getInterpTimer() const;
-	
-	 uint16_t getID() const { return nrg_id; }
+	/** Sets this Entity's ID */
 	void setID(int id){ nrg_id = id; }
-	
+	/** Returns this Entity's EntityManager */
 	EntityManager* getManager() const { return manager; }
+	/** Sets this Entity's EntityManager */
 	void setManager(EntityManager* m){ manager = m; }
-	 virtual ~Entity();
+	/** @endcond */
+	
 private:
 	int nrg_id;
 	bool nrg_updated;
@@ -57,6 +80,7 @@ private:
 
 class InputBase;
 
+/** Abstract class that contains functionality required by Entity objects */
 struct EntityManager {
 	virtual void markEntityUpdated(Entity& e){}
 	virtual void unregisterEntity(Entity& e){}
@@ -65,6 +89,7 @@ struct EntityManager {
 	virtual InputBase* getInput() const { return nullptr; }
 };
 
+/** Helper template class that automatically implements the Entity::clone and Entity::getType methods */
 template<class T, uint16_t type>
 struct EntityHelper : nrg::Entity {
 	virtual nrg::Entity* clone(){ return new T(*static_cast<T* const>(this)); }

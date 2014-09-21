@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ * Contains the default State classes used by the Client, ClientHandshakeState and ClientGameState
+ */
 #ifndef NRG_CLIENT_STATE_H
 #define NRG_CLIENT_STATE_H
 #include "nrg_core.h"
@@ -33,6 +36,7 @@
 
 namespace nrg {
 
+/* Performs handshaking with the server by comparing game names and versions */
 class ClientHandshakeState : public State {
 public:
 	ClientHandshakeState();
@@ -51,6 +55,7 @@ private:
 class Entity;
 class InputBase;
 
+/* Encapsulates the Client's game-specific components like Entity, Message, Replay */
 class ClientGameState : public State, public EntityManager {
 public:
 	ClientGameState();

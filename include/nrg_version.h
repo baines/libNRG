@@ -19,24 +19,41 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-/** @file
- *  Interpolation functionality
+/** @file 
+ * Library versioning stuff
  */
-#ifndef NRG_INTERP_H
-#define NRG_INTERP_H
-#include <type_traits>
-
 namespace nrg {
 
-/** Simple linear-interpolation functor */
-template<class T>
-struct lerp {
-	/** Perform the interpolation */
-	T operator()(double one, double two, const double& x) const {
-		return one + (two - one) * x;
+/** @brief A class to store the version of the library. */
+struct Version {
+	uint16_t v_major, v_minor, v_patch;
+	
+	Version()
+	: v_major(0)
+	, v_minor(0)
+	, v_patch(0){
+	
 	}
+	
+	Version(uint16_t a, uint16_t b, uint16_t c)
+	: v_major(a)
+	, v_minor(b)
+	, v_patch(c){
+	
+	}
+
+	bool operator>(const Version&) const ;
+	bool operator<(const Version&) const ;
+	bool operator>=(const Version&) const ;
+	bool operator<=(const Version&) const ;
+	bool operator==(const Version&) const ;
+	bool operator!=(const Version&) const ;
 };
 
-}
+/** @brief Retuns the version of LibNRG in use. */
+Version getLibVersion(void);
 
-#endif
+/** @brief Retuns true if @p v is compatible with this version of LibNRG. */
+bool isVersionCompatible(const Version& v);
+
+}

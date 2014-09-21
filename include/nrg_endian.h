@@ -19,9 +19,11 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Defines functions for converting between big and little endian byte orders
+ */
 #ifndef NRG_ENDIAN_H
 #define NRG_ENDIAN_H
-//#include <endian.h>
 /* adapted from http://stackoverflow.com/questions/809902/64-bit-ntohl-in-c */
 
 #if defined(__BYTE_ORDER__)
@@ -38,6 +40,7 @@
 
 namespace nrg {
 
+/** Swap the byte order of \p data between big and little endianness */
 template<typename T> 
 static inline T swapbytes(const T& data){
 	T ret;
@@ -51,6 +54,7 @@ static inline T swapbytes(const T& data){
 	return ret;
 }
 
+/** Convert \p data from big endian (network byte order) to host byte order */
 template<typename T>
 static inline T ntoh(const T& data){
 #ifdef NRG_BIG_ENDIAN
@@ -60,6 +64,7 @@ static inline T ntoh(const T& data){
 #endif
 }
 
+/** Convert \p data from host byte order to big endian (network byte order */
 template<typename T>
 static inline T hton(const T& data){
 	return nrg::ntoh(data);

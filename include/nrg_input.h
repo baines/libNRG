@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains classes related to Input which is sent from Clients to a Server each Client frame
+ */
 #ifndef NRG_INPUT_H
 #define NRG_INPUT_H
 #include "nrg_core.h"
@@ -30,17 +33,23 @@
 
 namespace nrg {
 
+/** Abstract base class for Input */
 struct InputBase : protected FieldContainer {
 	void markUpdated(bool b);
 	bool readFromPacket(Packet& p);
 	void writeToPacket(Packet& p) const;
 
+	/** Virtual function called Server-side when the Player \p player has sent some new input */
 	virtual void onUpdate(Player& player) = 0;	
+	
+	/** NYI: Do prediction of inputs client-side */
 	virtual void doPrediction() = 0;
 };
 
+/** Abstract class using the Curiously Recurring Template Pattern that users should inherit from and insert Fields into that represent user-input */
 template<class CRTP>
 struct Input : public InputBase {
+	/** NYI: Adds a function that is called client-side each frame to predict a Field's value before it is confirmed by the Server */
 	void addPredictionFunc(std::function<void(CRTP&)>&& func){
 		predict_funcs.push_back(std::move(func));
 	}

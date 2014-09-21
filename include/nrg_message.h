@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains Message classes and functionality for two-way RPC between Server and Client
+ */
 #ifndef NRG_MESSAGE_H
 #define NRG_MESSAGE_H
 #include "nrg_core.h"
@@ -29,36 +32,67 @@
 
 namespace nrg {
 
+/** Abstract base class for Message */
 struct MessageBase {
+	/** Returns the user-defined Message ID */
 	virtual uint16_t getID() const = 0;
+	
+	/** Writes this Message to the Packet \p p */
 	virtual size_t writeToPacket(Packet& p) const = 0;
+	
+	/** Reads this Message from the Packet \p p */
 	virtual size_t readFromPacket(Packet& p) = 0;
+	
+	/** Function called when the message has been received */
 	virtual void onReceive(uint32_t creation_ms) = 0;
+	
+	/** Returns a copy of the derived class of this MessageBase */
 	virtual MessageBase* clone() const = 0;
+	
+	/** Moves the derived class into the returned MessageBase */
 	virtual MessageBase* move_clone() = 0;
+	
+	/** Standard Destructor */
 	virtual ~MessageBase(){};
 };
 
-using std::enable_if;
-using std::tuple_element;
-
+/** Variadic template class that encodes / decodes its data to and from Packets */
 template<uint16_t id, typename... Args>
 class Message : public MessageBase {
 	static const size_t sz = sizeof...(Args)-1;
 	typedef std::tuple<Args...> MsgTuple;
 public:
+	/** Standard Constructor for a Message to be sent over the network */
 	Message(Args... args) : values(args...), on_receive(){}
+	
+	/** Move Constructor */
 	Message(Message&&) = default;
+	
+	/** Copy Constructor */
 	Message(const Message&) = default;
 	
+	/** Internally used Constructor for a Message that will run a callback function */
 	template<class F>
 	Message(F&& func)
 	: values()
 	, on_receive(std::forward<F>(func)){}
-		
+	
+	/** Returns the element of the Message specified by the template parameter \p n */
+	template<size_t n>
+	const typename tuple_element<n, MsgTuple>::type& get() const {
+		return std::get<n>(values);
+	}
+	
+	/** Sets the element of the Message specified by the template parameter \p n to \p val */
+	template<size_t n>
+	void set(const typename tuple_element<n, MsgTuple>::type& val) {
+		std::get<n>(values) = val;
+	}
+	
+	/** @cond INTERNAL_USE_ONLY */
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_write(Packet& p) const {
-		return Codec<typename tuple_element<n, MsgTuple>::type>().encode(p, std::get<n>(values));
+		return Codec<typename std::tuple_element<n, MsgTuple>::type>().encode(p, std::get<n>(values));
 	}
 	
 	template<size_t n>
@@ -77,7 +111,8 @@ public:
 		return Codec<typename tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values))
 		+ do_read<n+1>(p);
 	}
-		
+	/** @endcond */
+	
 	uint16_t getID() const {
 		return id;
 	}
@@ -101,17 +136,7 @@ public:
 	size_t readFromPacket(Packet& p){
 		return do_read<0>(p);
 	}
-	
-	template<size_t n>
-	const typename tuple_element<n, MsgTuple>::type& get() const {
-		return std::get<n>(values);
-	}
-	
-	template<size_t n>
-	void set(const typename tuple_element<n, MsgTuple>::type& val) {
-		std::get<n>(values) = val;
-	}
-	
+		
 private:
 	MsgTuple values;
 	std::function<void(const Message&, uint32_t)> on_receive;

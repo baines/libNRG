@@ -20,7 +20,7 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#include "nrg_core.h"
+#include "nrg_version.h"
 
 using namespace nrg;
 

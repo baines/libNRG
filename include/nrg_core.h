@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Common defines and includes used by all the other nrg header files
+ */
 #ifndef NRG_CORE_H
 #define NRG_CORE_H
 #ifdef _WIN32
@@ -64,38 +67,5 @@
 #else
 	#define NRG_DEBUG(fmt, ...) do { } while(0)
 #endif
-
-namespace nrg {
-
-struct Version {
-	uint16_t v_major, v_minor, v_patch;
-	
-	Version()
-	: v_major(0)
-	, v_minor(0)
-	, v_patch(0){
-	
-	}
-	
-	Version(uint16_t a, uint16_t b, uint16_t c)
-	: v_major(a)
-	, v_minor(b)
-	, v_patch(c){
-	
-	}
-
-	bool operator>(const Version&) const ;
-	bool operator<(const Version&) const ;
-	bool operator>=(const Version&) const ;
-	bool operator<=(const Version&) const ;
-	bool operator==(const Version&) const ;
-	bool operator!=(const Version&) const ;
-};
-
-Version getLibVersion(void);
-
-bool isVersionCompatible(const Version& v);
-
-}
 
 #endif

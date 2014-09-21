@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Functionality to notify users of Client and Server occurances
+ */
 #ifndef NRG_EVENT_H
 #define NRG_EVENT_H
 #include "nrg_core.h"
@@ -26,6 +29,7 @@
 
 namespace nrg {
 
+/** Event types */
 typedef enum {
 	/* Client-side */
 	DISCONNECTED = 1,
@@ -39,46 +43,63 @@ typedef enum {
 	PLAYER_INPUT,
 } EventType;
 
-struct  DisconnectEvent {
-	uint8_t type; /* DISCONNECTED */
-	const char* reason;
+/** Event raised when the Client becomes disconnected */
+struct DisconnectEvent {
+	uint8_t type;       /**< Will be DISCONNECTED */
+	const char* reason; /**< Statically-allocated reason for the disconnection */
 };
 
 class Entity;
 
-struct  EntityEvent {
-	uint8_t type; /* ENTITY_{UPDATED, CREATED, DESTROYED} */
-	uint16_t eid;
-	uint16_t etype;
-	Entity* pointer;
+/** Event raised when entities are updated, created, destroyed client-side - an alternative to the virtual methods that Entity provides */
+struct EntityEvent {
+	uint8_t type;    /**< Will be ENTITY_{UPDATED, CREATED, DESTROYED} */
+	uint16_t eid;    /**< The Entity's ID */
+	uint16_t etype;  /**< The Entity's user-defined type id */
+	Entity* pointer; /**< Pointer to the Entity - don't dereference it on ENTITY_DESTROYED! */
 };
 
 class Player;
 
-struct  PlayerEvent {
-	uint8_t type; /* PLAYER_{JOIN, LEAVE} */
-	uint16_t id;
-	Player* player;
+/** Event raised on the server when a player joins or leaves */
+struct PlayerEvent {
+	uint8_t type;   /**< Will be PLAYER_{JOIN, LEAVE} */
+	uint16_t id;    /**< The player's ID assigned by the library */
+	Player* player; /**< Pointer to the Player - don't dereference it on PLAYER_LEAVE! */
 };
 
-union  Event {
-	uint8_t type;
-	DisconnectEvent dc;
-	EntityEvent entity;
-	PlayerEvent player;
+/** Union to contain all the event types */
+union Event {
+	uint8_t type;       /**< Used to determine which event this is */
+	DisconnectEvent dc; /**< For DISCONNECTED */
+	EntityEvent entity; /**< For ENTITY_{UPDATED, CREATED, DESTROYED} */
+	PlayerEvent player; /**< For PLAYER_{JOIN, LEAVE} */
 	
+	/** Default Constructor */
 	Event() : type(0){}
+	
+	/** Implicit conversion constructor from DisconnectEvent */
 	Event(const DisconnectEvent& e) : dc(e){}
+	
+	/** Implicit conversion constructor from EntityEvent */
 	Event(const EntityEvent& e) : entity(e){}
+	
+	/** Implicit conversion constructor from PlayerEvent */
 	Event(const PlayerEvent& e) : player(e){}
 };
 
+/** Holds a queue of Event objects */
 class EventQueue {
 public:
+	/** Default Constructor */
 	EventQueue() : queue(32){}
+	
+	/** Add an event to the end of the queue */
 	void pushEvent(const Event& e){
 		queue.push(e);
 	}
+	
+	/** Place the Event at the head of the queue into \p e - return true if this happened or false if the queue is empty */
 	bool pollEvent(Event& e){
 		if(queue.empty()){
 			return false;
@@ -87,6 +108,8 @@ public:
 			return true;
 		}
 	}
+	
+	/** Removes all Events from the queue */
 	void clear(){
 		queue.clear();
 	}

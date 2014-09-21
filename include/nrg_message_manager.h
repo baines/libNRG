@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains functionality for managing the storage and reliable transmission or Messages
+ */
 #ifndef NRG_STATE_MANAGER_H
 #define NRG_STATE_MANAGER_H
 #include "nrg_core.h"
@@ -30,15 +33,25 @@
 
 namespace nrg {
 
+/** Class that stores Messages to be sent, and parses received messages from packets, running their callback functions */
 class MessageManager {
 public:
+	/** Default Constructor */
 	MessageManager();
+	
+	/** Writes any queued Messages into the Packet \p p - The current Server time must be provided in \p server_ms */
 	void writeToPacket(Packet& p, uint16_t server_ms);
+	
+	/** Reads all Messages from Packet \p p, running associated callback functions with them - The current Server time must be provided in \p server_ms */
 	bool readFromPacket(Packet& p, uint16_t server_ms);
 	
+	/** Add a Message containing a callback function to be run, passed in \p m as an R-value reference */
 	void addHandler(MessageBase&& m);
+	
+	/** Add a Message containing a callback function to be run, passed in \p m by const reference */
 	void addHandler(const MessageBase& m);
 	
+	/** Add a Message \p m to be sent over the network - The current Server time must be provided in \p server_ms */
 	void addMessage(const MessageBase& m, uint16_t server_ms);
 private:
 	struct MessageInfo {

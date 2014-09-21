@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Functionality for recording replay files
+ */
 #ifndef NRG_REPLAY_H
 #define NRG_REPLAY_H
 #include "nrg_core.h"
@@ -32,13 +35,22 @@ typedef void* gzFile;
 
 namespace nrg {
 
+/** Class that writes a replay to a file */
 class ReplayRecorder {
 public:
+	/** Default constructor */
 	ReplayRecorder();
+	
+	/** Starts recording a replay !CURRENTLY BROKEN! */
 	bool startRecording(const char* filename, int sid, const std::vector<Entity*>& initial_entities);
+	
+	/** Returns true if a replay is being recorded */
 	bool isRecording() const;
+	
+	/** Stops recording a replay */
 	void stopRecording();
 
+	/** Adds a packet that will be serialised into the replay file */
 	void addPacket(Packet& p);
 private:
 	gzFile file;

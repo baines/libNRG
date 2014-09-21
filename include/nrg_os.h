@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Operating-system specific functions
+ */
 #ifndef NRG_OS_H
 #define NRG_OS_H
 #include "nrg_core.h"
@@ -26,20 +29,26 @@
 namespace nrg {
 namespace os {
 
+	/** Perform OS initialisation routines */
 	Status init(void);
 
+	/** Perform OS uninitiasation routines */
 	void uninit(void);
 
+	/** Get a monotonic representation of time in microseconds */
 	uint64_t microseconds();
 	
+	/** Get a monotonic representation of time in milliseconds */
 	inline uint64_t milliseconds(){
 		return microseconds() / 1000;
 	}
 
+	/** Get a monotonic representation of time in seconds */
 	inline uint64_t seconds(){
 		return milliseconds() / 1000;
 	}
 	
+	/** Returns a reasonably random number, not guaranteed to be cryptographically secure */
 	uint32_t random();
 
 }

@@ -30,9 +30,8 @@
 using namespace nrg;
 using namespace std;
 
-ConnectionCommon::ConnectionCommon(const NetAddress& na) 
-: remote_addr(na)
-, seq_num(os::random())
+ConnectionCommon::ConnectionCommon() 
+: seq_num(os::random())
 , transform(NULL) {
 
 }
@@ -41,9 +40,8 @@ void ConnectionCommon::setTransform(PacketTransformation* t){
 	transform = t;
 }
 
-ConnectionIn::ConnectionIn(const NetAddress& na)
-: cc(na)
-, new_packet(false)
+ConnectionIn::ConnectionIn()
+: new_packet(false)
 , full_packet(false)
 , latest(NRG_MAX_PACKET_SIZE) {
 
@@ -174,7 +172,8 @@ PacketFlags ConnectionIn::getLatestPacket(Packet& p){
 }
 
 ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
-: cc(na)
+: cc()
+, remote_addr(na)
 , sock(sock)
 , last_status(true) {
 
@@ -210,7 +209,7 @@ Status ConnectionOut::sendPacketWithHeader(Packet& p, PacketHeader h){
 		if(cc.transform) cc.transform->apply(buffer, buffer2.reset());
 	
 		Packet& sendme = cc.transform ? buffer2 : buffer;
-		last_status = sock.sendPacket(sendme, cc.remote_addr);
+		last_status = sock.sendPacket(sendme, remote_addr);
 		if(!last_status){
 			return last_status;
 		}

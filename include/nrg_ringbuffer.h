@@ -19,6 +19,11 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Simple implementation of a ring / circular buffer
+ *  @warning This implementation only has the bare minimum functionality that is required internally.
+ *  @warning Also it only holds N-1 elements which is kinda broken.
+ */
 #ifndef NRG_RING_BUFFER_H
 #define NRG_RING_BUFFER_H
 #include "nrg_core.h"
@@ -28,16 +33,17 @@
 
 namespace nrg {
 
-/*XXX: This implementation only has the bare minimum functionality that is
-       required internally. Also it only holds N-1 elements which is kinda broken.
-*/
+/** ring / circular buffer implementation */
 template<class T, size_t N>
 class RingBuffer {
 public:
+	/** Default Constructor */
 	RingBuffer() : data(), start_idx(0), end_idx(0){}
-		
+	
+	/** Iterator class for the RingBuffer */
 	class iterator : public std::iterator<std::forward_iterator_tag, const T> {
 	public:
+		/** Default Iterator Constructor */
 		iterator(const RingBuffer* const rb, size_t i) : buff(rb), idx(i){}
 		
 		bool operator<(const iterator& other) const {
@@ -87,6 +93,7 @@ public:
 		ssize_t idx;
 	};
 	
+	/** Moves the ringbuffer up one, and returns a reference to this element */
 	T& next(void){
 		T& ret = data[end_idx];
 		end_idx = (end_idx + 1) % data.size();
@@ -96,18 +103,22 @@ public:
 		return ret;
 	}
 	
+	/** Returns an Iterator to the beginning of the RingBuffer */
 	iterator begin() const {
 		return iterator(this, start_idx);
 	}
 	
+	/** Returns an Iterator to the end of the RingBuffer */
 	iterator end() const {
 		return iterator(this, end_idx);
 	}
 	
+	/** Returns a Reverse-Iterator to the reverse-beginning of the RingBuffer */
 	std::reverse_iterator<iterator> rbegin() const {
 		return std::reverse_iterator<iterator>(end());
 	}
 	
+	/** Returns a Reverse-Iterator to the reverse-end of the RingBuffer */
 	std::reverse_iterator<iterator> rend() const {
 		return std::reverse_iterator<iterator>(begin());
 	}

@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Functionality for playing-back replay files
+ */
 #ifndef NRG_REPLAY_SERVER_H
 #define NRG_REPLAY_SERVER_H
 #include "nrg_core.h"
@@ -33,12 +36,22 @@
 
 namespace nrg {
 
-class  ReplayServer {
+/** Class that reads a replay file and acts as a local server, sending the packets in the file */
+class ReplayServer {
 public:
+	/** Default constructor */
 	ReplayServer();
+	
+	/** Opens the specified replay file by name, returns true if it opened successfully */
 	bool openReplay(const char* filename);
+	
+	/** Binds the server to the specified local port */
 	bool bind(const char* port);
+	
+	/** Updates the ReplayServer, potentially sending new packets */
 	bool update();
+	
+	/** Returns true if the ReplayServer is active */
 	bool isReplayRunning() const;
 private:
 	NetAddress bind_addr, client_addr;

@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  A simple queue implementation
+ */
 #include "nrg_core.h"
 #include <vector>
 #include <utility>
@@ -26,14 +29,14 @@
 
 namespace nrg {
 
+/** Simple queue class built on a std::vector */
 template<class T>
 class Queue {
 public:
-
-	Queue(size_t sz) : data(sz), tail(0), head(0) {
+	/** Construct a Queue with initial size \p sz */
+	Queue(size_t sz) : data(sz), tail(0), head(0){}
 	
-	}
-	
+	/** Push \p t onto the back of the queue */
 	void push(const T& t){
 		data[tail] = t;
 		tail = (tail + 1) % data.size();
@@ -41,6 +44,7 @@ public:
 		if(tail == head) expand(); 
 	}
 	
+	/** Remove the head of the queue and return it, don't call this if the queue is empty or all hell will break loose */
 	T pop(void){
 		//if(empty()) throw std::underflow_error(__PRETTY_FUNCTION__);
 		
@@ -49,14 +53,17 @@ public:
 		return std::move(t);
 	}
 	
+	/** Clears the queue */
 	void clear(){
 		head = tail = 0;
 	}
 	
+	/** Returns the size of the queue */
 	size_t size(){
 		return tail >= head ? tail - head : data.size() - (head - tail);
 	}
 	
+	/** Returns true if the queue is empty */
 	bool empty(){
 		return head == tail;
 	}

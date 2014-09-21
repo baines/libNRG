@@ -19,12 +19,17 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains the PacketHeader class
+ */
 #ifndef NRG_PACKET_HEADER_H
 #define NRG_PACKET_HEADER_H
 
 namespace nrg {
 
+/** Class representing a header to be prepended to packets that pass through ConnectionIn and ConnectionOut */
 struct PacketHeader {
+	/** Default constructor */
 	PacketHeader()
 	: seq_num(0)
 	, flags(0)
@@ -33,6 +38,7 @@ struct PacketHeader {
 	
 	}
 	
+	/** Constructor specifying all attributes */
 	PacketHeader(uint16_t seq, uint8_t flags, uint8_t frag_index = 0)
 	: seq_num(seq)
 	, flags(flags)
@@ -41,6 +47,7 @@ struct PacketHeader {
 	
 	}
 
+	/** Read a header from a packet \p p, returning true if successful */
 	bool read(Packet& p){
 		if(p.remaining() >= size){
 			uint8_t ver_idx = 0;
@@ -53,6 +60,8 @@ struct PacketHeader {
 			return false;
 		}
 	}
+	
+	/** Write this PacketHeader instance to the given packet \p p */
 	void write(Packet& p){
 		p.write8((version << 7) | (frag_index & 0x1F));
 		p.write8(flags);

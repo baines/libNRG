@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains classes related to the Field template class that encapsulates data to be replicated across the network
+ */
 #ifndef NRG_FIELD_H
 #define NRG_FIELD_H
 #include "nrg_core.h"
@@ -32,44 +35,86 @@ namespace nrg {
 
 class FieldContainer;
 
-class  FieldBase {
+/** Abstract base class that Field inherits from */
+class FieldBase {
 public:
+	/** Standard Constructor */
 	FieldBase(FieldContainer* container);
+	
+	/** Copy Constructor */
 	FieldBase(const FieldBase& copy);
+	
+	/** Assignment operator */
 	FieldBase& operator=(const FieldBase& copy);
+	
+	/** Reads data from Packet \p p into this Field */
 	virtual size_t readFromPacket(Packet& p) = 0;
+	
+	/** Writes this Field into the Packet \p p */
 	virtual size_t writeToPacket(Packet& p) const = 0;
+	
+	/** Indicates a new Snapshot has begun and the Field should move data_next to data */
 	virtual void shiftData() = 0;
+	
+	/** Standard Destructor */
 	virtual ~FieldBase(){}
 
+	/** Returns true if the Field was updated since the last update */
 	virtual bool wasUpdated() const;
+	
+	/** Force this Field's updated flag to be true or false */
 	virtual void setUpdated(bool updated);
+	
+	/** Returns the next Field in the FielcContainer's linked list, or nullptr at the end of the list */
 	FieldBase* getNextField() const;
+	
+	/** @cond INTERNAL_USE_ONLY */
 	void setNextField(FieldBase* f);
+	/** @endcond */
 protected:
 	FieldContainer* container;
 	FieldBase* next;
 	bool updated;
 };
 
-struct  FieldContainer {
+/** Abstract class used by anything that contains Fields, like Entity or InputBase */
+struct FieldContainer {
+	/** Standard Constructor */
 	FieldContainer();
+	
+	/** Copy Constructor */
 	FieldContainer(const FieldContainer& copy);
+	
+	/** Assignment Operator */
 	FieldContainer& operator=(const FieldContainer& copy);
-	virtual void markUpdated(bool b) = 0;
-	virtual double getInterpTimer() const { return 1.0; }
+
+	/** Return the first field in this FieldContainer's internal linked-list */
 	FieldBase* getFirstField() const;
+	
+	/** Returns the number of fields in this FieldContainer's linked-list */
 	size_t getNumFields() const;
+	
+	/** @cond INTERNAL_USE_ONLY */
+	/** Marks the FieldContainer as updated so the Server knows to send modified information contained inside */
+	virtual void markUpdated(bool b) = 0;
+	/** Passes down the Client's current progress between it's two latest snapshots to contained Fields */
+	virtual double getInterpTimer() const { return 1.0; }
+	/** Add a Field to this container, performed automatically during Field initialisation */
 	void addField(FieldBase* f);
+	/** @endcond */
 private:
 	FieldBase* field_head;
 	size_t num_fields;
 };
 
+/** Template class encapsulating a type that will be replicated from Server to Clients, and is stored inside a FieldContainer */
 template<typename T, class Cdc = nrg::Codec<T> >
 class Field : private FieldBase {
 public:
+	/* Standard Constructor */
 	Field(FieldContainer* c) : FieldBase(c), data(), data_next(){}
+	
+	/* Constructor with specified initial value \p t */
 	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t), data_next(t){}
 
 	virtual size_t readFromPacket(Packet& p){
@@ -84,10 +129,12 @@ public:
 		data = data_next;
 	}
 
+	/** Alternative to Field::operator= */
 	void set(const T& other){
 		*this = other;
 	}
 
+	/** Assignment operator, which also marks this field as having been updated */
 	Field& operator=(const T& other){
 		if(data != other){
 			data = data_next = other;
@@ -96,15 +143,18 @@ public:
 		return *this;
 	}
 	
+	/** Returns the most up-to-date data without interpolation */
 	T get() const {
 		return data_next;
 	}
 
+	/** Returns data interpolated between the two latest Snapshots using \p func */
 	template<class F>
 	T getInterp(const F& func) const {
 		return func(data, data_next, this->container->getInterpTimer());
 	}
 
+	/** Returns data linearly interpolated between the two latest Snapshots using nrg::lerp */
 	T getInterp() const {
 		return lerp<T>()(data, data_next, this->container->getInterpTimer());
 	}
@@ -112,6 +162,7 @@ private:
 	T data, data_next;
 };
 
+/** Specialisation of Field for array types */
 template<typename T, size_t N>
 class Field<T[N]> : private FieldBase {
 public:

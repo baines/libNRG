@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ * BitReader and BitWriter classes for easier manipulation of bitstreams
+ */
 #ifndef NRG_BIT_IO_H
 #define NRG_BIT_IO_H
 #include "nrg_core.h"
@@ -30,33 +33,49 @@ namespace detail {
 	static const size_t MAX_BYTE_SHIFTS = 7;
 }
 
+/** Writes a stream of bytes to a packet more easily */
 class  BitWriter {
 public:
+	/** Constructor a BitWriter that will read from the Packet \p p */
 	BitWriter(Packet& p) : bits(0), count(0), p(p){}
+	
+	/** Write a 1 or 0 if \p b is true or false respectively */
 	void write(bool b){
 		b ? write1() : write0();
 	}
+	
+	/** Write a 1 bit */
 	void write1(){
 		bits |= 1 << (detail::MAX_BYTE_SHIFTS - count);
 		write0();
 	}
+	
+	/** Write a 0 bit */
 	void write0(){
 		if(++count > detail::MAX_BYTE_SHIFTS) flush();
 	}
+	
+	/** Calls BitWriter::write using the bool return value from the function \p fn \p sz times */
 	template<class T>
 	void writeFunc(int sz, const T& fn){
 		for(int i = 0; i < sz; ++i){
 			write(fn(i));
 		}
 	}
+	
+	/** Finishes writing bits to the packet, and resets the internal state */
 	void flush(void){
 		if(!count) return;
 		p.write8(bits);
 		clear();
 	}
+	
+	/** Resets the internal set of bits that have not yet been written */
 	void clear(){
 		bits = count = 0;
 	}
+	
+	/** Destructor, which will call BitWriter::flush */
 	~BitWriter(){
 		flush();
 	}
@@ -65,15 +84,21 @@ private:
 	Packet& p;
 };
 
+/** Reads a stream of bytes from a packet more easily */
 class  BitReader {
 public:
+	/** Constructs a BitReader that will read from the Packet \p p */
 	BitReader(Packet& p) : bits(0), count(0), p(p){}
+	
+	/** Reads a bit from the internal state and returns a bool representation of it */
 	bool read(void){
 		if(count == 0) p.read8(bits);
 		bool b = bits & (1 << (detail::MAX_BYTE_SHIFTS - count));
 		count = (count + 1) & detail::MAX_BYTE_SHIFTS;
 		return b;
 	}
+	
+	/** Calls BitReader::read \p sz times, calling \p fn with each result */
 	template<class T>
 	void readFunc(int sz, const T& fn){
 		for(int i = 0; i < sz; ++i){

@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Contains the Codec class, which encodes and decodes types to and from Packets
+ */
 #ifndef NRG_CODEC_H
 #define NRG_CODEC_H
 #include "nrg_core.h"
@@ -47,12 +50,16 @@ public:
 using std::enable_if;
 using detail::has_encode_decode;
 
+/** Encodes and Decodes any type into a Packet object */
 template<class T, class E = void>
 struct Codec {
+	/** Encodes \p data into \p p, and retuns the number of bytes written */
 	size_t encode(Packet& p, const T& data){
 		p.write(data);
 		return sizeof(data);
 	}
+	
+	/** Decodes bytes from \p p into \p data, returns the number of bytes read or 0 on error */
 	size_t decode(Packet& p, T& data){
 		if(p.remaining() >= sizeof(data)){
 			p.read(data);
@@ -61,33 +68,33 @@ struct Codec {
 			return 0;
 		}
 	}
-	template<class New>
-	struct rebind {
-		typedef Codec<New> type;
-	};
 };
 
+/** Specialisation of Codec for types that have their own \p encode and \p decode methods */
 template<class T>
 struct Codec<T, typename enable_if<has_encode_decode<T>::value>::type> {
+	/** Calls the encode method of \p data to encode itself into the Packet \p p */
 	size_t encode(Packet& p, const T& data){
 		return data.encode(p);
 	}
+	
+	/** Calls the decode method of \p data to decode itself from the Packet \p p */
 	size_t decode(Packet& p, T& data){
 		return data.decode(p);
 	}
-	template<class New>
-	struct rebind {
-		typedef Codec<New> type;
-	};
-
 };
 
+/** Specialisation of Codec for arrays of char */
 template<size_t len>
 struct Codec<char[len]> {
+
+	/** Encodes \p data into \p p, and retuns the number of bytes written */
 	size_t encode(Packet& p, const char (&data)[len]){
 		p.writeArray(data, len);
 		return len;
 	}
+	
+	/** Decodes bytes from \p p into \p data, returns the number of bytes read or 0 on error */
 	size_t decode(Packet& p, char (&data)[len]){
 		if(p.remaining() >= len){
 			p.readArray(&data, len);
@@ -98,13 +105,18 @@ struct Codec<char[len]> {
 	}
 };
 
+/** Specialisation of Codec for std::string objects */
 template<>
 struct Codec<std::string> {
+
+	/** Encodes \p data into \p p by prefixing the string with its length as a Varint */
 	size_t encode(Packet& p, const std::string& str){
 		size_t ret = UVarint(str.length()).encode(p);
 		p.writeArray(str.c_str(), str.length());
 		return ret + str.length();
 	}
+	
+	/** Decodes bytes from \p p into \p data, returns the number of bytes read or 0 on error */
 	size_t decode(Packet& p, std::string& str){
 		if(!p.remaining()) return 0;
 				

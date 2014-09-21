@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ * Contains the main server-side class of the library
+ */
 #ifndef NRG_SERVER_H
 #define NRG_SERVER_H
 #include "nrg_core.h"
@@ -36,6 +39,7 @@
 
 namespace nrg {
 
+/** The main server-side class of the library */
 class Server : public EntityManager {
 public:
 	Server(const std::string& game_name, uint32_t game_version, InputBase& input);
