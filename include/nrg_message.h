@@ -79,7 +79,7 @@ public:
 	
 	/** Returns the element of the Message specified by the template parameter \p n */
 	template<size_t n>
-	const typename tuple_element<n, MsgTuple>::type& get() const {
+	const typename std::tuple_element<n, MsgTuple>::type& get() const {
 		return std::get<n>(values);
 	}
 	
@@ -97,18 +97,18 @@ public:
 	
 	template<size_t n>
 	typename std::enable_if<n != sz, size_t>::type do_write(Packet& p) const {
-		return Codec<typename tuple_element<n, MsgTuple>::type>().encode(p, std::get<n>(values))
+		return Codec<typename std::tuple_element<n, MsgTuple>::type>().encode(p, std::get<n>(values))
 		+ do_write<n+1>(p);
 	}
 	
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_read(Packet& p){
-		return Codec<typename tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values));
+		return Codec<typename std::tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values));
 	}
 	
 	template<size_t n>
 	typename std::enable_if<n != sz, size_t>::type do_read(Packet& p){
-		return Codec<typename tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values))
+		return Codec<typename std::tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values))
 		+ do_read<n+1>(p);
 	}
 	/** @endcond */

@@ -172,8 +172,7 @@ PacketFlags ConnectionIn::getLatestPacket(Packet& p){
 }
 
 ConnectionOut::ConnectionOut(const NetAddress& na, const Socket& sock)
-: cc()
-, remote_addr(na)
+: remote_addr(na)
 , sock(sock)
 , last_status(true) {
 

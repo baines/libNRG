@@ -54,6 +54,7 @@ struct PacketWritable {
 	virtual ~PacketWritable(){} /**< Standard Destructor */
 };
 
+/** Class for storing data to be sent / received across the network */
 class Packet : public PacketReadable, public PacketWritable {
 public:
 	/** Default Constructor */
@@ -137,7 +138,7 @@ public:
 	
 	/** Returns the base address of the packet's data without affecting the internal pointer */
 	const uint8_t* getBasePointer() const { return data; }
-protected:
+private:
 	void resize();
 	uint8_t *data, *pointer;
 	size_t data_size, used_size;

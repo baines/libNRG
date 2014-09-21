@@ -25,6 +25,7 @@
 #ifndef NRG_CLIENT_H
 #define NRG_CLIENT_H
 #include "nrg_core.h"
+#include "nrg_version.h"
 #include "nrg_socket.h"
 #include "nrg_netaddress.h"
 #include "nrg_client_state.h"
@@ -102,7 +103,7 @@ public:
 	void  setUserPointer(void* p) { user_pointer = p; }
 	/** @} */
 
-	/** @name Getters */
+	/** @name Misc Getters */
 	/** @{ */
 	InputBase*         getInput()       { return input; }
 	EventQueue&        getEventQueue()  { return eventq; }

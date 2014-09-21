@@ -58,7 +58,7 @@ public:
 	/** Returns the contained IP address as a string, if no address is contained it returns "" - do not free */
 	const char* getIP() const;
 	
-	/** Returns the family of the contained address, i.e. AF_INET, AF_INET6 or AF_UNSPEC */
+	/** Returns the family of the contained address, (AF_INET, AF_INET6 or AF_UNSPEC) */
 	int getFamily() const;
 	
 	/** Returns the contained address' port as a short in host byte order */

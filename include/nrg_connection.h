@@ -53,7 +53,9 @@ enum PacketFlags : uint8_t {
 
 /** Common connection functionality that is used by both ConnectionIn and ConnectionOut */
 struct ConnectionCommon {
-
+	/** Default Constructor */
+	ConnectionCommon();
+	
 	/** Add a PacketTransformation that will be applied to packets, or nullptr to disable */
 	void setTransform(PacketTransformation* transform);
 	
@@ -64,6 +66,9 @@ struct ConnectionCommon {
 /** Incoming connection class */
 class ConnectionIn {
 public:
+	/** Default Constructor */
+	ConnectionIn();
+	
 	/** Add a received packet with connection header information to be processed */
 	bool addPacket(Packet& p);
 	
@@ -113,8 +118,8 @@ public:
 private:
 	Status sendPacketWithHeader(Packet& p, PacketHeader h);
 	ConnectionCommon cc;
-	const Socket& sock;
 	const NetAddress& remote_addr;
+	const Socket& sock;
 	Packet buffer, buffer2, last;
 	PacketHeader last_header;
 	Status last_status;

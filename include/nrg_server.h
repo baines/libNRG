@@ -25,6 +25,7 @@
 #ifndef NRG_SERVER_H
 #define NRG_SERVER_H
 #include "nrg_core.h"
+#include "nrg_version.h"
 #include "nrg_socket.h"
 #include "nrg_packet.h"
 #include "nrg_netaddress.h"

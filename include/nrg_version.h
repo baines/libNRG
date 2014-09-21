@@ -22,6 +22,7 @@
 /** @file 
  * Library versioning stuff
  */
+#include "nrg_core.h"
 namespace nrg {
 
 /** @brief A class to store the version of the library. */
