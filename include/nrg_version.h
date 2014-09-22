@@ -22,6 +22,8 @@
 /** @file 
  * Library versioning stuff
  */
+#ifndef NRG_VERSION_H_
+#define NRG_VERSION_H_
 #include "nrg_core.h"
 namespace nrg {
 
@@ -58,3 +60,6 @@ Version getLibVersion(void);
 bool isVersionCompatible(const Version& v);
 
 }
+
+#endif
+
