@@ -95,13 +95,18 @@ $(document).ready(function(){initNavTree('structnrg_1_1UDPSocket.html','');});
 <div class="title">nrg::UDPSocket Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="classnrg_1_1Socket.html" title="Base socket class. ">Socket</a> derivative specifically for the User-Datagram Protocol.  
+</p>
+
+<p><code>#include &lt;<a class="el" href="nrg__socket_8h_source.html">nrg_socket.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nrg::UDPSocket:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="structnrg_1_1UDPSocket.png" usemap="#nrg::UDPSocket_map" alt=""/>
   <map id="nrg::UDPSocket_map" name="nrg::UDPSocket_map">
-<area href="classnrg_1_1Socket.html" alt="nrg::Socket" shape="rect" coords="0,0,100,24"/>
+<area href="classnrg_1_1Socket.html" title="Base socket class. " alt="nrg::Socket" shape="rect" coords="0,0,100,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -115,68 +120,88 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a013bc8a6d981b9b76b191aed74de9237"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classnrg_1_1Socket"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classnrg_1_1Socket')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classnrg_1_1Socket.html">nrg::Socket</a></td></tr>
 <tr class="memitem:a5b77635842a33fab905dba01650c5a0f inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5b77635842a33fab905dba01650c5a0f"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Socket</b> (int type, int family=PF_UNSPEC)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a5b77635842a33fab905dba01650c5a0f">Socket</a> (int type, int family=PF_UNSPEC)</td></tr>
+<tr class="memdesc:a5b77635842a33fab905dba01650c5a0f inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a socket with the given type and family. <br/></td></tr>
 <tr class="separator:a5b77635842a33fab905dba01650c5a0f inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9603bda62b97d0a1c8dec936de0007d5 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9603bda62b97d0a1c8dec936de0007d5"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Socket</b> (int type, const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a9603bda62b97d0a1c8dec936de0007d5">Socket</a> (int type, const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<tr class="memdesc:a9603bda62b97d0a1c8dec936de0007d5 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a socket with the given type and a family derived from the given address. <br/></td></tr>
 <tr class="separator:a9603bda62b97d0a1c8dec936de0007d5 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae45d59588e60ce0e52a7684cc2e3f0cf inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae45d59588e60ce0e52a7684cc2e3f0cf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setFamilyFromAddress</b> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#ae45d59588e60ce0e52a7684cc2e3f0cf">setFamilyFromAddress</a> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<tr class="memdesc:ae45d59588e60ce0e52a7684cc2e3f0cf inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the socket's family using the family of the given address. <br/></td></tr>
 <tr class="separator:ae45d59588e60ce0e52a7684cc2e3f0cf inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a445dba5ca9543782ef87ce779b1cf46a inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a445dba5ca9543782ef87ce779b1cf46a"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a445dba5ca9543782ef87ce779b1cf46a">bind</a> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<tr class="memdesc:a445dba5ca9543782ef87ce779b1cf46a inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the socket to the given local address. <br/></td></tr>
 <tr class="separator:a445dba5ca9543782ef87ce779b1cf46a inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9f542ff333dd056618f179589b8fdea inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9f542ff333dd056618f179589b8fdea"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>connect</b> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#af9f542ff333dd056618f179589b8fdea">connect</a> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<tr class="memdesc:af9f542ff333dd056618f179589b8fdea inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connects the socket to the given remote address. <br/></td></tr>
 <tr class="separator:af9f542ff333dd056618f179589b8fdea inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf26ab892c7066565330eb47d061b6ca inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaf26ab892c7066565330eb47d061b6ca"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>disconnect</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#aaf26ab892c7066565330eb47d061b6ca">disconnect</a> ()</td></tr>
+<tr class="memdesc:aaf26ab892c7066565330eb47d061b6ca inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disconnects the socket. <br/></td></tr>
 <tr class="separator:aaf26ab892c7066565330eb47d061b6ca inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e2cb88dd2ee2f6941832ac8d3b05190 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e2cb88dd2ee2f6941832ac8d3b05190"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isConnected</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a3e2cb88dd2ee2f6941832ac8d3b05190">isConnected</a> () const </td></tr>
+<tr class="memdesc:a3e2cb88dd2ee2f6941832ac8d3b05190 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the socket is connected. <br/></td></tr>
 <tr class="separator:a3e2cb88dd2ee2f6941832ac8d3b05190 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a506980e214114693e19bf4de62520bbd inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a506980e214114693e19bf4de62520bbd"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sendPacket</b> (const <a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p) const </td></tr>
+<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a506980e214114693e19bf4de62520bbd">sendPacket</a> (const <a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p) const </td></tr>
+<tr class="memdesc:a506980e214114693e19bf4de62520bbd inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a <a class="el" href="classnrg_1_1Packet.html" title="Class for storing data to be sent / received across the network. ">Packet</a> to the address this socket is connected to. <br/></td></tr>
 <tr class="separator:a506980e214114693e19bf4de62520bbd inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16f429e194de3125aa07273dc93d3ed4 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16f429e194de3125aa07273dc93d3ed4"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>sendPacket</b> (const <a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p, const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr) const </td></tr>
+<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a16f429e194de3125aa07273dc93d3ed4">sendPacket</a> (const <a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p, const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr) const </td></tr>
+<tr class="memdesc:a16f429e194de3125aa07273dc93d3ed4 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a <a class="el" href="classnrg_1_1Packet.html" title="Class for storing data to be sent / received across the network. ">Packet</a> to the given address. <br/></td></tr>
 <tr class="separator:a16f429e194de3125aa07273dc93d3ed4 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cf211ac9c0fd10008882e86e9e77fe1 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3cf211ac9c0fd10008882e86e9e77fe1"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>recvPacket</b> (<a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p) const </td></tr>
+<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a3cf211ac9c0fd10008882e86e9e77fe1">recvPacket</a> (<a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p) const </td></tr>
+<tr class="memdesc:a3cf211ac9c0fd10008882e86e9e77fe1 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive a <a class="el" href="classnrg_1_1Packet.html" title="Class for storing data to be sent / received across the network. ">Packet</a> from this socket's connected address. <br/></td></tr>
 <tr class="separator:a3cf211ac9c0fd10008882e86e9e77fe1 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9217f23ce8365c9d503ea64972c17a83 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9217f23ce8365c9d503ea64972c17a83"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>recvPacket</b> (<a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p, <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a9217f23ce8365c9d503ea64972c17a83">recvPacket</a> (<a class="el" href="classnrg_1_1Packet.html">Packet</a> &amp;p, <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<tr class="memdesc:a9217f23ce8365c9d503ea64972c17a83 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receive a <a class="el" href="classnrg_1_1Packet.html" title="Class for storing data to be sent / received across the network. ">Packet</a> from anyone, and put their address into addr. <br/></td></tr>
 <tr class="separator:a9217f23ce8365c9d503ea64972c17a83 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d192a472b40d16a74493b65f50e90c0 inherit pub_methods_classnrg_1_1Socket"><td class="memTemplParams" colspan="2"><a class="anchor" id="a5d192a472b40d16a74493b65f50e90c0"></a>
 template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a5d192a472b40d16a74493b65f50e90c0 inherit pub_methods_classnrg_1_1Socket"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setOption</b> (int level, int name, const T &amp;opt)</td></tr>
+<tr class="memitem:a5d192a472b40d16a74493b65f50e90c0 inherit pub_methods_classnrg_1_1Socket"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a5d192a472b40d16a74493b65f50e90c0">setOption</a> (int level, int name, const T &amp;opt)</td></tr>
+<tr class="memdesc:a5d192a472b40d16a74493b65f50e90c0 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Template wrapper around setsockopt. <br/></td></tr>
 <tr class="separator:a5d192a472b40d16a74493b65f50e90c0 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c6ac88106b347d18554226ec68184a3 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c6ac88106b347d18554226ec68184a3"></a>
-<a class="el" href="structnrg_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><b>checkErrorQueue</b> (<a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;culprit)</td></tr>
-<tr class="separator:a9c6ac88106b347d18554226ec68184a3 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae14b0cff875194d62547fe9596cf4537 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae14b0cff875194d62547fe9596cf4537"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>dataPending</b> (int usToBlock=0) const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#ae14b0cff875194d62547fe9596cf4537">dataPending</a> (int usToBlock=0) const </td></tr>
+<tr class="memdesc:ae14b0cff875194d62547fe9596cf4537 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Uses select() to determine if data is available for reading on this socket. <br/></td></tr>
 <tr class="separator:ae14b0cff875194d62547fe9596cf4537 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe3c6548636b04c88a922fdbd68be852 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abe3c6548636b04c88a922fdbd68be852"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setNonBlocking</b> (bool nonblock)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#abe3c6548636b04c88a922fdbd68be852">setNonBlocking</a> (bool nonblock)</td></tr>
+<tr class="memdesc:abe3c6548636b04c88a922fdbd68be852 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets this socket as non-blocking. <br/></td></tr>
 <tr class="separator:abe3c6548636b04c88a922fdbd68be852 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af490bd42790646b00d4e5a2257131875 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af490bd42790646b00d4e5a2257131875"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>enableTimestamps</b> (bool enable)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#af490bd42790646b00d4e5a2257131875">enableTimestamps</a> (bool enable)</td></tr>
+<tr class="memdesc:af490bd42790646b00d4e5a2257131875 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables the use of <a class="el" href="classnrg_1_1Socket.html#ad495ad3ca7e447a953b95140861403cd" title="Gets a timestamp of when the last packet was received, if available and enabled. ">getLastTimestamp()</a> <br/></td></tr>
 <tr class="separator:af490bd42790646b00d4e5a2257131875 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae702dae0fa11fe3c8c1f572e2b96f4cc inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae702dae0fa11fe3c8c1f572e2b96f4cc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>handleUnconnectedICMPErrors</b> (bool enable)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#ae702dae0fa11fe3c8c1f572e2b96f4cc">handleUnconnectedICMPErrors</a> (bool enable)</td></tr>
+<tr class="memdesc:ae702dae0fa11fe3c8c1f572e2b96f4cc inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables checking for ICMP related errors on this socket, if available. <br/></td></tr>
 <tr class="separator:ae702dae0fa11fe3c8c1f572e2b96f4cc inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ded4d2695d011f4165bb933563a4db6 inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ded4d2695d011f4165bb933563a4db6"></a>
 const std::unique_ptr<br class="typebreak"/>
-&lt; <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getBoundAddress</b> () const </td></tr>
+&lt; <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a4ded4d2695d011f4165bb933563a4db6">getBoundAddress</a> () const </td></tr>
+<tr class="memdesc:a4ded4d2695d011f4165bb933563a4db6 inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the address this socket is bound to. <br/></td></tr>
 <tr class="separator:a4ded4d2695d011f4165bb933563a4db6 inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6192fa97221285e7ab8c44c0ce37150e inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6192fa97221285e7ab8c44c0ce37150e"></a>
 const std::unique_ptr<br class="typebreak"/>
-&lt; <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getConnectedAddress</b> () const </td></tr>
+&lt; <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a6192fa97221285e7ab8c44c0ce37150e">getConnectedAddress</a> () const </td></tr>
+<tr class="memdesc:a6192fa97221285e7ab8c44c0ce37150e inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the address this socket is connected to. <br/></td></tr>
 <tr class="separator:a6192fa97221285e7ab8c44c0ce37150e inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad495ad3ca7e447a953b95140861403cd inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad495ad3ca7e447a953b95140861403cd"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>getLastTimestamp</b> () const </td></tr>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#ad495ad3ca7e447a953b95140861403cd">getLastTimestamp</a> () const </td></tr>
+<tr class="memdesc:ad495ad3ca7e447a953b95140861403cd inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a timestamp of when the last packet was received, if available and enabled. <br/></td></tr>
 <tr class="separator:ad495ad3ca7e447a953b95140861403cd inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ee970d19f93b77377dd84e51c3d1fed inherit pub_methods_classnrg_1_1Socket"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1ee970d19f93b77377dd84e51c3d1fed"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Socket.html#a1ee970d19f93b77377dd84e51c3d1fed">~Socket</a> ()</td></tr>
+<tr class="memdesc:a1ee970d19f93b77377dd84e51c3d1fed inherit pub_methods_classnrg_1_1Socket"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor. <br/></td></tr>
+<tr class="separator:a1ee970d19f93b77377dd84e51c3d1fed inherit pub_methods_classnrg_1_1Socket"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>include/<a class="el" href="nrg__socket_8h_source.html">nrg_socket.h</a></li>
@@ -187,7 +212,7 @@ uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>getLastTimestamp<
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>nrg</b></li><li class="navelem"><a class="el" href="structnrg_1_1UDPSocket.html">UDPSocket</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('nrg__socket_8h_source.html','');});
 <div class="title">nrg_socket.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<a href="nrg__socket_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">  LibNRG - Networking for Real-time Games</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">  </span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">  Copyright (C) 2012-2014 Alex Baines &lt;alex@abaines.me.uk&gt;</span></div>
@@ -113,72 +113,101 @@ $(document).ready(function(){initNavTree('nrg__socket_8h_source.html','');});
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">     misrepresented as being the original software.</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">  3. This notice may not be removed or altered from any source distribution.</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">*/</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#ifndef NRG_SOCKET_H</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_SOCKET_H</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__netaddress_8h.html">nrg_netaddress.h</a>&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;nrg_packet.h&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">namespace </span>nrg {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classnrg_1_1Socket.html">   31</a></span>&#160;<span class="keyword">class </span><a class="code" href="classnrg_1_1Socket.html">Socket</a> {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classnrg_1_1Socket.html">Socket</a>(<span class="keywordtype">int</span> type, <span class="keywordtype">int</span> family = PF_UNSPEC);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="classnrg_1_1Socket.html">Socket</a>(<span class="keywordtype">int</span> type, <span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> setFamilyFromAddress(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> bind(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> connect(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span> disconnect();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordtype">bool</span> isConnected() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> sendPacket(<span class="keyword">const</span> <a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> sendPacket(<span class="keyword">const</span> <a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p, <span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> recvPacket(<a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> recvPacket(<a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p, <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef NRG_SOCKET_H</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_SOCKET_H</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__netaddress_8h.html">nrg_netaddress.h</a>&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;nrg_packet.h&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">namespace </span>nrg {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classnrg_1_1Socket.html">   35</a></span>&#160;<span class="keyword">class </span><a class="code" href="classnrg_1_1Socket.html">Socket</a> {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classnrg_1_1Socket.html#a5b77635842a33fab905dba01650c5a0f">Socket</a>(<span class="keywordtype">int</span> type, <span class="keywordtype">int</span> family = PF_UNSPEC);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <a class="code" href="classnrg_1_1Socket.html#a5b77635842a33fab905dba01650c5a0f">Socket</a>(<span class="keywordtype">int</span> type, <span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnrg_1_1Socket.html#ae45d59588e60ce0e52a7684cc2e3f0cf">setFamilyFromAddress</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> <a class="code" href="classnrg_1_1Socket.html#a445dba5ca9543782ef87ce779b1cf46a">bind</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> setOption(<span class="keywordtype">int</span> level, <span class="keywordtype">int</span> name, <span class="keyword">const</span> T&amp; opt){</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;         <span class="keywordflow">return</span> setsockopt(fd, level, name, &amp;opt, <span class="keyword">sizeof</span>(T)) == 0;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> checkErrorQueue(<a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; culprit);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> dataPending(<span class="keywordtype">int</span> usToBlock = 0) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">void</span> setNonBlocking(<span class="keywordtype">bool</span> nonblock);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">void</span> enableTimestamps(<span class="keywordtype">bool</span> enable);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">void</span> handleUnconnectedICMPErrors(<span class="keywordtype">bool</span> enable);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> <a class="code" href="classnrg_1_1Socket.html#af9f542ff333dd056618f179589b8fdea">connect</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnrg_1_1Socket.html#aaf26ab892c7066565330eb47d061b6ca">disconnect</a>();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnrg_1_1Socket.html#a3e2cb88dd2ee2f6941832ac8d3b05190">isConnected</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> <a class="code" href="classnrg_1_1Socket.html#a506980e214114693e19bf4de62520bbd">sendPacket</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keyword">const</span> std::unique_ptr&lt;NetAddress&gt;&amp; getBoundAddress() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">const</span> std::unique_ptr&lt;NetAddress&gt;&amp; getConnectedAddress()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">return</span> connected_addr;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    uint64_t getLastTimestamp()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> last_timestamp;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classnrg_1_1Socket.html">Socket</a>();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">mutable</span> std::unique_ptr&lt;NetAddress&gt; bound_addr, connected_addr;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordtype">int</span> fd, family, type;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">bool</span> do_timestamp, use_errqueue;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    uint64_t last_timestamp;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="structnrg_1_1UDPSocket.html">   75</a></span>&#160;<span class="keyword">struct  </span><a class="code" href="structnrg_1_1UDPSocket.html">UDPSocket</a> : <span class="keyword">public</span> <a class="code" href="classnrg_1_1Socket.html">Socket</a> {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="structnrg_1_1UDPSocket.html">UDPSocket</a>(<span class="keywordtype">int</span> family = PF_UNSPEC);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <a class="code" href="structnrg_1_1UDPSocket.html">UDPSocket</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; a);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;};</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="structnrg_1_1UDPSocket_html"><div class="ttname"><a href="structnrg_1_1UDPSocket.html">nrg::UDPSocket</a></div><div class="ttdef"><b>Definition:</b> nrg_socket.h:75</div></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> <a class="code" href="classnrg_1_1Socket.html#a506980e214114693e19bf4de62520bbd">sendPacket</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p, <span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> <a class="code" href="classnrg_1_1Socket.html#a3cf211ac9c0fd10008882e86e9e77fe1">recvPacket</a>(<a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> <a class="code" href="classnrg_1_1Socket.html#a3cf211ac9c0fd10008882e86e9e77fe1">recvPacket</a>(<a class="code" href="classnrg_1_1Packet.html">Packet</a>&amp; p, <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; addr);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classnrg_1_1Socket.html#a5d192a472b40d16a74493b65f50e90c0">   71</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnrg_1_1Socket.html#a5d192a472b40d16a74493b65f50e90c0">setOption</a>(<span class="keywordtype">int</span> level, <span class="keywordtype">int</span> name, <span class="keyword">const</span> T&amp; opt){</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;         <span class="keywordflow">return</span> setsockopt(fd, level, name, &amp;opt, <span class="keyword">sizeof</span>(T)) == 0;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classnrg_1_1Socket.html#ae14b0cff875194d62547fe9596cf4537">dataPending</a>(<span class="keywordtype">int</span> usToBlock = 0) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnrg_1_1Socket.html#abe3c6548636b04c88a922fdbd68be852">setNonBlocking</a>(<span class="keywordtype">bool</span> nonblock);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnrg_1_1Socket.html#af490bd42790646b00d4e5a2257131875">enableTimestamps</a>(<span class="keywordtype">bool</span> enable);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classnrg_1_1Socket.html#ae702dae0fa11fe3c8c1f572e2b96f4cc">handleUnconnectedICMPErrors</a>(<span class="keywordtype">bool</span> enable);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">const</span> std::unique_ptr&lt;NetAddress&gt;&amp; <a class="code" href="classnrg_1_1Socket.html#a4ded4d2695d011f4165bb933563a4db6">getBoundAddress</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    </div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classnrg_1_1Socket.html#a6192fa97221285e7ab8c44c0ce37150e">   91</a></span>&#160;    <span class="keyword">const</span> std::unique_ptr&lt;NetAddress&gt;&amp; <a class="code" href="classnrg_1_1Socket.html#a6192fa97221285e7ab8c44c0ce37150e">getConnectedAddress</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">return</span> connected_addr;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    }</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    </div>
+<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classnrg_1_1Socket.html#ad495ad3ca7e447a953b95140861403cd">   96</a></span>&#160;    uint64_t <a class="code" href="classnrg_1_1Socket.html#ad495ad3ca7e447a953b95140861403cd">getLastTimestamp</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">return</span> last_timestamp;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classnrg_1_1Socket.html#a1ee970d19f93b77377dd84e51c3d1fed">~Socket</a>();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="keyword">private</span>:    </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a> checkErrorQueue(<a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; culprit);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    </div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">mutable</span> std::unique_ptr&lt;NetAddress&gt; bound_addr, connected_addr;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordtype">int</span> fd, family, type;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">bool</span> do_timestamp, use_errqueue;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    uint64_t last_timestamp;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;};</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="structnrg_1_1UDPSocket.html">  112</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1UDPSocket.html">UDPSocket</a> : <span class="keyword">public</span> <a class="code" href="classnrg_1_1Socket.html">Socket</a> {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <a class="code" href="structnrg_1_1UDPSocket.html">UDPSocket</a>(<span class="keywordtype">int</span> family = PF_UNSPEC);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <a class="code" href="structnrg_1_1UDPSocket.html">UDPSocket</a>(<span class="keyword">const</span> <a class="code" href="classnrg_1_1NetAddress.html">NetAddress</a>&amp; a);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;};</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="classnrg_1_1Socket_html_af490bd42790646b00d4e5a2257131875"><div class="ttname"><a href="classnrg_1_1Socket.html#af490bd42790646b00d4e5a2257131875">nrg::Socket::enableTimestamps</a></div><div class="ttdeci">void enableTimestamps(bool enable)</div><div class="ttdoc">Enables or disables the use of getLastTimestamp() </div></div>
+<div class="ttc" id="structnrg_1_1UDPSocket_html"><div class="ttname"><a href="structnrg_1_1UDPSocket.html">nrg::UDPSocket</a></div><div class="ttdoc">Socket derivative specifically for the User-Datagram Protocol. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:112</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a1ee970d19f93b77377dd84e51c3d1fed"><div class="ttname"><a href="classnrg_1_1Socket.html#a1ee970d19f93b77377dd84e51c3d1fed">nrg::Socket::~Socket</a></div><div class="ttdeci">virtual ~Socket()</div><div class="ttdoc">Default destructor. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_abe3c6548636b04c88a922fdbd68be852"><div class="ttname"><a href="classnrg_1_1Socket.html#abe3c6548636b04c88a922fdbd68be852">nrg::Socket::setNonBlocking</a></div><div class="ttdeci">void setNonBlocking(bool nonblock)</div><div class="ttdoc">Sets this socket as non-blocking. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a3e2cb88dd2ee2f6941832ac8d3b05190"><div class="ttname"><a href="classnrg_1_1Socket.html#a3e2cb88dd2ee2f6941832ac8d3b05190">nrg::Socket::isConnected</a></div><div class="ttdeci">bool isConnected() const </div><div class="ttdoc">Returns true if the socket is connected. </div></div>
 <div class="ttc" id="classnrg_1_1Packet_html"><div class="ttname"><a href="classnrg_1_1Packet.html">nrg::Packet</a></div><div class="ttdoc">Class for storing data to be sent / received across the network. </div><div class="ttdef"><b>Definition:</b> nrg_packet.h:58</div></div>
 <div class="ttc" id="nrg__netaddress_8h_html"><div class="ttname"><a href="nrg__netaddress_8h.html">nrg_netaddress.h</a></div><div class="ttdoc">Contains the NetAddress class for wrapping POSIX sockaddr structures and resolving hostnames to IP ad...</div></div>
-<div class="ttc" id="structnrg_1_1Status_html"><div class="ttname"><a href="structnrg_1_1Status.html">nrg::Status</a></div><div class="ttdef"><b>Definition:</b> nrg_status.h:30</div></div>
-<div class="ttc" id="classnrg_1_1Socket_html"><div class="ttname"><a href="classnrg_1_1Socket.html">nrg::Socket</a></div><div class="ttdef"><b>Definition:</b> nrg_socket.h:31</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_ad495ad3ca7e447a953b95140861403cd"><div class="ttname"><a href="classnrg_1_1Socket.html#ad495ad3ca7e447a953b95140861403cd">nrg::Socket::getLastTimestamp</a></div><div class="ttdeci">uint64_t getLastTimestamp() const </div><div class="ttdoc">Gets a timestamp of when the last packet was received, if available and enabled. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:96</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_ae702dae0fa11fe3c8c1f572e2b96f4cc"><div class="ttname"><a href="classnrg_1_1Socket.html#ae702dae0fa11fe3c8c1f572e2b96f4cc">nrg::Socket::handleUnconnectedICMPErrors</a></div><div class="ttdeci">void handleUnconnectedICMPErrors(bool enable)</div><div class="ttdoc">Enables or disables checking for ICMP related errors on this socket, if available. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_ae45d59588e60ce0e52a7684cc2e3f0cf"><div class="ttname"><a href="classnrg_1_1Socket.html#ae45d59588e60ce0e52a7684cc2e3f0cf">nrg::Socket::setFamilyFromAddress</a></div><div class="ttdeci">void setFamilyFromAddress(const NetAddress &amp;addr)</div><div class="ttdoc">Sets the socket&#39;s family using the family of the given address. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_af9f542ff333dd056618f179589b8fdea"><div class="ttname"><a href="classnrg_1_1Socket.html#af9f542ff333dd056618f179589b8fdea">nrg::Socket::connect</a></div><div class="ttdeci">Status connect(const NetAddress &amp;addr)</div><div class="ttdoc">Connects the socket to the given remote address. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a6192fa97221285e7ab8c44c0ce37150e"><div class="ttname"><a href="classnrg_1_1Socket.html#a6192fa97221285e7ab8c44c0ce37150e">nrg::Socket::getConnectedAddress</a></div><div class="ttdeci">const std::unique_ptr&lt; NetAddress &gt; &amp; getConnectedAddress() const </div><div class="ttdoc">Returns the address this socket is connected to. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:91</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a5b77635842a33fab905dba01650c5a0f"><div class="ttname"><a href="classnrg_1_1Socket.html#a5b77635842a33fab905dba01650c5a0f">nrg::Socket::Socket</a></div><div class="ttdeci">Socket(int type, int family=PF_UNSPEC)</div><div class="ttdoc">Constructs a socket with the given type and family. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a5d192a472b40d16a74493b65f50e90c0"><div class="ttname"><a href="classnrg_1_1Socket.html#a5d192a472b40d16a74493b65f50e90c0">nrg::Socket::setOption</a></div><div class="ttdeci">bool setOption(int level, int name, const T &amp;opt)</div><div class="ttdoc">Template wrapper around setsockopt. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:71</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a445dba5ca9543782ef87ce779b1cf46a"><div class="ttname"><a href="classnrg_1_1Socket.html#a445dba5ca9543782ef87ce779b1cf46a">nrg::Socket::bind</a></div><div class="ttdeci">Status bind(const NetAddress &amp;addr)</div><div class="ttdoc">Bind the socket to the given local address. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a506980e214114693e19bf4de62520bbd"><div class="ttname"><a href="classnrg_1_1Socket.html#a506980e214114693e19bf4de62520bbd">nrg::Socket::sendPacket</a></div><div class="ttdeci">Status sendPacket(const Packet &amp;p) const </div><div class="ttdoc">Sends a Packet to the address this socket is connected to. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a4ded4d2695d011f4165bb933563a4db6"><div class="ttname"><a href="classnrg_1_1Socket.html#a4ded4d2695d011f4165bb933563a4db6">nrg::Socket::getBoundAddress</a></div><div class="ttdeci">const std::unique_ptr&lt; NetAddress &gt; &amp; getBoundAddress() const </div><div class="ttdoc">Returns the address this socket is bound to. </div></div>
+<div class="ttc" id="structnrg_1_1Status_html"><div class="ttname"><a href="structnrg_1_1Status.html">nrg::Status</a></div><div class="ttdoc">Class to wrap system and internal errors. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:34</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_ae14b0cff875194d62547fe9596cf4537"><div class="ttname"><a href="classnrg_1_1Socket.html#ae14b0cff875194d62547fe9596cf4537">nrg::Socket::dataPending</a></div><div class="ttdeci">bool dataPending(int usToBlock=0) const </div><div class="ttdoc">Uses select() to determine if data is available for reading on this socket. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html"><div class="ttname"><a href="classnrg_1_1Socket.html">nrg::Socket</a></div><div class="ttdoc">Base socket class. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:35</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_aaf26ab892c7066565330eb47d061b6ca"><div class="ttname"><a href="classnrg_1_1Socket.html#aaf26ab892c7066565330eb47d061b6ca">nrg::Socket::disconnect</a></div><div class="ttdeci">void disconnect()</div><div class="ttdoc">Disconnects the socket. </div></div>
+<div class="ttc" id="classnrg_1_1Socket_html_a3cf211ac9c0fd10008882e86e9e77fe1"><div class="ttname"><a href="classnrg_1_1Socket.html#a3cf211ac9c0fd10008882e86e9e77fe1">nrg::Socket::recvPacket</a></div><div class="ttdeci">Status recvPacket(Packet &amp;p) const </div><div class="ttdoc">Receive a Packet from this socket&#39;s connected address. </div></div>
 <div class="ttc" id="nrg__core_8h_html"><div class="ttname"><a href="nrg__core_8h.html">nrg_core.h</a></div><div class="ttdoc">Common defines and includes used by all the other nrg header files. </div></div>
 <div class="ttc" id="classnrg_1_1NetAddress_html"><div class="ttname"><a href="classnrg_1_1NetAddress.html">nrg::NetAddress</a></div><div class="ttdoc">Class to wrap the various POSIX sockaddrs and resolve hostnames. </div><div class="ttdef"><b>Definition:</b> nrg_netaddress.h:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -186,8 +215,8 @@ $(document).ready(function(){initNavTree('nrg__socket_8h_source.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><b>nrg_socket.h</b></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__socket_8h.html">nrg_socket.h</a></li>
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

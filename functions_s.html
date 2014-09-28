@@ -103,18 +103,37 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 </li>
 <li>sendPacket()
 : <a class="el" href="classnrg_1_1ConnectionOut.html#abf1a163927fddc06c4c1927281939455">nrg::ConnectionOut</a>
+, <a class="el" href="classnrg_1_1Socket.html#a506980e214114693e19bf4de62520bbd">nrg::Socket</a>
 , <a class="el" href="structnrg_1_1StateConnectionOut.html#a98ff945e69d4f84c6fd5e4b1f82eb439">nrg::StateConnectionOut</a>
 , <a class="el" href="structnrg_1_1StateConnectionOutImpl.html#a17df0153eecb9e7d31647cad101831d3">nrg::StateConnectionOutImpl</a>
 </li>
 <li>sentPackets()
 : <a class="el" href="structnrg_1_1StateConnectionOutImpl.html#a3010512655385fddbcfa261e2bf572f7">nrg::StateConnectionOutImpl</a>
 </li>
+<li>Server()
+: <a class="el" href="classnrg_1_1Server.html#aee014ca98063e5bd346bda0f4a713d0d">nrg::Server</a>
+</li>
 <li>set()
 : <a class="el" href="classnrg_1_1Field.html#ac819d5ebe331a8fd828181867dc740db">nrg::Field&lt; T, Cdc &gt;</a>
 , <a class="el" href="classnrg_1_1Message.html#a98e11fe8d63feb2dd6520669ff325b4f">nrg::Message&lt; id, Args &gt;</a>
 </li>
+<li>setFamilyFromAddress()
+: <a class="el" href="classnrg_1_1Socket.html#ae45d59588e60ce0e52a7684cc2e3f0cf">nrg::Socket</a>
+</li>
+<li>setMaxPlayers()
+: <a class="el" href="classnrg_1_1Server.html#a8dda0419ff07e7322473cde1fcfb32f6">nrg::Server</a>
+</li>
+<li>setNonBlocking()
+: <a class="el" href="classnrg_1_1Socket.html#abe3c6548636b04c88a922fdbd68be852">nrg::Socket</a>
+</li>
+<li>setOption()
+: <a class="el" href="classnrg_1_1Socket.html#a5d192a472b40d16a74493b65f50e90c0">nrg::Socket</a>
+</li>
 <li>setPacketRateLimit()
 : <a class="el" href="classnrg_1_1Client.html#ab53ab85a72a66a3e346b74ffc7165cc9">nrg::Client</a>
+</li>
+<li>setTickRate()
+: <a class="el" href="classnrg_1_1Server.html#af2e6a709c50cddb52e4d6ec44050f7c9">nrg::Server</a>
 </li>
 <li>setTransform()
 : <a class="el" href="structnrg_1_1ConnectionCommon.html#a9b1a95d4fecec87eead63c1b58697e77">nrg::ConnectionCommon</a>
@@ -127,6 +146,10 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 </li>
 <li>setUserPointer()
 : <a class="el" href="classnrg_1_1Client.html#a65eeae79686ad93e18e4b63b73951626">nrg::Client</a>
+, <a class="el" href="classnrg_1_1Server.html#a1a497c5a9c860e7d16b6a98e0742db5f">nrg::Server</a>
+</li>
+<li>setVersionComparison()
+: <a class="el" href="classnrg_1_1Server.html#ad135049907fa95dbb2a21b9437767913">nrg::Server</a>
 </li>
 <li>shiftData()
 : <a class="el" href="classnrg_1_1Field.html#acc8f840bb51c1b898800bea502e65e16">nrg::Field&lt; T, Cdc &gt;</a>
@@ -137,6 +160,9 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 : <a class="el" href="classnrg_1_1Packet.html#a1fd90b23c999b8021549222fd903669a">nrg::Packet</a>
 , <a class="el" href="classnrg_1_1Queue.html#ad1c3a3193f9cbfa788670502e8b38457">nrg::Queue&lt; T &gt;</a>
 </li>
+<li>Socket()
+: <a class="el" href="classnrg_1_1Socket.html#a5b77635842a33fab905dba01650c5a0f">nrg::Socket</a>
+</li>
 <li>startRecording()
 : <a class="el" href="classnrg_1_1ReplayRecorder.html#a0832293a1849819de28851dde6fde7f2">nrg::ReplayRecorder</a>
 </li>
@@ -146,11 +172,17 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 <li>StateConnectionOutImpl()
 : <a class="el" href="structnrg_1_1StateConnectionOutImpl.html#a7b0dbb720907547cd0158037dc24b198">nrg::StateConnectionOutImpl</a>
 </li>
+<li>Status()
+: <a class="el" href="structnrg_1_1Status.html#aed89eafa61568d5e2d97f1fc3b4f490e">nrg::Status</a>
+</li>
 <li>stopRecording()
 : <a class="el" href="classnrg_1_1ReplayRecorder.html#ab6ec2c943eb538c082cc33a1ce2c8559">nrg::ReplayRecorder</a>
 </li>
 <li>stopRecordingReplay()
 : <a class="el" href="classnrg_1_1Client.html#ae6f7b9b8d20155bc1f80dfce7464b03b">nrg::Client</a>
+</li>
+<li>sys_errno
+: <a class="el" href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">nrg::Status</a>
 </li>
 </ul>
 </div><!-- contents -->
@@ -158,7 +190,7 @@ $(document).ready(function(){initNavTree('functions_s.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

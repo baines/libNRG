@@ -44,7 +44,6 @@ var hierarchy =
       [ "nrg::Message< id, Args >", "classnrg_1_1Message.html", null ]
     ] ],
     [ "nrg::MessageManager", "classnrg_1_1MessageManager.html", null ],
-    [ "nrg::min_sizeof< N >", "structnrg_1_1min__sizeof.html", null ],
     [ "nrg::NetAddress", "classnrg_1_1NetAddress.html", null ],
     [ "nrg::PacketHeader", "structnrg_1_1PacketHeader.html", null ],
     [ "nrg::PacketReadable", "structnrg_1_1PacketReadable.html", [
@@ -62,11 +61,6 @@ var hierarchy =
     [ "nrg::ReplayServer", "classnrg_1_1ReplayServer.html", null ],
     [ "nrg::RingBuffer< T, N >", "classnrg_1_1RingBuffer.html", null ],
     [ "nrg::RingBuffer< DeltaSnapshot, NRG_NUM_PAST_SNAPSHOTS >", "classnrg_1_1RingBuffer.html", null ],
-    [ "nrg::size2type< N >", "structnrg_1_1size2type.html", null ],
-    [ "nrg::size2type< 1 >", "structnrg_1_1size2type_3_011_01_4.html", null ],
-    [ "nrg::size2type< 2 >", "structnrg_1_1size2type_3_012_01_4.html", null ],
-    [ "nrg::size2type< 4 >", "structnrg_1_1size2type_3_014_01_4.html", null ],
-    [ "nrg::size2type< 8 >", "structnrg_1_1size2type_3_018_01_4.html", null ],
     [ "nrg::Snapshot", "classnrg_1_1Snapshot.html", null ],
     [ "nrg::Socket", "classnrg_1_1Socket.html", [
       [ "nrg::UDPSocket", "structnrg_1_1UDPSocket.html", null ]
@@ -75,13 +69,11 @@ var hierarchy =
       [ "nrg::ClientGameState", "classnrg_1_1ClientGameState.html", null ],
       [ "nrg::ClientHandshakeState", "classnrg_1_1ClientHandshakeState.html", null ],
       [ "nrg::ServerHandshakeState", "structnrg_1_1ServerHandshakeState.html", null ],
-      [ "nrg::ServerPlayerGameState", "classnrg_1_1ServerPlayerGameState.html", null ],
-      [ "nrg::TransitionState", "structnrg_1_1TransitionState.html", null ]
+      [ "nrg::ServerPlayerGameState", "classnrg_1_1ServerPlayerGameState.html", null ]
     ] ],
     [ "nrg::StateConnectionOut", "structnrg_1_1StateConnectionOut.html", [
       [ "nrg::StateConnectionOutImpl", "structnrg_1_1StateConnectionOutImpl.html", null ]
     ] ],
-    [ "nrg::StateManager", "classnrg_1_1StateManager.html", null ],
     [ "nrg::Status", "structnrg_1_1Status.html", [
       [ "nrg::StatusErr", "structnrg_1_1StatusErr.html", null ],
       [ "nrg::StatusOK", "structnrg_1_1StatusOK.html", null ]

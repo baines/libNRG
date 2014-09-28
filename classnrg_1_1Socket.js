@@ -4,7 +4,6 @@ var classnrg_1_1Socket =
     [ "Socket", "classnrg_1_1Socket.html#a9603bda62b97d0a1c8dec936de0007d5", null ],
     [ "~Socket", "classnrg_1_1Socket.html#a1ee970d19f93b77377dd84e51c3d1fed", null ],
     [ "bind", "classnrg_1_1Socket.html#a445dba5ca9543782ef87ce779b1cf46a", null ],
-    [ "checkErrorQueue", "classnrg_1_1Socket.html#a9c6ac88106b347d18554226ec68184a3", null ],
     [ "connect", "classnrg_1_1Socket.html#af9f542ff333dd056618f179589b8fdea", null ],
     [ "dataPending", "classnrg_1_1Socket.html#ae14b0cff875194d62547fe9596cf4537", null ],
     [ "disconnect", "classnrg_1_1Socket.html#aaf26ab892c7066565330eb47d061b6ca", null ],

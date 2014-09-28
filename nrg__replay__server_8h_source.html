@@ -116,8 +116,8 @@ $(document).ready(function(){initNavTree('nrg__replay__server_8h_source.html',''
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef NRG_REPLAY_SERVER_H</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_REPLAY_SERVER_H</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;nrg_socket.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;nrg_server_state.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__socket_8h.html">nrg_socket.h</a>&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__server__state_8h.html">nrg_server_state.h</a>&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#ifdef NRG_ENABLE_ZLIB_COMPRESSION</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor"></span><span class="preprocessor">    #include &lt;zlib.h&gt;</span></div>
@@ -153,15 +153,17 @@ $(document).ready(function(){initNavTree('nrg__replay__server_8h_source.html',''
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="structnrg_1_1UDPSocket_html"><div class="ttname"><a href="structnrg_1_1UDPSocket.html">nrg::UDPSocket</a></div><div class="ttdef"><b>Definition:</b> nrg_socket.h:75</div></div>
+<div class="ttc" id="structnrg_1_1UDPSocket_html"><div class="ttname"><a href="structnrg_1_1UDPSocket.html">nrg::UDPSocket</a></div><div class="ttdoc">Socket derivative specifically for the User-Datagram Protocol. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:112</div></div>
 <div class="ttc" id="classnrg_1_1ReplayServer_html_a3be03652c9fc712e75db5dc6940ec857"><div class="ttname"><a href="classnrg_1_1ReplayServer.html#a3be03652c9fc712e75db5dc6940ec857">nrg::ReplayServer::isReplayRunning</a></div><div class="ttdeci">bool isReplayRunning() const </div><div class="ttdoc">Returns true if the ReplayServer is active. </div></div>
 <div class="ttc" id="classnrg_1_1Packet_html"><div class="ttname"><a href="classnrg_1_1Packet.html">nrg::Packet</a></div><div class="ttdoc">Class for storing data to be sent / received across the network. </div><div class="ttdef"><b>Definition:</b> nrg_packet.h:58</div></div>
 <div class="ttc" id="classnrg_1_1ReplayServer_html_a76483477def3144e3d29a37d58432de0"><div class="ttname"><a href="classnrg_1_1ReplayServer.html#a76483477def3144e3d29a37d58432de0">nrg::ReplayServer::bind</a></div><div class="ttdeci">bool bind(const char *port)</div><div class="ttdoc">Binds the server to the specified local port. </div></div>
 <div class="ttc" id="classnrg_1_1ReplayServer_html_a809e2a04002abf7c890f3522c72e37e5"><div class="ttname"><a href="classnrg_1_1ReplayServer.html#a809e2a04002abf7c890f3522c72e37e5">nrg::ReplayServer::openReplay</a></div><div class="ttdeci">bool openReplay(const char *filename)</div><div class="ttdoc">Opens the specified replay file by name, returns true if it opened successfully. </div></div>
 <div class="ttc" id="classnrg_1_1ReplayServer_html"><div class="ttname"><a href="classnrg_1_1ReplayServer.html">nrg::ReplayServer</a></div><div class="ttdoc">Class that reads a replay file and acts as a local server, sending the packets in the file...</div><div class="ttdef"><b>Definition:</b> nrg_replay_server.h:40</div></div>
+<div class="ttc" id="nrg__socket_8h_html"><div class="ttname"><a href="nrg__socket_8h.html">nrg_socket.h</a></div><div class="ttdoc">Classes to wrap POSIX sockets. </div></div>
+<div class="ttc" id="nrg__server__state_8h_html"><div class="ttname"><a href="nrg__server__state_8h.html">nrg_server_state.h</a></div><div class="ttdoc">Server-specific classes derived from State that are used internally. </div></div>
 <div class="ttc" id="classnrg_1_1ReplayServer_html_a044f5409125a9c2ada3450d65152edf2"><div class="ttname"><a href="classnrg_1_1ReplayServer.html#a044f5409125a9c2ada3450d65152edf2">nrg::ReplayServer::ReplayServer</a></div><div class="ttdeci">ReplayServer()</div><div class="ttdoc">Default constructor. </div></div>
 <div class="ttc" id="structnrg_1_1Connection_html"><div class="ttname"><a href="structnrg_1_1Connection.html">nrg::Connection</a></div><div class="ttdoc">Combines both ConnectionIn and ConnectionOut into a single class. </div><div class="ttdef"><b>Definition:</b> nrg_connection.h:129</div></div>
-<div class="ttc" id="structnrg_1_1ServerHandshakeState_html"><div class="ttname"><a href="structnrg_1_1ServerHandshakeState.html">nrg::ServerHandshakeState</a></div><div class="ttdef"><b>Definition:</b> nrg_server_state.h:32</div></div>
+<div class="ttc" id="structnrg_1_1ServerHandshakeState_html"><div class="ttname"><a href="structnrg_1_1ServerHandshakeState.html">nrg::ServerHandshakeState</a></div><div class="ttdoc">State for default handshake protocol, server-side. </div><div class="ttdef"><b>Definition:</b> nrg_server_state.h:36</div></div>
 <div class="ttc" id="nrg__core_8h_html"><div class="ttname"><a href="nrg__core_8h.html">nrg_core.h</a></div><div class="ttdoc">Common defines and includes used by all the other nrg header files. </div></div>
 <div class="ttc" id="classnrg_1_1ReplayServer_html_a57898e06861d32b297130e10c64db146"><div class="ttname"><a href="classnrg_1_1ReplayServer.html#a57898e06861d32b297130e10c64db146">nrg::ReplayServer::update</a></div><div class="ttdeci">bool update()</div><div class="ttdoc">Updates the ReplayServer, potentially sending new packets. </div></div>
 <div class="ttc" id="classnrg_1_1NetAddress_html"><div class="ttname"><a href="classnrg_1_1NetAddress.html">nrg::NetAddress</a></div><div class="ttdoc">Class to wrap the various POSIX sockaddrs and resolve hostnames. </div><div class="ttdef"><b>Definition:</b> nrg_netaddress.h:32</div></div>
@@ -171,7 +173,7 @@ $(document).ready(function(){initNavTree('nrg__replay__server_8h_source.html',''
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__replay__server_8h.html">nrg_replay_server.h</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

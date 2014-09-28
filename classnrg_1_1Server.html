@@ -113,60 +113,94 @@ Inheritance diagram for nrg::Server:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aee014ca98063e5bd346bda0f4a713d0d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee014ca98063e5bd346bda0f4a713d0d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Server</b> (const std::string &amp;game_name, uint32_t game_version, <a class="el" href="structnrg_1_1InputBase.html">InputBase</a> &amp;input)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#aee014ca98063e5bd346bda0f4a713d0d">Server</a> (const std::string &amp;game_name, uint32_t game_version, <a class="el" href="structnrg_1_1InputBase.html">InputBase</a> &amp;input)</td></tr>
+<tr class="memdesc:aee014ca98063e5bd346bda0f4a713d0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a server with the given game name, version and a user-created subclass of <a class="el" href="structnrg_1_1Input.html" title="Abstract class using the Curiously Recurring Template Pattern that users should inherit from and inse...">Input</a>. <br/></td></tr>
 <tr class="separator:aee014ca98063e5bd346bda0f4a713d0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acbbd327bc84d959d76a091ac27e66592"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acbbd327bc84d959d76a091ac27e66592"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Server</b> (const std::string &amp;game_name, uint32_t game_version)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#acbbd327bc84d959d76a091ac27e66592">Server</a> (const std::string &amp;game_name, uint32_t game_version)</td></tr>
+<tr class="memdesc:acbbd327bc84d959d76a091ac27e66592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a server which doesn't accept input, generally not very useful. <br/></td></tr>
 <tr class="separator:acbbd327bc84d959d76a091ac27e66592"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab85b2107845783ba40d6e4b1958630a4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab85b2107845783ba40d6e4b1958630a4"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>bind</b> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#ab85b2107845783ba40d6e4b1958630a4">bind</a> (const <a class="el" href="classnrg_1_1NetAddress.html">NetAddress</a> &amp;addr)</td></tr>
+<tr class="memdesc:ab85b2107845783ba40d6e4b1958630a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the server to the specified local address. <br/></td></tr>
 <tr class="separator:ab85b2107845783ba40d6e4b1958630a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac464cabdb01ac053c8352c2a3d48647d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac464cabdb01ac053c8352c2a3d48647d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isBound</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#ac464cabdb01ac053c8352c2a3d48647d">isBound</a> () const </td></tr>
+<tr class="memdesc:ac464cabdb01ac053c8352c2a3d48647d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the server is bound to a port. <br/></td></tr>
 <tr class="separator:ac464cabdb01ac053c8352c2a3d48647d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56fdfadf43c6f46d5bd1eae0b006013f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56fdfadf43c6f46d5bd1eae0b006013f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>update</b> ()</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a56fdfadf43c6f46d5bd1eae0b006013f">update</a> ()</td></tr>
+<tr class="memdesc:a56fdfadf43c6f46d5bd1eae0b006013f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blocks to accept input from clients until the next snapshot time, then creates the new snapshot and sends updates to clients - returns false on error. <br/></td></tr>
 <tr class="separator:a56fdfadf43c6f46d5bd1eae0b006013f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8cb3fcf11ae57c14e6445948fbdfcd0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8cb3fcf11ae57c14e6445948fbdfcd0"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>pollEvent</b> (<a class="el" href="unionnrg_1_1Event.html">Event</a> &amp;e)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#ae8cb3fcf11ae57c14e6445948fbdfcd0">pollEvent</a> (<a class="el" href="unionnrg_1_1Event.html">Event</a> &amp;e)</td></tr>
+<tr class="memdesc:ae8cb3fcf11ae57c14e6445948fbdfcd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives <a class="el" href="unionnrg_1_1Event.html" title="Union to contain all the event types. ">Event</a> instances into <code>e</code>, returns false if there are no more events. <br/></td></tr>
 <tr class="separator:ae8cb3fcf11ae57c14e6445948fbdfcd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae23aa4f32e16e22e5de70a93d5d8f4e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae23aa4f32e16e22e5de70a93d5d8f4e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>pushEvent</b> (const <a class="el" href="unionnrg_1_1Event.html">Event</a> &amp;e)</td></tr>
+<tr class="memitem:aae23aa4f32e16e22e5de70a93d5d8f4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#aae23aa4f32e16e22e5de70a93d5d8f4e">pushEvent</a> (const <a class="el" href="unionnrg_1_1Event.html">Event</a> &amp;e)</td></tr>
 <tr class="separator:aae23aa4f32e16e22e5de70a93d5d8f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d1c204eacc7356ee068b25798dc3229"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2d1c204eacc7356ee068b25798dc3229"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>playerCount</b> () const </td></tr>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a2d1c204eacc7356ee068b25798dc3229">playerCount</a> () const </td></tr>
+<tr class="memdesc:a2d1c204eacc7356ee068b25798dc3229"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of players connected to this server. <br/></td></tr>
 <tr class="separator:a2d1c204eacc7356ee068b25798dc3229"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8dda0419ff07e7322473cde1fcfb32f6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8dda0419ff07e7322473cde1fcfb32f6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setMaxPlayers</b> (uint16_t val)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a8dda0419ff07e7322473cde1fcfb32f6">setMaxPlayers</a> (uint16_t val)</td></tr>
+<tr class="memdesc:a8dda0419ff07e7322473cde1fcfb32f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the maximum number of players, doesn't kick anyone if the current count is larger than this. <br/></td></tr>
 <tr class="separator:a8dda0419ff07e7322473cde1fcfb32f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a64f6e164518444b7ac556ce637c7f07c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a64f6e164518444b7ac556ce637c7f07c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFull</b> () const </td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a64f6e164518444b7ac556ce637c7f07c">isFull</a> () const </td></tr>
+<tr class="memdesc:a64f6e164518444b7ac556ce637c7f07c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the server has reached its maximum player count. <br/></td></tr>
 <tr class="separator:a64f6e164518444b7ac556ce637c7f07c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2e6a709c50cddb52e4d6ec44050f7c9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af2e6a709c50cddb52e4d6ec44050f7c9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setTickRate</b> (uint8_t rate)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#af2e6a709c50cddb52e4d6ec44050f7c9">setTickRate</a> (uint8_t rate)</td></tr>
+<tr class="memdesc:af2e6a709c50cddb52e4d6ec44050f7c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the number of ticks / master snapshots generated by the server per second, 256 max. <br/></td></tr>
 <tr class="separator:af2e6a709c50cddb52e4d6ec44050f7c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bb305ec0d04eca4a6e53a0b8966cf52"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3bb305ec0d04eca4a6e53a0b8966cf52"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>getTickRate</b> () const </td></tr>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a3bb305ec0d04eca4a6e53a0b8966cf52">getTickRate</a> () const </td></tr>
+<tr class="memdesc:a3bb305ec0d04eca4a6e53a0b8966cf52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the number of ticks per second the server is running at, default: 20. <br/></td></tr>
 <tr class="separator:a3bb305ec0d04eca4a6e53a0b8966cf52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a862dd099010863df7fe55932a8898a1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a862dd099010863df7fe55932a8898a1c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>registerEntity</b> (<a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;e)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a862dd099010863df7fe55932a8898a1c">registerEntity</a> (<a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;e)</td></tr>
+<tr class="memdesc:a862dd099010863df7fe55932a8898a1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register an <a class="el" href="classnrg_1_1Entity.html" title="Abstract class to be inherited by users of the library which acts as a container of one or more Field...">Entity</a> with the server to be tracked and replicated to clients. <br/></td></tr>
 <tr class="separator:a862dd099010863df7fe55932a8898a1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a13690edeba1e236462df013700fe8581"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a13690edeba1e236462df013700fe8581"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>unregisterEntity</b> (<a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;e)</td></tr>
+<tr class="memitem:a13690edeba1e236462df013700fe8581"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a13690edeba1e236462df013700fe8581">unregisterEntity</a> (<a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;e)</td></tr>
 <tr class="separator:a13690edeba1e236462df013700fe8581"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ee4e68a7974e1604babbc230eb9177f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3ee4e68a7974e1604babbc230eb9177f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>markEntityUpdated</b> (<a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;e)</td></tr>
+<tr class="memitem:a3ee4e68a7974e1604babbc230eb9177f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a3ee4e68a7974e1604babbc230eb9177f">markEntityUpdated</a> (<a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;e)</td></tr>
 <tr class="separator:a3ee4e68a7974e1604babbc230eb9177f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33f04b6d50ef28d42959774123abde89"><td class="memTemplParams" colspan="2"><a class="anchor" id="a33f04b6d50ef28d42959774123abde89"></a>
 template&lt;class M , class F &gt; </td></tr>
-<tr class="memitem:a33f04b6d50ef28d42959774123abde89"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>addMessageHandler</b> (F &amp;&amp;func)</td></tr>
+<tr class="memitem:a33f04b6d50ef28d42959774123abde89"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a33f04b6d50ef28d42959774123abde89">addMessageHandler</a> (F &amp;&amp;func)</td></tr>
+<tr class="memdesc:a33f04b6d50ef28d42959774123abde89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a callback function <code>func</code> that will be called on receipt of a message of type <code>M</code>. <br/></td></tr>
 <tr class="separator:a33f04b6d50ef28d42959774123abde89"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a56ce2926fa2858c95d454632e3ad0baf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56ce2926fa2858c95d454632e3ad0baf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>broadcastMessage</b> (const <a class="el" href="structnrg_1_1MessageBase.html">MessageBase</a> &amp;m)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a56ce2926fa2858c95d454632e3ad0baf">broadcastMessage</a> (const <a class="el" href="structnrg_1_1MessageBase.html">MessageBase</a> &amp;m)</td></tr>
+<tr class="memdesc:a56ce2926fa2858c95d454632e3ad0baf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends message <code>m</code> to all connected clients. <br/></td></tr>
 <tr class="separator:a56ce2926fa2858c95d454632e3ad0baf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a93c862996dad67585abbbf28127b0e14"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93c862996dad67585abbbf28127b0e14"></a>
-<a class="el" href="structnrg_1_1Player.html">Player</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPlayerByID</b> (uint16_t) const </td></tr>
+<a class="el" href="structnrg_1_1Player.html">Player</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a93c862996dad67585abbbf28127b0e14">getPlayerByID</a> (uint16_t) const </td></tr>
+<tr class="memdesc:a93c862996dad67585abbbf28127b0e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the player with the given id, or <code>nullptr</code> if they don't exist. <br/></td></tr>
 <tr class="separator:a93c862996dad67585abbbf28127b0e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad135049907fa95dbb2a21b9437767913"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad135049907fa95dbb2a21b9437767913"></a>
+template&lt;class F &gt; </td></tr>
+<tr class="memitem:ad135049907fa95dbb2a21b9437767913"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#ad135049907fa95dbb2a21b9437767913">setVersionComparison</a> (F &amp;&amp;func)</td></tr>
+<tr class="memdesc:ad135049907fa95dbb2a21b9437767913"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a function that should return true if two uint32_t game version parameters are compatible. <br/></td></tr>
+<tr class="separator:ad135049907fa95dbb2a21b9437767913"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5feb70dc33e1cf6d319e60b43c00746"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5feb70dc33e1cf6d319e60b43c00746"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#aa5feb70dc33e1cf6d319e60b43c00746">isGameVersionCompatible</a> (uint32_t client_ver) const </td></tr>
+<tr class="memdesc:aa5feb70dc33e1cf6d319e60b43c00746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs its internal version comparison function against the server version and <code>client_ver</code>, returns true if they're compatible. <br/></td></tr>
+<tr class="separator:aa5feb70dc33e1cf6d319e60b43c00746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a497c5a9c860e7d16b6a98e0742db5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1a497c5a9c860e7d16b6a98e0742db5f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a1a497c5a9c860e7d16b6a98e0742db5f">setUserPointer</a> (void *p)</td></tr>
+<tr class="memdesc:a1a497c5a9c860e7d16b6a98e0742db5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associate a user-given pointer with this server. <br/></td></tr>
+<tr class="separator:a1a497c5a9c860e7d16b6a98e0742db5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5314c875223cb5eeb0fe320e7c36ca35"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5314c875223cb5eeb0fe320e7c36ca35"></a>
+void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#a5314c875223cb5eeb0fe320e7c36ca35">getUserPointer</a> () const </td></tr>
+<tr class="memdesc:a5314c875223cb5eeb0fe320e7c36ca35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the user-given pointer associated with this server, nullptr by default. <br/></td></tr>
+<tr class="separator:a5314c875223cb5eeb0fe320e7c36ca35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2bee7e2dced177fe157df01f2e61449"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2bee7e2dced177fe157df01f2e61449"></a>
+virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Server.html#ab2bee7e2dced177fe157df01f2e61449">~Server</a> ()</td></tr>
+<tr class="memdesc:ab2bee7e2dced177fe157df01f2e61449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor. <br/></td></tr>
+<tr class="separator:ab2bee7e2dced177fe157df01f2e61449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">Various Getters</div></td></tr>
 <tr class="memitem:af48286032f5b5a6047ae8a7626213f08"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af48286032f5b5a6047ae8a7626213f08"></a>
 const <a class="el" href="structnrg_1_1UDPSocket.html">UDPSocket</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getSocket</b> () const </td></tr>
 <tr class="separator:af48286032f5b5a6047ae8a7626213f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -185,19 +219,6 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ge
 <tr class="memitem:ae5f00f6cd585f1818e61922b7281127e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae5f00f6cd585f1818e61922b7281127e"></a>
 const uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>getGameVersion</b> ()</td></tr>
 <tr class="separator:ae5f00f6cd585f1818e61922b7281127e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad135049907fa95dbb2a21b9437767913"><td class="memTemplParams" colspan="2"><a class="anchor" id="ad135049907fa95dbb2a21b9437767913"></a>
-template&lt;class F &gt; </td></tr>
-<tr class="memitem:ad135049907fa95dbb2a21b9437767913"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>setVersionComparison</b> (F &amp;&amp;func)</td></tr>
-<tr class="separator:ad135049907fa95dbb2a21b9437767913"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5feb70dc33e1cf6d319e60b43c00746"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5feb70dc33e1cf6d319e60b43c00746"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isGameVersionCompatible</b> (uint32_t client_ver) const </td></tr>
-<tr class="separator:aa5feb70dc33e1cf6d319e60b43c00746"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a497c5a9c860e7d16b6a98e0742db5f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1a497c5a9c860e7d16b6a98e0742db5f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setUserPointer</b> (void *p)</td></tr>
-<tr class="separator:a1a497c5a9c860e7d16b6a98e0742db5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5314c875223cb5eeb0fe320e7c36ca35"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5314c875223cb5eeb0fe320e7c36ca35"></a>
-void *&#160;</td><td class="memItemRight" valign="bottom"><b>getUserPointer</b> () const </td></tr>
-<tr class="separator:a5314c875223cb5eeb0fe320e7c36ca35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structnrg_1_1EntityManager"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structnrg_1_1EntityManager')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structnrg_1_1EntityManager.html">nrg::EntityManager</a></td></tr>
 <tr class="memitem:a0f72bf4a9759352b115c66e30bc4763a inherit pub_methods_structnrg_1_1EntityManager"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0f72bf4a9759352b115c66e30bc4763a"></a>
 virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getInterpTimer</b> () const </td></tr>
@@ -206,6 +227,78 @@ virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>getInterpTi
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>supportsPrediction</b> () const </td></tr>
 <tr class="separator:a7c00bf5c889a67d1400afffa9845ca7b inherit pub_methods_structnrg_1_1EntityManager"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a3ee4e68a7974e1604babbc230eb9177f"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nrg::Server::markEntityUpdated </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Lets the server know an entity has been updated, done automatically </p>
+
+<p>Reimplemented from <a class="el" href="structnrg_1_1EntityManager.html">nrg::EntityManager</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aae23aa4f32e16e22e5de70a93d5d8f4e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nrg::Server::pushEvent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="unionnrg_1_1Event.html">Event</a> &amp;&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add an event to the server's internal event queue </p>
+
+</div>
+</div>
+<a class="anchor" id="a13690edeba1e236462df013700fe8581"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void nrg::Server::unregisterEntity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classnrg_1_1Entity.html">Entity</a> &amp;&#160;</td>
+          <td class="paramname"><em>e</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Unregister an <a class="el" href="classnrg_1_1Entity.html" title="Abstract class to be inherited by users of the library which acts as a container of one or more Field...">Entity</a> - automatically called by <a class="el" href="classnrg_1_1Entity.html" title="Abstract class to be inherited by users of the library which acts as a container of one or more Field...">Entity</a>'s destructor </p>
+
+<p>Reimplemented from <a class="el" href="structnrg_1_1EntityManager.html">nrg::EntityManager</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>include/<a class="el" href="nrg__server_8h_source.html">nrg_server.h</a></li>
 </ul>
@@ -215,7 +308,7 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>supportsPredi
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>nrg</b></li><li class="navelem"><a class="el" href="classnrg_1_1Server.html">Server</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

@@ -1,6 +1,10 @@
 var NAVTREE =
 [
   [ "LibNRG", "index.html", [
+    [ "Introduction", "index.html#intro", null ],
+    [ "Source Code", "index.html#src", null ],
+    [ "Main classes", "index.html#classes", null ],
+    [ "Links", "index.html#nav", null ],
     [ "Classes", null, [
       [ "Class List", "annotated.html", "annotated" ],
       [ "Class Index", "classes.html", null ],
@@ -22,7 +26,7 @@ var NAVTREEINDEX =
 [
 ".html",
 "classnrg_1_1Server.html#ab2bee7e2dced177fe157df01f2e61449",
-"structnrg_1_1ConnectionCommon.html#a9b1a95d4fecec87eead63c1b58697e77"
+"structnrg_1_1Codec_3_01std_1_1string_01_4.html#a0e731793e85cda2756cf7297c2419fd9"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

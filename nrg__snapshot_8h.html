@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>LibNRG: Member List</title>
+<title>LibNRG: include/nrg_snapshot.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,7 +70,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('structnrg_1_1size2type_3_014_01_4.html','');});
+$(document).ready(function(){initNavTree('nrg__snapshot_8h.html','');});
 </script>
 <div id="doc-content">
 <!-- window showing the filter options -->
@@ -88,20 +88,50 @@ $(document).ready(function(){initNavTree('structnrg_1_1size2type_3_014_01_4.html
 </div>
 
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
-<div class="title">nrg::size2type&lt; 4 &gt; Member List</div>  </div>
+<div class="title">nrg_snapshot.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="structnrg_1_1size2type_3_014_01_4.html">nrg::size2type&lt; 4 &gt;</a>, including all inherited members.</p>
-<table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>type</b> typedef (defined in <a class="el" href="structnrg_1_1size2type_3_014_01_4.html">nrg::size2type&lt; 4 &gt;</a>)</td><td class="entry"><a class="el" href="structnrg_1_1size2type_3_014_01_4.html">nrg::size2type&lt; 4 &gt;</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+<p>Classes to hold a specific snapshot in time of Entity Field values.  
+<a href="#details">More...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="nrg__core_8h_source.html">nrg_core.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="nrg__entity_8h_source.html">nrg_entity.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="nrg__event_8h_source.html">nrg_event.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="nrg__ringbuffer_8h_source.html">nrg_ringbuffer.h</a>&quot;</code><br/>
+<code>#include &lt;functional&gt;</code><br/>
+<code>#include &lt;vector&gt;</code><br/>
+<code>#include &lt;map&gt;</code><br/>
+</div>
+<p><a href="nrg__snapshot_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classnrg_1_1Snapshot.html">nrg::Snapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1DeltaSnapshot.html">nrg::DeltaSnapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1ClientSnapshot.html">nrg::ClientSnapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:acd097634fe50607dcb03317e3eeb7bb0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd097634fe50607dcb03317e3eeb7bb0"></a>
+typedef RingBuffer<br class="typebreak"/>
+&lt; DeltaSnapshot, <br class="typebreak"/>
+NRG_NUM_PAST_SNAPSHOTS &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>nrg::DeltaSnapshotBuffer</b></td></tr>
+<tr class="separator:acd097634fe50607dcb03317e3eeb7bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__snapshot_8h.html">nrg_snapshot.h</a></li>
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

@@ -113,40 +113,47 @@ $(document).ready(function(){initNavTree('nrg__version_8h_source.html','');});
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">     misrepresented as being the original software.</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">  3. This notice may not be removed or altered from any source distribution.</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">*/</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>nrg {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structnrg_1_1Version.html">   29</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1Version.html">Version</a> {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    uint16_t v_major, v_minor, v_patch;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="structnrg_1_1Version.html">Version</a>()</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    : v_major(0)</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    , v_minor(0)</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    , v_patch(0){</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <a class="code" href="structnrg_1_1Version.html">Version</a>(uint16_t a, uint16_t b, uint16_t c)</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    : v_major(a)</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    , v_minor(b)</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    , v_patch(c){</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">bool</span> operator&gt;(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">bool</span> operator&lt;(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> operator&gt;=(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> operator&lt;=(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">bool</span> operator!=(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;};</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<a class="code" href="structnrg_1_1Version.html">Version</a> getLibVersion(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keywordtype">bool</span> isVersionCompatible(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp; v);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
-<div class="ttc" id="structnrg_1_1Version_html"><div class="ttname"><a href="structnrg_1_1Version.html">nrg::Version</a></div><div class="ttdoc">A class to store the version of the library. </div><div class="ttdef"><b>Definition:</b> nrg_version.h:29</div></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef NRG_VERSION_H_</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_VERSION_H_</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>nrg {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structnrg_1_1Version.html">   31</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1Version.html">Version</a> {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    uint16_t v_major, v_minor, v_patch;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    </div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="structnrg_1_1Version.html#a03129098b0b260150dc1a8b5666c5898">   35</a></span>&#160;    <a class="code" href="structnrg_1_1Version.html#a03129098b0b260150dc1a8b5666c5898">Version</a>()</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    : v_major(0)</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    , v_minor(0)</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    , v_patch(0){</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    </div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="structnrg_1_1Version.html#ad12298a295cdcb4c7740855739209168">   43</a></span>&#160;    <a class="code" href="structnrg_1_1Version.html#ad12298a295cdcb4c7740855739209168">Version</a>(uint16_t a, uint16_t b, uint16_t c)</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    : v_major(a)</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    , v_minor(b)</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    , v_patch(c){</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">bool</span> operator&gt;(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">bool</span> operator&lt;(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">bool</span> operator&gt;=(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordtype">bool</span> operator&lt;=(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordtype">bool</span> operator!=(<span class="keyword">const</span> <a class="code" href="structnrg_1_1Version.html">Version</a>&amp;) <span class="keyword">const</span> ;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;Version getLibVersion(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keywordtype">bool</span> isVersionCompatible(<span class="keyword">const</span> Version&amp; v);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor"></span></div>
+<div class="ttc" id="structnrg_1_1Version_html"><div class="ttname"><a href="structnrg_1_1Version.html">nrg::Version</a></div><div class="ttdoc">A class to store the version of the library. </div><div class="ttdef"><b>Definition:</b> nrg_version.h:31</div></div>
+<div class="ttc" id="structnrg_1_1Version_html_ad12298a295cdcb4c7740855739209168"><div class="ttname"><a href="structnrg_1_1Version.html#ad12298a295cdcb4c7740855739209168">nrg::Version::Version</a></div><div class="ttdeci">Version(uint16_t a, uint16_t b, uint16_t c)</div><div class="ttdoc">Construct with major, minor and patch version a, b, and c respectively. </div><div class="ttdef"><b>Definition:</b> nrg_version.h:43</div></div>
+<div class="ttc" id="structnrg_1_1Version_html_a03129098b0b260150dc1a8b5666c5898"><div class="ttname"><a href="structnrg_1_1Version.html#a03129098b0b260150dc1a8b5666c5898">nrg::Version::Version</a></div><div class="ttdeci">Version()</div><div class="ttdoc">Default constructor. </div><div class="ttdef"><b>Definition:</b> nrg_version.h:35</div></div>
 <div class="ttc" id="nrg__core_8h_html"><div class="ttname"><a href="nrg__core_8h.html">nrg_core.h</a></div><div class="ttdoc">Common defines and includes used by all the other nrg header files. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -154,7 +161,7 @@ $(document).ready(function(){initNavTree('nrg__version_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__version_8h.html">nrg_version.h</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

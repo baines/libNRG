@@ -119,7 +119,7 @@ $(document).ready(function(){initNavTree('nrg__connection_8h_source.html','');})
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__netaddress_8h.html">nrg_netaddress.h</a>&quot;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;nrg_packet.h&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__packet__header_8h.html">nrg_packet_header.h</a>&quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;nrg_socket.h&quot;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__socket_8h.html">nrg_socket.h</a>&quot;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;bitset&gt;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;array&gt;</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
@@ -224,11 +224,12 @@ $(document).ready(function(){initNavTree('nrg__connection_8h_source.html','');})
 <div class="ttc" id="classnrg_1_1ConnectionIn_html_ad767bae11e260fdf32c8a23cfd04c368"><div class="ttname"><a href="classnrg_1_1ConnectionIn.html#ad767bae11e260fdf32c8a23cfd04c368">nrg::ConnectionIn::addPacket</a></div><div class="ttdeci">bool addPacket(Packet &amp;p)</div><div class="ttdoc">Add a received packet with connection header information to be processed. </div></div>
 <div class="ttc" id="classnrg_1_1ConnectionIn_html"><div class="ttname"><a href="classnrg_1_1ConnectionIn.html">nrg::ConnectionIn</a></div><div class="ttdoc">Incoming connection class. </div><div class="ttdef"><b>Definition:</b> nrg_connection.h:67</div></div>
 <div class="ttc" id="structnrg_1_1Connection_html_a81c038ac4321912dcbd8c3f5f185ecf0"><div class="ttname"><a href="structnrg_1_1Connection.html#a81c038ac4321912dcbd8c3f5f185ecf0">nrg::Connection::Connection</a></div><div class="ttdeci">Connection(const NetAddress &amp;remote_addr, const Socket &amp;sock_out)</div><div class="ttdoc">Standard Constructor. </div><div class="ttdef"><b>Definition:</b> nrg_connection.h:131</div></div>
+<div class="ttc" id="nrg__socket_8h_html"><div class="ttname"><a href="nrg__socket_8h.html">nrg_socket.h</a></div><div class="ttdoc">Classes to wrap POSIX sockets. </div></div>
 <div class="ttc" id="classnrg_1_1ConnectionIn_html_a59e5baf5ba9d03f171617fb3e2765889"><div class="ttname"><a href="classnrg_1_1ConnectionIn.html#a59e5baf5ba9d03f171617fb3e2765889">nrg::ConnectionIn::setTransform</a></div><div class="ttdeci">void setTransform(PacketTransformation *transform)</div><div class="ttdoc">Set a PacketTransformation to be removed from packets added to the connection. </div></div>
-<div class="ttc" id="structnrg_1_1Status_html"><div class="ttname"><a href="structnrg_1_1Status.html">nrg::Status</a></div><div class="ttdef"><b>Definition:</b> nrg_status.h:30</div></div>
+<div class="ttc" id="structnrg_1_1Status_html"><div class="ttname"><a href="structnrg_1_1Status.html">nrg::Status</a></div><div class="ttdoc">Class to wrap system and internal errors. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:34</div></div>
 <div class="ttc" id="structnrg_1_1Connection_html"><div class="ttname"><a href="structnrg_1_1Connection.html">nrg::Connection</a></div><div class="ttdoc">Combines both ConnectionIn and ConnectionOut into a single class. </div><div class="ttdef"><b>Definition:</b> nrg_connection.h:129</div></div>
 <div class="ttc" id="structnrg_1_1PacketTransformation_html"><div class="ttname"><a href="structnrg_1_1PacketTransformation.html">nrg::PacketTransformation</a></div><div class="ttdoc">Interface representing a transformation of a Packet, such as Compression. </div><div class="ttdef"><b>Definition:</b> nrg_packet.h:148</div></div>
-<div class="ttc" id="classnrg_1_1Socket_html"><div class="ttname"><a href="classnrg_1_1Socket.html">nrg::Socket</a></div><div class="ttdef"><b>Definition:</b> nrg_socket.h:31</div></div>
+<div class="ttc" id="classnrg_1_1Socket_html"><div class="ttname"><a href="classnrg_1_1Socket.html">nrg::Socket</a></div><div class="ttdoc">Base socket class. </div><div class="ttdef"><b>Definition:</b> nrg_socket.h:35</div></div>
 <div class="ttc" id="classnrg_1_1ConnectionIn_html_a008aba9a6bf0ec5875a2ca6250cc18c9"><div class="ttname"><a href="classnrg_1_1ConnectionIn.html#a008aba9a6bf0ec5875a2ca6250cc18c9">nrg::ConnectionIn::getLatestPacket</a></div><div class="ttdeci">PacketFlags getLatestPacket(Packet &amp;p)</div><div class="ttdoc">Placed the latest packet into p, and returns its associated PacketFlags. </div></div>
 <div class="ttc" id="classnrg_1_1ConnectionOut_html_a1df3b416b1ae121f0b174117651d25d3"><div class="ttname"><a href="classnrg_1_1ConnectionOut.html#a1df3b416b1ae121f0b174117651d25d3">nrg::ConnectionOut::sendDisconnect</a></div><div class="ttdeci">Status sendDisconnect(Packet &amp;extra_data)</div><div class="ttdoc">Send a Packet informing the remote host that the connection is over, extra_data can be a message expl...</div></div>
 <div class="ttc" id="nrg__core_8h_html"><div class="ttname"><a href="nrg__core_8h.html">nrg_core.h</a></div><div class="ttdoc">Common defines and includes used by all the other nrg header files. </div></div>
@@ -242,7 +243,7 @@ $(document).ready(function(){initNavTree('nrg__connection_8h_source.html','');})
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__connection_8h.html">nrg_connection.h</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

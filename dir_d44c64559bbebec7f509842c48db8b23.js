@@ -71,13 +71,19 @@ var dir_d44c64559bbebec7f509842c48db8b23 =
     [ "nrg_server.h", "nrg__server_8h.html", [
       [ "Server", "classnrg_1_1Server.html", "classnrg_1_1Server" ]
     ] ],
-    [ "nrg_server_state.h", "nrg__server__state_8h_source.html", null ],
-    [ "nrg_snapshot.h", "nrg__snapshot_8h_source.html", null ],
-    [ "nrg_socket.h", "nrg__socket_8h_source.html", null ],
+    [ "nrg_server_state.h", "nrg__server__state_8h.html", [
+      [ "ServerHandshakeState", "structnrg_1_1ServerHandshakeState.html", "structnrg_1_1ServerHandshakeState" ],
+      [ "ServerPlayerGameState", "classnrg_1_1ServerPlayerGameState.html", "classnrg_1_1ServerPlayerGameState" ]
+    ] ],
+    [ "nrg_snapshot.h", "nrg__snapshot_8h.html", "nrg__snapshot_8h" ],
+    [ "nrg_socket.h", "nrg__socket_8h.html", [
+      [ "Socket", "classnrg_1_1Socket.html", "classnrg_1_1Socket" ],
+      [ "UDPSocket", "structnrg_1_1UDPSocket.html", "structnrg_1_1UDPSocket" ]
+    ] ],
     [ "nrg_state.h", "nrg__state_8h.html", "nrg__state_8h" ],
-    [ "nrg_state_manager.h", "nrg__state__manager_8h_source.html", null ],
-    [ "nrg_status.h", "nrg__status_8h_source.html", null ],
-    [ "nrg_util.h", "nrg__util_8h_source.html", null ],
-    [ "nrg_varint.h", "nrg__varint_8h_source.html", null ],
+    [ "nrg_state_manager.h", "nrg__state__manager_8h.html", null ],
+    [ "nrg_status.h", "nrg__status_8h.html", "nrg__status_8h" ],
+    [ "nrg_util.h", "nrg__util_8h.html", "nrg__util_8h" ],
+    [ "nrg_varint.h", "nrg__varint_8h.html", "nrg__varint_8h" ],
     [ "nrg_version.h", "nrg__version_8h.html", "nrg__version_8h" ]
 ];

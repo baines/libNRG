@@ -9,10 +9,11 @@ var searchData=
   ['packetwritable',['PacketWritable',['../structnrg_1_1PacketWritable.html',1,'nrg']]],
   ['player',['player',['../structnrg_1_1PlayerEvent.html#a1582bab72ab56f6e55b4a5398b9013ae',1,'nrg::PlayerEvent::player()'],['../unionnrg_1_1Event.html#a9804b0eb7f8265f81ff62e8e7f06d7d6',1,'nrg::Event::player()']]],
   ['player',['Player',['../structnrg_1_1Player.html',1,'nrg']]],
+  ['playercount',['playerCount',['../classnrg_1_1Server.html#a2d1c204eacc7356ee068b25798dc3229',1,'nrg::Server']]],
   ['playerevent',['PlayerEvent',['../structnrg_1_1PlayerEvent.html',1,'nrg']]],
   ['pointer',['pointer',['../structnrg_1_1EntityEvent.html#ae3cf8ad4523927364616d708495c2ce2',1,'nrg::EntityEvent']]],
-  ['pollevent',['pollEvent',['../classnrg_1_1Client.html#ab4af43bae6ec23fdfca015bfe556527c',1,'nrg::Client::pollEvent()'],['../classnrg_1_1EventQueue.html#a69ba120e6cc8cc4de49e9bda16b8acb2',1,'nrg::EventQueue::pollEvent()']]],
+  ['pollevent',['pollEvent',['../classnrg_1_1Client.html#ab4af43bae6ec23fdfca015bfe556527c',1,'nrg::Client::pollEvent()'],['../classnrg_1_1EventQueue.html#a69ba120e6cc8cc4de49e9bda16b8acb2',1,'nrg::EventQueue::pollEvent()'],['../classnrg_1_1Server.html#ae8cb3fcf11ae57c14e6445948fbdfcd0',1,'nrg::Server::pollEvent()']]],
   ['pop',['pop',['../classnrg_1_1Queue.html#ab8d8d3fd928b45de818e693a66708514',1,'nrg::Queue']]],
   ['push',['push',['../classnrg_1_1Queue.html#a1d48fe4eb7221b5ab1d701ef1e702e43',1,'nrg::Queue']]],
-  ['pushevent',['pushEvent',['../classnrg_1_1EventQueue.html#a4897a75996fcb18626dd12dab07fe9c9',1,'nrg::EventQueue']]]
+  ['pushevent',['pushEvent',['../classnrg_1_1EventQueue.html#a4897a75996fcb18626dd12dab07fe9c9',1,'nrg::EventQueue::pushEvent()'],['../classnrg_1_1Server.html#aae23aa4f32e16e22e5de70a93d5d8f4e',1,'nrg::Server::pushEvent()']]]
 ];

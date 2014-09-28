@@ -92,7 +92,7 @@ $(document).ready(function(){initNavTree('nrg__status_8h_source.html','');});
 <div class="title">nrg_status.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<a href="nrg__status_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">  LibNRG - Networking for Real-time Games</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">  </span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">  Copyright (C) 2012-2014 Alex Baines &lt;alex@abaines.me.uk&gt;</span></div>
@@ -113,82 +113,88 @@ $(document).ready(function(){initNavTree('nrg__status_8h_source.html','');});
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">     misrepresented as being the original software.</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">  3. This notice may not be removed or altered from any source distribution.</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">*/</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#ifndef NRG_STATUS_H</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_STATUS_H</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;errno.h&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;string.h&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>nrg {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html">   30</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1Status.html">Status</a> {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a>() : <a class="code" href="structnrg_1_1Status.html">Status</a>(<span class="keyword">true</span>){}</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a>(<span class="keywordtype">bool</span> ok, <span class="keywordtype">int</span> err = 0)</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    : type(ok ? Ok : SystemError)</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    , sys_errno(ok ? 0 : err)</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    , desc(ok ? <span class="stringliteral">&quot;No error.&quot;</span> : <span class="stringliteral">&quot;System call returned error.&quot;</span>){</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="structnrg_1_1Status.html">Status</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* custom)</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    : type(InternalError)</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    , sys_errno(0)</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    , desc(custom){</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">enum</span> : <span class="keywordtype">int</span> {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        Ok,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        InternalError,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        SystemError</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    } type;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">int</span> sys_errno;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* desc;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">operator</span> bool()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="keywordflow">return</span> type == Ok;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="structnrg_1_1StatusOK.html">   61</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1StatusOK.html">StatusOK</a> : <a class="code" href="structnrg_1_1Status.html">Status</a> {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <a class="code" href="structnrg_1_1StatusOK.html">StatusOK</a>() : <a class="code" href="structnrg_1_1Status.html">Status</a>(<span class="keyword">true</span>){}</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;};</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="structnrg_1_1StatusErr.html">   65</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1StatusErr.html">StatusErr</a> : <a class="code" href="structnrg_1_1Status.html">Status</a> {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="structnrg_1_1StatusErr.html">StatusErr</a>(<span class="keywordtype">int</span> e = errno) : <a class="code" href="structnrg_1_1Status.html">Status</a>(<span class="keyword">false</span>, e){}</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;};</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="comment">// portability wrapper for both GNU and XSI strerror_r versions.</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* strerr_r(<span class="keywordtype">int</span> eno, <span class="keywordtype">char</span>* buf, <span class="keywordtype">size_t</span> sz){</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#ifdef _WIN32</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor"></span>    strerror_s(buf, sz, eno);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">return</span> buf;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor"></span>    <span class="keyword">auto</span> r = strerror_r(eno, buf, sz);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">if</span>(std::is_same&lt;decltype(r), <span class="keywordtype">int</span>&gt;::value){</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordflow">return</span> buf;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> r;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="preprocessor"></span>}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="structnrg_1_1StatusErr_html"><div class="ttname"><a href="structnrg_1_1StatusErr.html">nrg::StatusErr</a></div><div class="ttdef"><b>Definition:</b> nrg_status.h:65</div></div>
-<div class="ttc" id="structnrg_1_1StatusOK_html"><div class="ttname"><a href="structnrg_1_1StatusOK.html">nrg::StatusOK</a></div><div class="ttdef"><b>Definition:</b> nrg_status.h:61</div></div>
-<div class="ttc" id="structnrg_1_1Status_html"><div class="ttname"><a href="structnrg_1_1Status.html">nrg::Status</a></div><div class="ttdef"><b>Definition:</b> nrg_status.h:30</div></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef NRG_STATUS_H</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_STATUS_H</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;errno.h&gt;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;string.h&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">namespace </span>nrg {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html">   34</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1Status.html">Status</a> {</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html#a16c703277c19e705db94495d8042c3dc">   36</a></span>&#160;    <a class="code" href="structnrg_1_1Status.html#a16c703277c19e705db94495d8042c3dc">Status</a>() : <a class="code" href="structnrg_1_1Status.html">Status</a>(true){}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html#aed89eafa61568d5e2d97f1fc3b4f490e">   39</a></span>&#160;    <a class="code" href="structnrg_1_1Status.html#aed89eafa61568d5e2d97f1fc3b4f490e">Status</a>(<span class="keywordtype">bool</span> ok, <span class="keywordtype">int</span> err = 0)</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    : <a class="code" href="structnrg_1_1Status.html#a55ead5395cecff68219a21a8ae2f357e">type</a>(ok ? Ok : SystemError)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    , <a class="code" href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">sys_errno</a>(ok ? 0 : err)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    , <a class="code" href="structnrg_1_1Status.html#a1f00c737237f3abd0afe42d08d669c25">desc</a>(ok ? <span class="stringliteral">&quot;No error.&quot;</span> : <span class="stringliteral">&quot;System call returned error.&quot;</span>){</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html#a3f0a3fff3b518c37b2d4d22a026787ec">   47</a></span>&#160;    <a class="code" href="structnrg_1_1Status.html#a3f0a3fff3b518c37b2d4d22a026787ec">Status</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* custom)</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    : <a class="code" href="structnrg_1_1Status.html#a55ead5395cecff68219a21a8ae2f357e">type</a>(InternalError)</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    , <a class="code" href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">sys_errno</a>(0)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    , <a class="code" href="structnrg_1_1Status.html#a1f00c737237f3abd0afe42d08d669c25">desc</a>(custom){</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keyword">enum</span> : <span class="keywordtype">int</span> {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        Ok,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        InternalError,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        SystemError</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    } <a class="code" href="structnrg_1_1Status.html#a55ead5395cecff68219a21a8ae2f357e">type</a>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    </div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">   62</a></span>&#160;    <span class="keywordtype">int</span> <a class="code" href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">sys_errno</a>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    </div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html#a1f00c737237f3abd0afe42d08d669c25">   65</a></span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code" href="structnrg_1_1Status.html#a1f00c737237f3abd0afe42d08d669c25">desc</a>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    </div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="structnrg_1_1Status.html#aa7f3a32253c696fd1b0c1619e4813124">   68</a></span>&#160;    <span class="keyword">operator</span> bool()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="structnrg_1_1Status.html#a55ead5395cecff68219a21a8ae2f357e">type</a> == Ok;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    }</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="structnrg_1_1StatusOK.html">   74</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1StatusOK.html">StatusOK</a> : <a class="code" href="structnrg_1_1Status.html">Status</a> {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <a class="code" href="structnrg_1_1StatusOK.html">StatusOK</a>() : <a class="code" href="structnrg_1_1Status.html#a16c703277c19e705db94495d8042c3dc">Status</a>(<span class="keyword">true</span>){}</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="structnrg_1_1StatusErr.html">   79</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structnrg_1_1StatusErr.html">StatusErr</a> : <a class="code" href="structnrg_1_1Status.html">Status</a> {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <a class="code" href="structnrg_1_1StatusErr.html">StatusErr</a>(<span class="keywordtype">int</span> e = errno) : <a class="code" href="structnrg_1_1Status.html#a16c703277c19e705db94495d8042c3dc">Status</a>(<span class="keyword">false</span>, e){}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* strerr_r(<span class="keywordtype">int</span> eno, <span class="keywordtype">char</span>* buf, <span class="keywordtype">size_t</span> sz){</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#ifdef _WIN32</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor"></span>    strerror_s(buf, sz, eno);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> buf;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor"></span>    <span class="keyword">auto</span> r = strerror_r(eno, buf, sz);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">if</span>(std::is_same&lt;decltype(r), <span class="keywordtype">int</span>&gt;::value){</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;        <span class="keywordflow">return</span> buf;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">return</span> r;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor"></span>}</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="structnrg_1_1Status_html_add80f51b423b463c81b549b4b55b4e19"><div class="ttname"><a href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">nrg::Status::sys_errno</a></div><div class="ttdeci">int sys_errno</div><div class="ttdoc">The associated errno for the error, or 0 if not a system error. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:62</div></div>
+<div class="ttc" id="structnrg_1_1Status_html_a3f0a3fff3b518c37b2d4d22a026787ec"><div class="ttname"><a href="structnrg_1_1Status.html#a3f0a3fff3b518c37b2d4d22a026787ec">nrg::Status::Status</a></div><div class="ttdeci">Status(const char *custom)</div><div class="ttdoc">Constructor for custom errors, with the specified error string. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:47</div></div>
+<div class="ttc" id="structnrg_1_1StatusErr_html"><div class="ttname"><a href="structnrg_1_1StatusErr.html">nrg::StatusErr</a></div><div class="ttdoc">Derived class for system errors. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:79</div></div>
+<div class="ttc" id="structnrg_1_1Status_html_a55ead5395cecff68219a21a8ae2f357e"><div class="ttname"><a href="structnrg_1_1Status.html#a55ead5395cecff68219a21a8ae2f357e">nrg::Status::type</a></div><div class="ttdeci">enum nrg::Status::@0 type</div><div class="ttdoc">Enumeration for error type. </div></div>
+<div class="ttc" id="structnrg_1_1StatusOK_html"><div class="ttname"><a href="structnrg_1_1StatusOK.html">nrg::StatusOK</a></div><div class="ttdoc">Derived class for non-error statuses. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:74</div></div>
+<div class="ttc" id="structnrg_1_1Status_html"><div class="ttname"><a href="structnrg_1_1Status.html">nrg::Status</a></div><div class="ttdoc">Class to wrap system and internal errors. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:34</div></div>
+<div class="ttc" id="structnrg_1_1Status_html_aed89eafa61568d5e2d97f1fc3b4f490e"><div class="ttname"><a href="structnrg_1_1Status.html#aed89eafa61568d5e2d97f1fc3b4f490e">nrg::Status::Status</a></div><div class="ttdeci">Status(bool ok, int err=0)</div><div class="ttdoc">Constructor with the given error-status and errno for system-errors. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:39</div></div>
+<div class="ttc" id="structnrg_1_1Status_html_a1f00c737237f3abd0afe42d08d669c25"><div class="ttname"><a href="structnrg_1_1Status.html#a1f00c737237f3abd0afe42d08d669c25">nrg::Status::desc</a></div><div class="ttdeci">const char * desc</div><div class="ttdoc">Statically-allocated description of the error. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:65</div></div>
+<div class="ttc" id="structnrg_1_1Status_html_a16c703277c19e705db94495d8042c3dc"><div class="ttname"><a href="structnrg_1_1Status.html#a16c703277c19e705db94495d8042c3dc">nrg::Status::Status</a></div><div class="ttdeci">Status()</div><div class="ttdoc">Default Constructor, creates a no-error status. </div><div class="ttdef"><b>Definition:</b> nrg_status.h:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><b>nrg_status.h</b></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__status_8h.html">nrg_status.h</a></li>
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

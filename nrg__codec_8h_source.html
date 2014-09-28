@@ -116,7 +116,7 @@ $(document).ready(function(){initNavTree('nrg__codec_8h_source.html','');});
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#ifndef NRG_CODEC_H</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define NRG_CODEC_H</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;nrg_varint.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__varint_8h.html">nrg_varint.h</a>&quot;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
@@ -217,7 +217,7 @@ $(document).ready(function(){initNavTree('nrg__codec_8h_source.html','');});
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="classnrg_1_1Packet_html_aae580566d36bd5342681aed1f494bd2e"><div class="ttname"><a href="classnrg_1_1Packet.html#aae580566d36bd5342681aed1f494bd2e">nrg::Packet::seek</a></div><div class="ttdeci">Packet &amp; seek(off_t offset, int whence)</div><div class="ttdoc">Seeks the packet to some offset using SEEK_SET, SEEK_CUR or SEEK_END. </div></div>
 <div class="ttc" id="structnrg_1_1Codec_html_a2a2db7329c9e6b43711c64a0d3406098"><div class="ttname"><a href="structnrg_1_1Codec.html#a2a2db7329c9e6b43711c64a0d3406098">nrg::Codec::decode</a></div><div class="ttdeci">size_t decode(Packet &amp;p, T &amp;data)</div><div class="ttdoc">Decodes bytes from p into data, returns the number of bytes read or 0 on error. </div><div class="ttdef"><b>Definition:</b> nrg_codec.h:63</div></div>
-<div class="ttc" id="structnrg_1_1TVarint_html"><div class="ttname"><a href="structnrg_1_1TVarint.html">nrg::TVarint</a></div><div class="ttdef"><b>Definition:</b> nrg_varint.h:79</div></div>
+<div class="ttc" id="structnrg_1_1TVarint_html"><div class="ttname"><a href="structnrg_1_1TVarint.html">nrg::TVarint</a></div><div class="ttdoc">Default undeclared template instance to cause a compilation error for non-integer types...</div><div class="ttdef"><b>Definition:</b> nrg_varint.h:83</div></div>
 <div class="ttc" id="classnrg_1_1Packet_html_a06a2b4a3e9862a59ce0584cb73000461"><div class="ttname"><a href="classnrg_1_1Packet.html#a06a2b4a3e9862a59ce0584cb73000461">nrg::Packet::remaining</a></div><div class="ttdeci">size_t remaining() const </div><div class="ttdoc">Get the amount of data that can be read from the internal pointer&#39;s current position. </div><div class="ttdef"><b>Definition:</b> nrg_packet.h:134</div></div>
 <div class="ttc" id="classnrg_1_1Packet_html"><div class="ttname"><a href="classnrg_1_1Packet.html">nrg::Packet</a></div><div class="ttdoc">Class for storing data to be sent / received across the network. </div><div class="ttdef"><b>Definition:</b> nrg_packet.h:58</div></div>
 <div class="ttc" id="classnrg_1_1Packet_html_a6b8465a1cf6dc2e7363f1571bd919e4a"><div class="ttname"><a href="classnrg_1_1Packet.html#a6b8465a1cf6dc2e7363f1571bd919e4a">nrg::Packet::read</a></div><div class="ttdeci">void read(T &amp;v)</div><div class="ttdoc">Generic read function with endian conversion, be careful with types like size_t that differ across pl...</div><div class="ttdef"><b>Definition:</b> nrg_packet.h:115</div></div>
@@ -233,6 +233,7 @@ $(document).ready(function(){initNavTree('nrg__codec_8h_source.html','');});
 <div class="ttc" id="structnrg_1_1Codec_3_01std_1_1string_01_4_html_a6c57eded10a008c9b6f7a53c153481bd"><div class="ttname"><a href="structnrg_1_1Codec_3_01std_1_1string_01_4.html#a6c57eded10a008c9b6f7a53c153481bd">nrg::Codec&lt; std::string &gt;::decode</a></div><div class="ttdeci">size_t decode(Packet &amp;p, std::string &amp;str)</div><div class="ttdoc">Decodes bytes from p into data, returns the number of bytes read or 0 on error. </div><div class="ttdef"><b>Definition:</b> nrg_codec.h:120</div></div>
 <div class="ttc" id="classnrg_1_1Packet_html_af7f95cec78918a1fe2faa9613959e80e"><div class="ttname"><a href="classnrg_1_1Packet.html#af7f95cec78918a1fe2faa9613959e80e">nrg::Packet::write</a></div><div class="ttdeci">void write(const T &amp;v)</div><div class="ttdoc">Generic write function with endian conversion, be careful with types like size_t that differ across p...</div><div class="ttdef"><b>Definition:</b> nrg_packet.h:94</div></div>
 <div class="ttc" id="structnrg_1_1Codec_html_ac12f9f530bf5731ce7e7fb2e348f9110"><div class="ttname"><a href="structnrg_1_1Codec.html#ac12f9f530bf5731ce7e7fb2e348f9110">nrg::Codec::encode</a></div><div class="ttdeci">size_t encode(Packet &amp;p, const T &amp;data)</div><div class="ttdoc">Encodes data into p, and retuns the number of bytes written. </div><div class="ttdef"><b>Definition:</b> nrg_codec.h:57</div></div>
+<div class="ttc" id="nrg__varint_8h_html"><div class="ttname"><a href="nrg__varint_8h.html">nrg_varint.h</a></div><div class="ttdoc">Template implementation of variable-length integers, following the same format as Google&#39;s Protobufs...</div></div>
 <div class="ttc" id="structnrg_1_1Codec_3_01char[len]_4_html_afc585f1c839b8d8f593b433a38926281"><div class="ttname"><a href="structnrg_1_1Codec_3_01char[len]_4.html#afc585f1c839b8d8f593b433a38926281">nrg::Codec&lt; char[len]&gt;::encode</a></div><div class="ttdeci">size_t encode(Packet &amp;p, const char(&amp;data)[len])</div><div class="ttdoc">Encodes data into p, and retuns the number of bytes written. </div><div class="ttdef"><b>Definition:</b> nrg_codec.h:92</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -240,7 +241,7 @@ $(document).ready(function(){initNavTree('nrg__codec_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__codec_8h.html">nrg_codec.h</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

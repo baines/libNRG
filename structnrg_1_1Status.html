@@ -97,14 +97,19 @@ $(document).ready(function(){initNavTree('structnrg_1_1Status.html','');});
 <div class="title">nrg::Status Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Class to wrap system and internal errors.  
+</p>
+
+<p><code>#include &lt;<a class="el" href="nrg__status_8h_source.html">nrg_status.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for nrg::Status:</div>
 <div class="dyncontent">
  <div class="center">
   <img src="structnrg_1_1Status.png" usemap="#nrg::Status_map" alt=""/>
   <map id="nrg::Status_map" name="nrg::Status_map">
-<area href="structnrg_1_1StatusErr.html" alt="nrg::StatusErr" shape="rect" coords="0,56,89,80"/>
-<area href="structnrg_1_1StatusOK.html" alt="nrg::StatusOK" shape="rect" coords="99,56,188,80"/>
+<area href="structnrg_1_1StatusErr.html" title="Derived class for system errors. " alt="nrg::StatusErr" shape="rect" coords="0,56,89,80"/>
+<area href="structnrg_1_1StatusOK.html" title="Derived class for non-error statuses. " alt="nrg::StatusOK" shape="rect" coords="99,56,188,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -114,30 +119,41 @@ Public Types</h2></td></tr>
 <b>InternalError</b>, 
 <b>SystemError</b>
  }</td></tr>
+<tr class="memdesc:a6da13b3cdebfa3defd02365e62d2234e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration for error type. <br/></td></tr>
 <tr class="separator:a6da13b3cdebfa3defd02365e62d2234e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a16c703277c19e705db94495d8042c3dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a16c703277c19e705db94495d8042c3dc"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#a16c703277c19e705db94495d8042c3dc">Status</a> ()</td></tr>
+<tr class="memdesc:a16c703277c19e705db94495d8042c3dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default Constructor, creates a no-error status. <br/></td></tr>
+<tr class="separator:a16c703277c19e705db94495d8042c3dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed89eafa61568d5e2d97f1fc3b4f490e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed89eafa61568d5e2d97f1fc3b4f490e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Status</b> (bool ok, int err=0)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#aed89eafa61568d5e2d97f1fc3b4f490e">Status</a> (bool ok, int err=0)</td></tr>
+<tr class="memdesc:aed89eafa61568d5e2d97f1fc3b4f490e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor with the given error-status and errno for system-errors. <br/></td></tr>
 <tr class="separator:aed89eafa61568d5e2d97f1fc3b4f490e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f0a3fff3b518c37b2d4d22a026787ec"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3f0a3fff3b518c37b2d4d22a026787ec"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Status</b> (const char *custom)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#a3f0a3fff3b518c37b2d4d22a026787ec">Status</a> (const char *custom)</td></tr>
+<tr class="memdesc:a3f0a3fff3b518c37b2d4d22a026787ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for custom errors, with the specified error string. <br/></td></tr>
 <tr class="separator:a3f0a3fff3b518c37b2d4d22a026787ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7f3a32253c696fd1b0c1619e4813124"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa7f3a32253c696fd1b0c1619e4813124"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>operator bool</b> () const </td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#aa7f3a32253c696fd1b0c1619e4813124">operator bool</a> () const </td></tr>
+<tr class="memdesc:aa7f3a32253c696fd1b0c1619e4813124"><td class="mdescLeft">&#160;</td><td class="mdescRight">bool conversion operator <br/></td></tr>
 <tr class="separator:aa7f3a32253c696fd1b0c1619e4813124"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a55ead5395cecff68219a21a8ae2f357e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55ead5395cecff68219a21a8ae2f357e"></a>
-enum nrg::Status:: { ... } &#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
+enum nrg::Status:: { ... } &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#a55ead5395cecff68219a21a8ae2f357e">type</a></td></tr>
+<tr class="memdesc:a55ead5395cecff68219a21a8ae2f357e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumeration for error type. <br/></td></tr>
 <tr class="separator:a55ead5395cecff68219a21a8ae2f357e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add80f51b423b463c81b549b4b55b4e19"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add80f51b423b463c81b549b4b55b4e19"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>sys_errno</b></td></tr>
+int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#add80f51b423b463c81b549b4b55b4e19">sys_errno</a></td></tr>
+<tr class="memdesc:add80f51b423b463c81b549b4b55b4e19"><td class="mdescLeft">&#160;</td><td class="mdescRight">The associated errno for the error, or 0 if not a system error. <br/></td></tr>
 <tr class="separator:add80f51b423b463c81b549b4b55b4e19"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f00c737237f3abd0afe42d08d669c25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1f00c737237f3abd0afe42d08d669c25"></a>
-const char *&#160;</td><td class="memItemRight" valign="bottom"><b>desc</b></td></tr>
+const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1Status.html#a1f00c737237f3abd0afe42d08d669c25">desc</a></td></tr>
+<tr class="memdesc:a1f00c737237f3abd0afe42d08d669c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Statically-allocated description of the error. <br/></td></tr>
 <tr class="separator:a1f00c737237f3abd0afe42d08d669c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
@@ -149,7 +165,7 @@ const char *&#160;</td><td class="memItemRight" valign="bottom"><b>desc</b></td>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>nrg</b></li><li class="navelem"><a class="el" href="structnrg_1_1Status.html">Status</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('nrg__client__state_8h_source.html','')
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__state_8h.html">nrg_state.h</a>&quot;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__replay_8h.html">nrg_replay.h</a>&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;nrg_snapshot.h&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__snapshot_8h.html">nrg_snapshot.h</a>&quot;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__message_8h.html">nrg_message.h</a>&quot;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__message__manager_8h.html">nrg_message_manager.h</a>&quot;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
@@ -195,7 +195,7 @@ $(document).ready(function(){initNavTree('nrg__client__state_8h_source.html','')
 <div class="ttc" id="classnrg_1_1ClientGameState_html_aaff65697e8697c6808fee39ed6d8e7a5"><div class="ttname"><a href="classnrg_1_1ClientGameState.html#aaff65697e8697c6808fee39ed6d8e7a5">nrg::ClientGameState::getTimeoutSeconds</a></div><div class="ttdeci">size_t getTimeoutSeconds() const </div><div class="ttdoc">Returns a time that the state can go without needsUpdate() returning true, after which update() will ...</div><div class="ttdef"><b>Definition:</b> nrg_client_state.h:65</div></div>
 <div class="ttc" id="structnrg_1_1MessageBase_html"><div class="ttname"><a href="structnrg_1_1MessageBase.html">nrg::MessageBase</a></div><div class="ttdoc">Abstract base class for Message. </div><div class="ttdef"><b>Definition:</b> nrg_message.h:36</div></div>
 <div class="ttc" id="classnrg_1_1ClientGameState_html_ac2a7101dd0102e9344d9ac1dd477a416"><div class="ttname"><a href="classnrg_1_1ClientGameState.html#ac2a7101dd0102e9344d9ac1dd477a416">nrg::ClientGameState::update</a></div><div class="ttdeci">StateResult update(StateConnectionOut &amp;out, StateFlags f)</div><div class="ttdoc">Called to update the state (or on a timeout) allowing it to optionally send some Packets using out...</div></div>
-<div class="ttc" id="structnrg_1_1ClientSnapshot_html"><div class="ttname"><a href="structnrg_1_1ClientSnapshot.html">nrg::ClientSnapshot</a></div><div class="ttdef"><b>Definition:</b> nrg_snapshot.h:96</div></div>
+<div class="ttc" id="structnrg_1_1ClientSnapshot_html"><div class="ttname"><a href="structnrg_1_1ClientSnapshot.html">nrg::ClientSnapshot</a></div><div class="ttdef"><b>Definition:</b> nrg_snapshot.h:102</div></div>
 <div class="ttc" id="nrg__message_8h_html"><div class="ttname"><a href="nrg__message_8h.html">nrg_message.h</a></div><div class="ttdoc">Contains Message classes and functionality for two-way RPC between Server and Client. </div></div>
 <div class="ttc" id="structnrg_1_1StateConnectionOut_html"><div class="ttname"><a href="structnrg_1_1StateConnectionOut.html">nrg::StateConnectionOut</a></div><div class="ttdoc">Interface for wrapping ConnectionOut with rate-limiting functionality. </div><div class="ttdef"><b>Definition:</b> nrg_state.h:61</div></div>
 <div class="ttc" id="classnrg_1_1ClientGameState_html_a3bdaaecd7bcae7abcc758ee40cde24d1"><div class="ttname"><a href="classnrg_1_1ClientGameState.html#a3bdaaecd7bcae7abcc758ee40cde24d1">nrg::ClientGameState::onRecvPacket</a></div><div class="ttdeci">bool onRecvPacket(Packet &amp;p, PacketFlags f)</div><div class="ttdoc">Called when a Packet is recieved and this is the active State, f shows if the packet was out-of-order...</div></div>
@@ -203,7 +203,7 @@ $(document).ready(function(){initNavTree('nrg__client__state_8h_source.html','')
 <div class="ttc" id="classnrg_1_1ClientGameState_html_a64b1d9b74766ac6b58c8f01bd06b2c00"><div class="ttname"><a href="classnrg_1_1ClientGameState.html#a64b1d9b74766ac6b58c8f01bd06b2c00">nrg::ClientGameState::needsUpdate</a></div><div class="ttdeci">bool needsUpdate() const </div><div class="ttdoc">Called to see if the State would like to be updated. </div></div>
 <div class="ttc" id="structnrg_1_1Player_html"><div class="ttname"><a href="structnrg_1_1Player.html">nrg::Player</a></div><div class="ttdoc">Represents a connected client on the server. </div><div class="ttdef"><b>Definition:</b> nrg_player.h:34</div></div>
 <div class="ttc" id="classnrg_1_1Entity_html"><div class="ttname"><a href="classnrg_1_1Entity.html">nrg::Entity</a></div><div class="ttdoc">Abstract class to be inherited by users of the library which acts as a container of one or more Field...</div><div class="ttdef"><b>Definition:</b> nrg_entity.h:37</div></div>
-<div class="ttc" id="structnrg_1_1ClientStats_html"><div class="ttname"><a href="structnrg_1_1ClientStats.html">nrg::ClientStats</a></div><div class="ttdef"><b>Definition:</b> nrg_util.h:61</div></div>
+<div class="ttc" id="structnrg_1_1ClientStats_html"><div class="ttname"><a href="structnrg_1_1ClientStats.html">nrg::ClientStats</a></div><div class="ttdoc">Client statistics interface. </div><div class="ttdef"><b>Definition:</b> nrg_util.h:66</div></div>
 <div class="ttc" id="classnrg_1_1EventQueue_html"><div class="ttname"><a href="classnrg_1_1EventQueue.html">nrg::EventQueue</a></div><div class="ttdoc">Holds a queue of Event objects. </div><div class="ttdef"><b>Definition:</b> nrg_event.h:92</div></div>
 <div class="ttc" id="classnrg_1_1ClientHandshakeState_html_ab8b38bb6e4303390234a0e723cb0bd01"><div class="ttname"><a href="classnrg_1_1ClientHandshakeState.html#ab8b38bb6e4303390234a0e723cb0bd01">nrg::ClientHandshakeState::needsUpdate</a></div><div class="ttdeci">bool needsUpdate() const </div><div class="ttdoc">Called to see if the State would like to be updated. </div></div>
 <div class="ttc" id="structnrg_1_1InputBase_html"><div class="ttname"><a href="structnrg_1_1InputBase.html">nrg::InputBase</a></div><div class="ttdoc">Abstract base class for Input. </div><div class="ttdef"><b>Definition:</b> nrg_input.h:37</div></div>
@@ -224,13 +224,14 @@ $(document).ready(function(){initNavTree('nrg__client__state_8h_source.html','')
 <div class="ttc" id="classnrg_1_1ClientHandshakeState_html"><div class="ttname"><a href="classnrg_1_1ClientHandshakeState.html">nrg::ClientHandshakeState</a></div><div class="ttdef"><b>Definition:</b> nrg_client_state.h:40</div></div>
 <div class="ttc" id="nrg__core_8h_html"><div class="ttname"><a href="nrg__core_8h.html">nrg_core.h</a></div><div class="ttdoc">Common defines and includes used by all the other nrg header files. </div></div>
 <div class="ttc" id="nrg__state_8h_html"><div class="ttname"><a href="nrg__state_8h.html">nrg_state.h</a></div><div class="ttdoc">Functionality related to the State abstract class. </div></div>
+<div class="ttc" id="nrg__snapshot_8h_html"><div class="ttname"><a href="nrg__snapshot_8h.html">nrg_snapshot.h</a></div><div class="ttdoc">Classes to hold a specific snapshot in time of Entity Field values. </div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__client__state_8h.html">nrg_client_state.h</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

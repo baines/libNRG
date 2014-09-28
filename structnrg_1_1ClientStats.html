@@ -95,23 +95,33 @@ $(document).ready(function(){initNavTree('structnrg_1_1ClientStats.html','');});
 <div class="title">nrg::ClientStats Struct Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="classnrg_1_1Client.html" title="The main client-side nrg class. ">Client</a> statistics interface.  
+</p>
+
+<p><code>#include &lt;<a class="el" href="nrg__util_8h_source.html">nrg_util.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a883c5d085cd99603689aacf28081da32"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a883c5d085cd99603689aacf28081da32"></a>
-virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumSnapshotStats</b> () const =0</td></tr>
+virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1ClientStats.html#a883c5d085cd99603689aacf28081da32">getNumSnapshotStats</a> () const =0</td></tr>
+<tr class="memdesc:a883c5d085cd99603689aacf28081da32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of available snapshot statistics. <br/></td></tr>
 <tr class="separator:a883c5d085cd99603689aacf28081da32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adad4e868e94d6463d638d84386fbe460"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adad4e868e94d6463d638d84386fbe460"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>getSnapshotStat</b> (size_t index) const =0</td></tr>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1ClientStats.html#adad4e868e94d6463d638d84386fbe460">getSnapshotStat</a> (size_t index) const =0</td></tr>
+<tr class="memdesc:adad4e868e94d6463d638d84386fbe460"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a snapshot statistic which shows the latency at which snapshots were received, -1 means it was dropped. <br/></td></tr>
 <tr class="separator:adad4e868e94d6463d638d84386fbe460"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a02bddffba323cc2dfa10a92c2b2978bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02bddffba323cc2dfa10a92c2b2978bd"></a>
-virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumInterpStats</b> () const =0</td></tr>
+virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1ClientStats.html#a02bddffba323cc2dfa10a92c2b2978bd">getNumInterpStats</a> () const =0</td></tr>
+<tr class="memdesc:a02bddffba323cc2dfa10a92c2b2978bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the number of available interpolation statistics. <br/></td></tr>
 <tr class="separator:a02bddffba323cc2dfa10a92c2b2978bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f8ac9bb0c4ababf5f9fd9b652c811e4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f8ac9bb0c4ababf5f9fd9b652c811e4"></a>
-virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>getInterpStat</b> (size_t index) const =0</td></tr>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1ClientStats.html#a7f8ac9bb0c4ababf5f9fd9b652c811e4">getInterpStat</a> (size_t index) const =0</td></tr>
+<tr class="memdesc:a7f8ac9bb0c4ababf5f9fd9b652c811e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a statistic showing how far between snapshots the client is interpolating, &gt;1 means it is having to extrapolate data due to not receiving the next snapshot in time. <br/></td></tr>
 <tr class="separator:a7f8ac9bb0c4ababf5f9fd9b652c811e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6bef37196083eb0931edfeacc1cf571"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad6bef37196083eb0931edfeacc1cf571"></a>
-virtual uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>toRGBATexture</b> (uint32_t(&amp;tex)[64 *64]) const =0</td></tr>
+virtual uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnrg_1_1ClientStats.html#ad6bef37196083eb0931edfeacc1cf571">toRGBATexture</a> (uint32_t(&amp;tex)[64 *64]) const =0</td></tr>
+<tr class="memdesc:ad6bef37196083eb0931edfeacc1cf571"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a href="https://en.wikipedia.org/wiki/Lagometer">Lagometer</a> texture from the stats. <br/></td></tr>
 <tr class="separator:ad6bef37196083eb0931edfeacc1cf571"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
@@ -123,7 +133,7 @@ virtual uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>toRGBATe
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><b>nrg</b></li><li class="navelem"><a class="el" href="structnrg_1_1ClientStats.html">ClientStats</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

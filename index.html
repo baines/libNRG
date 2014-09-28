@@ -92,23 +92,54 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">LibNRG Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
-<ul><li><a href="index.html"><span>Main&#160;Page</span></a>
-</li><li><a href="annotated.html"><span>Classes</span></a>
-<ul><li><a href="annotated.html"><span>Class&#160;List</span></a>
-</li><li><a href="classes.html"><span>Class&#160;Index</span></a>
-</li><li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a>
-</li><li><a href="functions.html"><span>Class&#160;Members</span></a>
-</li></ul>
-</li><li><a href="files.html"><span>Files</span></a>
-<ul><li><a href="files.html"><span>File&#160;List</span></a>
-</li></ul>
-</li></ul>
-</div><!-- contents -->
+<div class="textblock"><h1><a class="anchor" id="intro"></a>
+Introduction</h1>
+<dl class="section user"><dt></dt><dd>This is the documentation for LibNRG (Networking for Real-time Games) - a library which was created by myself, Alex Baines, for my third year computer science project at Warwick University. </dd></dl>
+<dl class="section user"><dt></dt><dd>The library provides a high-level of abstraction over UDP networking that can be used to implement client / server online multi-player in video games. </dd></dl>
+<h1><a class="anchor" id="src"></a>
+Source Code</h1>
+<dl class="section user"><dt></dt><dd><a href="https://github.com/baines/LibNRG/">Available on Github here.</a> </dd></dl>
+<h1><a class="anchor" id="classes"></a>
+Main classes</h1>
+<ul>
+<li><a class="el" href="classnrg_1_1Server.html" title="The main server-side class of the library. ">nrg::Server</a><ul>
+<li>Create one server-side to set up a game server</li>
+</ul>
+</li>
+<li><a class="el" href="classnrg_1_1Client.html" title="The main client-side nrg class. ">nrg::Client</a><ul>
+<li>Create one client-side to set up a game client</li>
+</ul>
+</li>
+<li><a class="el" href="classnrg_1_1Entity.html" title="Abstract class to be inherited by users of the library which acts as a container of one or more Field...">nrg::Entity</a><ul>
+<li>Inherit from this class or EntityHelper and put some <a class="el" href="classnrg_1_1Field.html" title="Template class encapsulating a type that will be replicated from Server to Clients, and is stored inside a FieldContainer. ">nrg::Field</a> classes inside to define a struct that will be replicated from the server to all connected Clients</li>
+</ul>
+</li>
+<li><a class="el" href="structnrg_1_1Input.html" title="Abstract class using the Curiously Recurring Template Pattern that users should inherit from and inse...">nrg::Input</a><ul>
+<li>Inherit a single class from this CRTP class and puts <a class="el" href="classnrg_1_1Field.html" title="Template class encapsulating a type that will be replicated from Server to Clients, and is stored inside a FieldContainer. ">nrg::Field</a> classes inside it, this will be the data the client sends to the server each frame such as mouse position, camera angles</li>
+</ul>
+</li>
+<li><a class="el" href="classnrg_1_1Field.html" title="Template class encapsulating a type that will be replicated from Server to Clients, and is stored inside a FieldContainer. ">nrg::Field</a><ul>
+<li>Wrap types like int in this template class to define a piece of data to be replicated inside an <a class="el" href="classnrg_1_1Entity.html" title="Abstract class to be inherited by users of the library which acts as a container of one or more Field...">nrg::Entity</a> or <a class="el" href="structnrg_1_1Input.html" title="Abstract class using the Curiously Recurring Template Pattern that users should inherit from and inse...">nrg::Input</a>.</li>
+</ul>
+</li>
+<li><a class="el" href="classnrg_1_1Message.html" title="Variadic template class that encodes / decodes its data to and from Packets. ">nrg::Message</a><ul>
+<li>Create instances of this variadic template class to define RPC methods between server and clients </li>
+</ul>
+</li>
+</ul>
+<h1><a class="anchor" id="nav"></a>
+Links</h1>
+<dl class="section user"><dt></dt><dd>The other classes are less important (and may only be for internal use) but still have some associated documentation.<ul>
+<li><a href="annotated.html">Class List</a></li>
+<li><a href="files.html">File List</a> </li>
+</ul>
+</dd></dl>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

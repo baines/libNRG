@@ -118,7 +118,7 @@ $(document).ready(function(){initNavTree('nrg__field_8h_source.html','');});
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="nrg__core_8h.html">nrg_core.h</a>&quot;</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;nrg_packet.h&quot;</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__codec_8h.html">nrg_codec.h</a>&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;nrg_util.h&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__util_8h.html">nrg_util.h</a>&quot;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="nrg__interp_8h.html">nrg_interp.h</a>&quot;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;bitset&gt;</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
@@ -315,7 +315,7 @@ $(document).ready(function(){initNavTree('nrg__field_8h_source.html','');});
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    T data[N], data_next[N];</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    std::bitset&lt;N&gt; updated_indices;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> size2type&lt;min_sizeof&lt;N-1&gt;::val&gt;::type index_t;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> detail::size2type&lt;detail::min_sizeof&lt;N-1&gt;::val&gt;::type index_t;</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;};</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}</div>
@@ -336,6 +336,7 @@ $(document).ready(function(){initNavTree('nrg__field_8h_source.html','');});
 <div class="ttc" id="classnrg_1_1Field_3_01T[N]_4_html_aeff0efa720c09adb870578b9f2868ffe"><div class="ttname"><a href="classnrg_1_1Field_3_01T[N]_4.html#aeff0efa720c09adb870578b9f2868ffe">nrg::Field&lt; T[N]&gt;::writeToPacket</a></div><div class="ttdeci">virtual size_t writeToPacket(Packet &amp;p) const </div><div class="ttdoc">Writes this Field into the Packet p. </div><div class="ttdef"><b>Definition:</b> nrg_field.h:200</div></div>
 <div class="ttc" id="classnrg_1_1FieldBase_html_a8352c5c5d8eb47964cf11c96e5f4d017"><div class="ttname"><a href="classnrg_1_1FieldBase.html#a8352c5c5d8eb47964cf11c96e5f4d017">nrg::FieldBase::readFromPacket</a></div><div class="ttdeci">virtual size_t readFromPacket(Packet &amp;p)=0</div><div class="ttdoc">Reads data from Packet p into this Field. </div></div>
 <div class="ttc" id="classnrg_1_1FieldBase_html_a0d528d9945e0b857cad1e29a3f76c413"><div class="ttname"><a href="classnrg_1_1FieldBase.html#a0d528d9945e0b857cad1e29a3f76c413">nrg::FieldBase::setUpdated</a></div><div class="ttdeci">virtual void setUpdated(bool updated)</div><div class="ttdoc">Force this Field&#39;s updated flag to be true or false. </div></div>
+<div class="ttc" id="nrg__util_8h_html"><div class="ttname"><a href="nrg__util_8h.html">nrg_util.h</a></div><div class="ttdoc">Various utility classes and functions. </div></div>
 <div class="ttc" id="classnrg_1_1Field_3_01T[N]_4_html_a65e7f694e68909fd4a062ff43b8a6c32"><div class="ttname"><a href="classnrg_1_1Field_3_01T[N]_4.html#a65e7f694e68909fd4a062ff43b8a6c32">nrg::Field&lt; T[N]&gt;::readFromPacket</a></div><div class="ttdeci">virtual size_t readFromPacket(Packet &amp;p)</div><div class="ttdoc">Reads data from Packet p into this Field. </div><div class="ttdef"><b>Definition:</b> nrg_field.h:176</div></div>
 <div class="ttc" id="classnrg_1_1FieldBase_html_aa108e3bd47311c65611f374b8a4b6315"><div class="ttname"><a href="classnrg_1_1FieldBase.html#aa108e3bd47311c65611f374b8a4b6315">nrg::FieldBase::writeToPacket</a></div><div class="ttdeci">virtual size_t writeToPacket(Packet &amp;p) const =0</div><div class="ttdoc">Writes this Field into the Packet p. </div></div>
 <div class="ttc" id="structnrg_1_1FieldContainer_html_adfb2508b8f72332d07983efa4bd4460b"><div class="ttname"><a href="structnrg_1_1FieldContainer.html#adfb2508b8f72332d07983efa4bd4460b">nrg::FieldContainer::operator=</a></div><div class="ttdeci">FieldContainer &amp; operator=(const FieldContainer &amp;copy)</div><div class="ttdoc">Assignment Operator. </div></div>
@@ -362,7 +363,7 @@ $(document).ready(function(){initNavTree('nrg__field_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__field_8h.html">nrg_field.h</a></li>
-    <li class="footer">Generated on Mon Sep 22 2014 00:38:45 for LibNRG by
+    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>
