@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Classes to hold a specific snapshot in time of Entity Field values
+ */
 #ifndef NRG_SNAPSHOT_H
 #define NRG_SNAPSHOT_H
 #include "nrg_core.h"
@@ -31,6 +34,7 @@
 
 namespace nrg {
 
+/** @internal Class to hold the values of all Entities registered with it */
 class Snapshot {
 public:
 	Snapshot();
@@ -54,6 +58,7 @@ private:
 	Packet buffer;
 };
 
+/** @internal Class to hold only modified values of Entities */
 struct DeltaSnapshot {
 	DeltaSnapshot() : DeltaSnapshot(0){}
 	DeltaSnapshot(int i);
@@ -93,6 +98,7 @@ private:
 	Packet field_data, buffer;
 };
 
+/** @internal Class to parse a snapshot received client-side */
 struct ClientSnapshot {
 	enum class Action {	Get, Create, Destroy, Update };
 	typedef std::function<Entity*(Action, uint16_t eid, uint16_t etype)> CSnapFunc;

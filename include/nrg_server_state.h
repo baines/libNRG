@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Server-specific classes derived from State that are used internally
+ */
 #ifndef NRG_SERVER_STATE_H
 #define NRG_SERVER_STATE_H
 #include "nrg_core.h"
@@ -29,6 +32,7 @@
 
 namespace nrg {
 
+/** State for default handshake protocol, server-side */
 struct ServerHandshakeState : public State {
 	ServerHandshakeState();
 	bool init(Client*, Server*, Player*);
@@ -42,6 +46,7 @@ private:
 	Packet packet;
 };
 
+/** State for default game protocol, server-side */
 class ServerPlayerGameState : public State {
 public:
 	ServerPlayerGameState();

@@ -255,7 +255,7 @@ public:
 private:
 	T data[N], data_next[N];
 	std::bitset<N> updated_indices;
-	typedef typename size2type<min_sizeof<N-1>::val>::type index_t;
+	typedef typename detail::size2type<detail::min_sizeof<N-1>::val>::type index_t;
 };
 
 }

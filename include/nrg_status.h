@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Error-handling functionality
+ */
 #ifndef NRG_STATUS_H
 #define NRG_STATUS_H
 #include <errno.h>
@@ -27,10 +30,12 @@
 
 namespace nrg {
 
+/** Class to wrap system and internal errors */
 struct Status {
-
+	/** Default Constructor, creates a no-error status */
 	Status() : Status(true){}
 
+	/** Constructor with the given error-status and errno for system-errors */
 	Status(bool ok, int err = 0)
 	: type(ok ? Ok : SystemError)
 	, sys_errno(ok ? 0 : err)
@@ -38,6 +43,7 @@ struct Status {
 	
 	}
 
+	/** Constructor for custom errors, with the specified error string */
 	Status(const char* custom)
 	: type(InternalError)
 	, sys_errno(0)
@@ -45,28 +51,36 @@ struct Status {
 	
 	}
 	
+	/** Enumeration for error type */
 	enum : int {
 		Ok,
 		InternalError,
 		SystemError
 	} type;
+	
+	/** The associated errno for the error, or 0 if not a system error */
 	int sys_errno;
+	
+	/** Statically-allocated description of the error */
 	const char* desc;
 	
+	/** bool conversion operator */
 	operator bool() const {
 		return type == Ok;
 	}
 };
 
+/** Derived class for non-error statuses */
 struct StatusOK : Status {
 	StatusOK() : Status(true){}
 };
 
+/** Derived class for system errors */
 struct StatusErr : Status {
 	StatusErr(int e = errno) : Status(false, e){}
 };
 
-// portability wrapper for both GNU and XSI strerror_r versions.
+/** Portability wrapper for GNU and XSI strerror_r versions. */
 static inline const char* strerr_r(int eno, char* buf, size_t sz){
 #ifdef _WIN32
 	strerror_s(buf, sz, eno);

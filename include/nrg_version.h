@@ -27,10 +27,11 @@
 #include "nrg_core.h"
 namespace nrg {
 
-/** @brief A class to store the version of the library. */
+/** A class to store the version of the library. */
 struct Version {
 	uint16_t v_major, v_minor, v_patch;
 	
+	/** Default constructor */
 	Version()
 	: v_major(0)
 	, v_minor(0)
@@ -38,6 +39,7 @@ struct Version {
 	
 	}
 	
+	/** Construct with major, minor and patch version \p a, \p b, and \p c respectively */
 	Version(uint16_t a, uint16_t b, uint16_t c)
 	: v_major(a)
 	, v_minor(b)
@@ -45,18 +47,21 @@ struct Version {
 	
 	}
 
+	/** @name Comparison operators */
+	/** @{ */
 	bool operator>(const Version&) const ;
 	bool operator<(const Version&) const ;
 	bool operator>=(const Version&) const ;
 	bool operator<=(const Version&) const ;
 	bool operator==(const Version&) const ;
 	bool operator!=(const Version&) const ;
+	/** @} */
 };
 
-/** @brief Retuns the version of LibNRG in use. */
+/** Retuns the version of LibNRG in use. */
 Version getLibVersion(void);
 
-/** @brief Retuns true if @p v is compatible with this version of LibNRG. */
+/** Retuns true if @p v is compatible with this version of LibNRG. */
 bool isVersionCompatible(const Version& v);
 
 }

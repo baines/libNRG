@@ -19,6 +19,9 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+/** @file
+ *  Template implementation of variable-length integers, following the same format as Google's Protobufs
+ */
 #ifndef NRG_VARINT_H
 #define NRG_VARINT_H
 #include "nrg_core.h"
@@ -75,9 +78,11 @@ typename enable_if<is_unsigned<T>::value, size_t>::type varint_encode(Packet& p,
 
 }
 
+/** Default undeclared template instance to cause a compilation error for non-integer types */
 template<class T, class = void>
 struct TVarint;
 
+/** Varint template specialisation for unsigned types */
 template<class T>
 struct TVarint<T, typename std::enable_if<std::is_unsigned<T>::value>::type> {
 
@@ -111,6 +116,7 @@ struct TVarint<T, typename std::enable_if<std::is_unsigned<T>::value>::type> {
 	T data;
 };
 
+/** Varint template specialisation for signed types that requre zigzagging */
 template<class T>
 struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 
@@ -147,7 +153,9 @@ struct TVarint<T, typename std::enable_if<std::is_signed<T>::value>::type> {
 	T data;
 };
 
+/** Typedef for unsigned varints */
 typedef TVarint<uint64_t> UVarint;
+/** Typedef for signed varints */
 typedef TVarint<int64_t> SVarint;
 
 }
