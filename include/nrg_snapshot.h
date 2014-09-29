@@ -34,15 +34,25 @@
 
 namespace nrg {
 
+struct SnapshotBase {
+	virtual uint16_t getID() const            = 0;
+	virtual void setID(uint16_t)              = 0;
+	virtual void addEntity(Entity*)           = 0;
+	virtual void removeEntityByID(uint16_t)   = 0;
+	virtual void writeToPacket(Packet&) const = 0;
+	virtual void reset()                      = 0;
+	virtual ~SnapshotBase(){}
+};
+
 /** @internal Class to hold the values of all Entities registered with it */
-class Snapshot {
+class Snapshot : public SnapshotBase {
 public:
 	Snapshot();
 	Snapshot(uint16_t id);
 	uint16_t getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
 	void addEntity(Entity* e);
-	void removeEntityById(uint16_t id);
+	void removeEntityByID(uint16_t id);
 	void writeToPacket(Packet& p) const;
 	void reset();
 private:
@@ -59,18 +69,18 @@ private:
 };
 
 /** @internal Class to hold only modified values of Entities */
-struct DeltaSnapshot {
+struct DeltaSnapshot : public SnapshotBase {
 	DeltaSnapshot() : DeltaSnapshot(0){}
 	DeltaSnapshot(int i);
 	uint16_t getID() const { return id; }
 	void setID(uint16_t id){ this->id = id; }
 	void addEntity(Entity* e);
-	void removeEntityById(uint16_t id);
+	void removeEntityByID(uint16_t id);
 	void mergeWithNext(const DeltaSnapshot& next);
 	void writeToPacket(Packet& p) const;
 	void reset();
 private:
-	struct  FieldInfo {
+	struct FieldInfo {
 		uint16_t entity;
 		uint16_t number;
 		size_t size;
@@ -81,7 +91,7 @@ private:
 		bool operator<(uint16_t v) const { return entity < v; }
 		bool operator==(uint16_t v) const { return entity == v; }
 	};
-	struct  EntityInfo {
+	struct EntityInfo {
 		size_t num_fields;
 		uint16_t id;
 		uint16_t type;

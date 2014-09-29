@@ -118,7 +118,7 @@ StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 
 ServerPlayerGameState::ServerPlayerGameState()
 : snapshot()
-, no_ack(true)
+, send_diff(false)
 , unackd_updates(0)
 , seq(0)
 , last_sent_id(0)
@@ -147,7 +147,7 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
 	if(f & PKTFLAG_OUT_OF_ORDER) return true;
 
-	no_ack = false;
+	send_diff = true;
 
 	p.read16(ack_time);
 	TVarint<uint16_t> v;
@@ -177,24 +177,20 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 	unackd_updates++;
 	
 	int ping = std::max<int>(0, (os::milliseconds() & USHRT_MAX) - c_time);
+	int seq_inc = 1;
 
-	if(no_ack){
-		const Snapshot& master = server->getSnapshot();
-		last_sent_id = master.getID();
-		
-		buffer.reset().write16(master.getID()).write8(seq++);
-		UVarint(ping).encode(buffer);
-		master.writeToPacket(buffer);
-		msg_manager.writeToPacket(buffer, os::milliseconds());
-		
-		out.sendPacket(buffer);
-	} else {
+	const SnapshotBase& outgoing_snap = send_diff
+	? reinterpret_cast<const SnapshotBase&>(snapshot)
+	: reinterpret_cast<const SnapshotBase&>(server->getSnapshot())
+	;
+			
+	if(send_diff){
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
 		
 		auto ss_r = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
 			return ack_time == s.getID();
-		});
-		
+		});	
+				
 		if(ss_r != snaps.rend()){
 			snapshot.reset();
 
@@ -206,19 +202,22 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 				return last_sent_id == s.getID();
 			});
 			
-			seq += distance(last_it.base(), snaps.end());
-			last_sent_id = snapshot.getID();
-			
-			buffer.reset().write16(snapshot.getID()).write8(seq);
-			UVarint(ping).encode(buffer);
-			snapshot.writeToPacket(buffer);
-			msg_manager.writeToPacket(buffer, os::milliseconds());
-			
-			out.sendPacket(buffer);
+			seq_inc = distance(last_it.base(), snaps.end());
 		} else {
 			return STATE_FAILURE;
 		}
 	}
+	
+	last_sent_id = outgoing_snap.getID();
+	
+	buffer.reset().write16(outgoing_snap.getID()).write8(seq);
+	UVarint(ping).encode(buffer);
+	outgoing_snap.writeToPacket(buffer);
+	msg_manager.writeToPacket(buffer, os::milliseconds());
+	out.sendPacket(buffer);
+	
+	seq += seq_inc;
+	
 	return STATE_CONTINUE;
 }
 

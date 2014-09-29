@@ -80,7 +80,7 @@ void DeltaSnapshot::addEntity(Entity* e){
 	}
 }
 
-void DeltaSnapshot::removeEntityById(uint16_t eid){
+void DeltaSnapshot::removeEntityByID(uint16_t eid){
 	assert(find(entities.begin(), entities.end(), eid) == entities.end());
 	entities.push_back({0, eid, 0, false});
 	++del_count;

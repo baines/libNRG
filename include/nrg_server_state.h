@@ -59,7 +59,7 @@ public:
 	void sendMessage(const MessageBase& m);
 private:
 	DeltaSnapshot snapshot;
-	bool no_ack;
+	bool send_diff;
 	int unackd_updates;
 	uint8_t seq;
 	uint16_t last_sent_id;

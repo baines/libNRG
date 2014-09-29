@@ -185,8 +185,8 @@ bool Server::update(){
 				delta_ss.addEntity(e);
 				clearEntityUpdated(e);
 			} else {
-				master_snapshot.removeEntityById(i);
-				delta_ss.removeEntityById(i);
+				master_snapshot.removeEntityByID(i);
+				delta_ss.removeEntityByID(i);
 			}
 		}
 	}

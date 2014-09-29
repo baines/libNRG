@@ -81,7 +81,7 @@ void Snapshot::addEntity(Entity* e){
 }
 
 
-void Snapshot::removeEntityById(uint16_t id){
+void Snapshot::removeEntityByID(uint16_t id){
 	auto it = edata.find(id);
 	if(it != edata.end()) edata.erase(it);
 }
