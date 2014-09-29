@@ -75,7 +75,7 @@ struct ClientStats {
 	virtual size_t getNumInterpStats() const = 0;
 	
 	/** Get a statistic showing how far between snapshots the client is interpolating, >1 means it is having to extrapolate data due to not receiving the next snapshot in time */
-	virtual int getInterpStat(size_t index) const = 0;
+	virtual float getInterpStat(size_t index) const = 0;
 	
 	/** Create a <a href="https://en.wikipedia.org/wiki/Lagometer">Lagometer</a> texture from the stats */
 	virtual uint8_t* toRGBATexture(uint32_t (&tex)[64*64]) const = 0;

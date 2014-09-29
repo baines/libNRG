@@ -242,8 +242,7 @@ StateResult ClientGameState::update(StateConnectionOut& out, StateFlags f){
 	int32_t n = max<int32_t>((now_ms - interval) - client_ms_prev, 0);
 	ss_timer = n / double(client_ms - client_ms_prev);
 	
-	static_cast<ClientStatsImpl*>(stats.get())->addInterpStat(
-		ss_timer <= 1.0 ? 1 : (ss_timer - 1.0) * 16.0);
+	static_cast<ClientStatsImpl*>(stats.get())->addInterpStat(ss_timer);
 
 	buffer.reset().write16(server_ms_prev);
 	

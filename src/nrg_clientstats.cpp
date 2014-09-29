@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -34,7 +34,7 @@ int ClientStatsImpl::getSnapshotStat(size_t index) const {
 size_t ClientStatsImpl::getNumInterpStats() const {
 	return NUM_STATS;
 }
-int ClientStatsImpl::getInterpStat(size_t index) const {
+float ClientStatsImpl::getInterpStat(size_t index) const {
 	return i_stats[(i_index + 1 + index) % NUM_STATS];
 }
 
@@ -42,7 +42,7 @@ void ClientStatsImpl::addSnapshotStat(int stat) {
 	s_index = (s_index + 1) % NUM_STATS;
 	s_stats[s_index] = stat;
 }
-void ClientStatsImpl::addInterpStat(int stat){
+void ClientStatsImpl::addInterpStat(float stat){
 	i_index = (i_index + 1) % NUM_STATS;
 	i_stats[i_index] = stat;
 }
@@ -55,28 +55,39 @@ static const uint32_t YLW = ntoh(0xffff00ff);
 static const uint32_t BG1 = ntoh(0x111111ff);
 static const uint32_t BG2 = ntoh(0x222222ff);
 
-uint8_t* ClientStatsImpl::toRGBATexture(uint32_t (&tex)[NUM_STATS*NUM_STATS]) const {		
-	for(int h = 0; h < NUM_STATS/2; ++h){
-		for(int w = 0; w < NUM_STATS; ++w){
-			uint32_t& p = tex[h*NUM_STATS+w];
-			if(getInterpStat(w) >= ((NUM_STATS/2)-h)){
-				p = h == (NUM_STATS/2-1) ? BLU : YLW;
-			} else {
-				int x = (i_index + w) % NUM_STATS;
-				p = x >= (NUM_STATS/2) ? BG1 : BG2;
+uint8_t* ClientStatsImpl::toRGBATexture(uint32_t (&tex)[NUM_STATS*NUM_STATS]) const {
+
+	int height = NUM_STATS / 2;
+	int width  = NUM_STATS;
+
+	// upper interpolation graph
+	for(int h = 0; h < height; ++h){
+		for(int w = 0; w < width; ++w){
+			uint32_t& p = tex[h*width+w];
+			float stat = getInterpStat(w);
+
+			if(stat * 4.0f >= (height-h)){
+				p = stat <= 1.0f ? BLU : YLW;
+			} else { // background
+				int x = (i_index + w) % width;
+				p = x >= width / 2 ? BG1 : BG2;
 			}
 		}
 	}
-	for(int h = NUM_STATS/2; h < NUM_STATS; ++h){
-		for(int w = 0; w < NUM_STATS; ++w){
-			uint32_t& p = tex[h*NUM_STATS+w];
-			if(getSnapshotStat(w) < 0){
+
+	// lower snapshot ping graph
+	for(int h = height; h < height * 2; ++h){
+		for(int w = 0; w < width; ++w){
+			uint32_t& p = tex[h*width+w];
+			int stat = getSnapshotStat(w);
+
+			if(stat < 0){ // dropped
 				p = RED;
-			} else if(1 + getSnapshotStat(w) / 8 >= (NUM_STATS-h)){
+			} else if(1 + stat / 8 >= (height*2-h)){ // recieved
 				p = GRN;
-			} else {
-				int x = (s_index + w) % NUM_STATS;
-				p = x >= (NUM_STATS/2) ? BG1 : BG2;
+			} else { // background
+				int x = (s_index + w) % width;
+				p = x >= width / 2 ? BG1 : BG2;
 			}
 		}
 	}

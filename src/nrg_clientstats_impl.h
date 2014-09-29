@@ -33,16 +33,16 @@ struct ClientStatsImpl : public ClientStats {
 	int getSnapshotStat(size_t index) const;
 
 	size_t getNumInterpStats() const;
-	int getInterpStat(size_t index) const;
+	float getInterpStat(size_t index) const;
 	
 	void addSnapshotStat(int stat);
-	void addInterpStat(int stat);
+	void addInterpStat(float stat);
 
 	uint8_t* toRGBATexture(uint32_t (&tex)[64*64]) const;
 private:
 	static const int NUM_STATS = 64;
 	int s_stats[NUM_STATS];
-	int i_stats[NUM_STATS];
+	float i_stats[NUM_STATS];
 	int s_index, i_index;
 };
 
