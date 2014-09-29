@@ -1,0 +1,5 @@
+examples/
+build/
+libnrg.so.0
+libnrg.a
+libnrg.dll

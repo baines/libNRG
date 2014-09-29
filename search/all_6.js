@@ -8,7 +8,7 @@ var searchData=
   ['getfirstfield',['getFirstField',['../structnrg_1_1FieldContainer.html#a30e14de19b86afe3e8a582b1bfbe30da',1,'nrg::FieldContainer']]],
   ['getid',['getID',['../classnrg_1_1Entity.html#ab043203ce196bf66f75ddb5343198f0f',1,'nrg::Entity::getID()'],['../structnrg_1_1MessageBase.html#af6110641635851c19d420cbf6d0deb73',1,'nrg::MessageBase::getID()'],['../classnrg_1_1Message.html#ae3a4cf22290dbc5340b3b7a7f97f0a73',1,'nrg::Message::getID()'],['../structnrg_1_1Player.html#afe2ce1d89cf899cbeb42ee71b8acc7cb',1,'nrg::Player::getID()']]],
   ['getinterp',['getInterp',['../classnrg_1_1Field.html#a3a5403d32a9b6ba36a5aacbb3457b012',1,'nrg::Field::getInterp(const F &amp;func) const '],['../classnrg_1_1Field.html#a338e820b5b91d8b45ac15d4f8cf6ee4b',1,'nrg::Field::getInterp() const ']]],
-  ['getinterpstat',['getInterpStat',['../structnrg_1_1ClientStats.html#a7f8ac9bb0c4ababf5f9fd9b652c811e4',1,'nrg::ClientStats']]],
+  ['getinterpstat',['getInterpStat',['../structnrg_1_1ClientStats.html#ad5361fbd5dd120554f76ae7101dc2581',1,'nrg::ClientStats']]],
   ['getip',['getIP',['../classnrg_1_1NetAddress.html#a26da5515f600da7ee795051cf481fe8e',1,'nrg::NetAddress']]],
   ['getlaststatus',['getLastStatus',['../classnrg_1_1ConnectionOut.html#a9a5053442ee6e63fe27c271c2d58a8b9',1,'nrg::ConnectionOut']]],
   ['getlasttimestamp',['getLastTimestamp',['../classnrg_1_1Socket.html#ad495ad3ca7e447a953b95140861403cd',1,'nrg::Socket']]],

@@ -159,7 +159,7 @@ $(document).ready(function(){initNavTree('nrg__util_8h_source.html','');});
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code" href="structnrg_1_1ClientStats.html#a02bddffba323cc2dfa10a92c2b2978bd">getNumInterpStats</a>() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="structnrg_1_1ClientStats.html#a7f8ac9bb0c4ababf5f9fd9b652c811e4">getInterpStat</a>(<span class="keywordtype">size_t</span> index) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">float</span> <a class="code" href="structnrg_1_1ClientStats.html#ad5361fbd5dd120554f76ae7101dc2581">getInterpStat</a>(<span class="keywordtype">size_t</span> index) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    </div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">virtual</span> uint8_t* <a class="code" href="structnrg_1_1ClientStats.html#ad6bef37196083eb0931edfeacc1cf571">toRGBATexture</a>(uint32_t (&amp;tex)[64*64]) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
@@ -190,7 +190,6 @@ $(document).ready(function(){initNavTree('nrg__util_8h_source.html','');});
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor"></span></div>
-<div class="ttc" id="structnrg_1_1ClientStats_html_a7f8ac9bb0c4ababf5f9fd9b652c811e4"><div class="ttname"><a href="structnrg_1_1ClientStats.html#a7f8ac9bb0c4ababf5f9fd9b652c811e4">nrg::ClientStats::getInterpStat</a></div><div class="ttdeci">virtual int getInterpStat(size_t index) const =0</div><div class="ttdoc">Get a statistic showing how far between snapshots the client is interpolating, &gt;1 means it is having ...</div></div>
 <div class="ttc" id="structnrg_1_1ClientStats_html_a883c5d085cd99603689aacf28081da32"><div class="ttname"><a href="structnrg_1_1ClientStats.html#a883c5d085cd99603689aacf28081da32">nrg::ClientStats::getNumSnapshotStats</a></div><div class="ttdeci">virtual size_t getNumSnapshotStats() const =0</div><div class="ttdoc">Get the number of available snapshot statistics. </div></div>
 <div class="ttc" id="structnrg_1_1ClientStats_html"><div class="ttname"><a href="structnrg_1_1ClientStats.html">nrg::ClientStats</a></div><div class="ttdoc">Client statistics interface. </div><div class="ttdef"><b>Definition:</b> nrg_util.h:66</div></div>
 <div class="ttc" id="classnrg_1_1IDAssigner_html"><div class="ttname"><a href="classnrg_1_1IDAssigner.html">nrg::IDAssigner</a></div><div class="ttdef"><b>Definition:</b> nrg_util.h:44</div></div>
@@ -198,13 +197,14 @@ $(document).ready(function(){initNavTree('nrg__util_8h_source.html','');});
 <div class="ttc" id="structnrg_1_1ClientStats_html_a02bddffba323cc2dfa10a92c2b2978bd"><div class="ttname"><a href="structnrg_1_1ClientStats.html#a02bddffba323cc2dfa10a92c2b2978bd">nrg::ClientStats::getNumInterpStats</a></div><div class="ttdeci">virtual size_t getNumInterpStats() const =0</div><div class="ttdoc">Get the number of available interpolation statistics. </div></div>
 <div class="ttc" id="structnrg_1_1ClientStats_html_adad4e868e94d6463d638d84386fbe460"><div class="ttname"><a href="structnrg_1_1ClientStats.html#adad4e868e94d6463d638d84386fbe460">nrg::ClientStats::getSnapshotStat</a></div><div class="ttdeci">virtual int getSnapshotStat(size_t index) const =0</div><div class="ttdoc">Get a snapshot statistic which shows the latency at which snapshots were received, -1 means it was dropped. </div></div>
 <div class="ttc" id="nrg__core_8h_html"><div class="ttname"><a href="nrg__core_8h.html">nrg_core.h</a></div><div class="ttdoc">Common defines and includes used by all the other nrg header files. </div></div>
+<div class="ttc" id="structnrg_1_1ClientStats_html_ad5361fbd5dd120554f76ae7101dc2581"><div class="ttname"><a href="structnrg_1_1ClientStats.html#ad5361fbd5dd120554f76ae7101dc2581">nrg::ClientStats::getInterpStat</a></div><div class="ttdeci">virtual float getInterpStat(size_t index) const =0</div><div class="ttdoc">Get a statistic showing how far between snapshots the client is interpolating, &gt;1 means it is having ...</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="nrg__util_8h.html">nrg_util.h</a></li>
-    <li class="footer">Generated on Sun Sep 28 2014 21:09:08 for LibNRG by
+    <li class="footer">Generated on Mon Sep 29 2014 17:20:37 for LibNRG by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>
