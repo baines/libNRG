@@ -83,7 +83,7 @@ uint8_t* ClientStatsImpl::toRGBATexture(uint32_t (&tex)[NUM_STATS*NUM_STATS]) co
 
 			if(stat < 0){ // dropped
 				p = RED;
-			} else if(1 + stat / 8 >= (height*2-h)){ // recieved
+			} else if(1 + stat / 32 >= (height*2-h)){ // recieved
 				p = GRN;
 			} else { // background
 				int x = (s_index + w) % width;

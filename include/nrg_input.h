@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -40,8 +40,8 @@ struct InputBase : protected FieldContainer {
 	void writeToPacket(Packet& p) const;
 
 	/** Virtual function called Server-side when the Player \p player has sent some new input */
-	virtual void onUpdate(Player& player) = 0;	
-	
+	virtual void onUpdate(Player& player) = 0;
+
 	/** NYI: Do prediction of inputs client-side */
 	virtual void doPrediction() = 0;
 };

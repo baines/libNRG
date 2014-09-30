@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -37,7 +37,7 @@ namespace os {
 
 	/** Get a monotonic representation of time in microseconds */
 	uint64_t microseconds();
-	
+
 	/** Get a monotonic representation of time in milliseconds */
 	inline uint64_t milliseconds(){
 		return microseconds() / 1000;
@@ -47,7 +47,7 @@ namespace os {
 	inline uint64_t seconds(){
 		return milliseconds() / 1000;
 	}
-	
+
 	/** Returns a reasonably random number, not guaranteed to be cryptographically secure */
 	uint32_t random();
 

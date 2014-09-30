@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -36,22 +36,22 @@ namespace nrg {
 struct MessageBase {
 	/** Returns the user-defined Message ID */
 	virtual uint16_t getID() const = 0;
-	
+
 	/** Writes this Message to the Packet \p p */
 	virtual size_t writeToPacket(Packet& p) const = 0;
-	
+
 	/** Reads this Message from the Packet \p p */
 	virtual size_t readFromPacket(Packet& p) = 0;
-	
+
 	/** Function called when the message has been received */
 	virtual void onReceive(uint32_t creation_ms) = 0;
-	
+
 	/** Returns a copy of the derived class of this MessageBase */
 	virtual MessageBase* clone() const = 0;
-	
+
 	/** Moves the derived class into the returned MessageBase */
 	virtual MessageBase* move_clone() = 0;
-	
+
 	/** Standard Destructor */
 	virtual ~MessageBase(){};
 };
@@ -64,79 +64,79 @@ class Message : public MessageBase {
 public:
 	/** Standard Constructor for a Message to be sent over the network */
 	Message(Args... args) : values(args...), on_receive(){}
-	
+
 	/** Move Constructor */
 	Message(Message&&) = default;
-	
+
 	/** Copy Constructor */
 	Message(const Message&) = default;
-	
+
 	/** Internally used Constructor for a Message that will run a callback function */
 	template<class F>
 	Message(F&& func)
 	: values()
 	, on_receive(std::forward<F>(func)){}
-	
+
 	/** Returns the element of the Message specified by the template parameter \p n */
 	template<size_t n>
 	const typename std::tuple_element<n, MsgTuple>::type& get() const {
 		return std::get<n>(values);
 	}
-	
+
 	/** Sets the element of the Message specified by the template parameter \p n to \p val */
 	template<size_t n>
 	void set(const typename tuple_element<n, MsgTuple>::type& val) {
 		std::get<n>(values) = val;
 	}
-	
+
 	/** @cond INTERNAL_USE_ONLY */
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_write(Packet& p) const {
 		return Codec<typename std::tuple_element<n, MsgTuple>::type>().encode(p, std::get<n>(values));
 	}
-	
+
 	template<size_t n>
 	typename std::enable_if<n != sz, size_t>::type do_write(Packet& p) const {
 		return Codec<typename std::tuple_element<n, MsgTuple>::type>().encode(p, std::get<n>(values))
 		+ do_write<n+1>(p);
 	}
-	
+
 	template<size_t n>
 	typename std::enable_if<n == sz, size_t>::type do_read(Packet& p){
 		return Codec<typename std::tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values));
 	}
-	
+
 	template<size_t n>
 	typename std::enable_if<n != sz, size_t>::type do_read(Packet& p){
 		return Codec<typename std::tuple_element<n, MsgTuple>::type>().decode(p, std::get<n>(values))
 		+ do_read<n+1>(p);
 	}
 	/** @endcond */
-	
+
 	uint16_t getID() const {
 		return id;
 	}
-	
+
 	void onReceive(uint32_t creation_ms){
 		if(on_receive) on_receive(*this, creation_ms);
 	}
-	
+
 	MessageBase* clone() const {
 		return new Message(*this);
 	}
-	
+
 	MessageBase* move_clone() {
 		return new Message(std::move(*this));
 	}
-	
+
 	size_t writeToPacket(Packet& p) const {
 		return do_write<0>(p);
 	}
-	
+
 	size_t readFromPacket(Packet& p){
 		return do_read<0>(p);
 	}
-		
+
 private:
 	MsgTuple values;
 	std::function<void(const Message&, uint32_t)> on_receive;

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -40,34 +40,34 @@ class FieldBase {
 public:
 	/** Standard Constructor */
 	FieldBase(FieldContainer* container);
-	
+
 	/** Copy Constructor */
 	FieldBase(const FieldBase& copy);
-	
+
 	/** Assignment operator */
 	FieldBase& operator=(const FieldBase& copy);
-	
+
 	/** Reads data from Packet \p p into this Field */
 	virtual size_t readFromPacket(Packet& p) = 0;
-	
+
 	/** Writes this Field into the Packet \p p */
 	virtual size_t writeToPacket(Packet& p) const = 0;
-	
+
 	/** Indicates a new Snapshot has begun and the Field should move data_next to data */
 	virtual void shiftData() = 0;
-	
+
 	/** Standard Destructor */
 	virtual ~FieldBase(){}
 
 	/** Returns true if the Field was updated since the last update */
 	virtual bool wasUpdated() const;
-	
+
 	/** Force this Field's updated flag to be true or false */
 	virtual void setUpdated(bool updated);
-	
+
 	/** Returns the next Field in the FielcContainer's linked list, or nullptr at the end of the list */
 	FieldBase* getNextField() const;
-	
+
 	/** @cond INTERNAL_USE_ONLY */
 	void setNextField(FieldBase* f);
 	/** @endcond */
@@ -81,19 +81,19 @@ protected:
 struct FieldContainer {
 	/** Standard Constructor */
 	FieldContainer();
-	
+
 	/** Copy Constructor */
 	FieldContainer(const FieldContainer& copy);
-	
+
 	/** Assignment Operator */
 	FieldContainer& operator=(const FieldContainer& copy);
 
 	/** Return the first field in this FieldContainer's internal linked-list */
 	FieldBase* getFirstField() const;
-	
+
 	/** Returns the number of fields in this FieldContainer's linked-list */
 	size_t getNumFields() const;
-	
+
 	/** @cond INTERNAL_USE_ONLY */
 	/** Marks the FieldContainer as updated so the Server knows to send modified information contained inside */
 	virtual void markUpdated(bool b) = 0;
@@ -113,7 +113,7 @@ class Field : private FieldBase {
 public:
 	/* Standard Constructor */
 	Field(FieldContainer* c) : FieldBase(c), data(), data_next(){}
-	
+
 	/* Constructor with specified initial value \p t */
 	Field(FieldContainer* c, const T& t) : FieldBase(c), data(t), data_next(t){}
 
@@ -142,7 +142,7 @@ public:
 		}
 		return *this;
 	}
-	
+
 	/** Returns the most up-to-date data without interpolation */
 	T get() const {
 		return data_next;
@@ -177,7 +177,7 @@ public:
 		index_t count;
 		p.read<index_t>(count);
 		size_t uic = count + 1;
-		
+
 		if(uic * (sizeof(index_t) + sizeof(T)) > N * sizeof(T)){
 			for(size_t i = 0; i < N; ++i){
 				p.read<T>(data_next[i]);
@@ -200,7 +200,7 @@ public:
 	virtual size_t writeToPacket(Packet& p) const {
 		size_t uic = updated_indices.count();
 		p.write<index_t>(uic-1);
-		
+
 		if(uic * (sizeof(index_t) + sizeof(T)) > N * sizeof(T)){
 			for(size_t i = 0; i < N; ++i){
 				p.write<T>(data[i]);
@@ -239,11 +239,11 @@ public:
 		FieldBase::setUpdated(true);
 		return *this;
 	}
-	
+
 	T get(size_t index) const {
 		return data_next[index];
 	}
-	
+
 	template<class F>
 	T getInterp(size_t index, const F& func) const {
 		return func(data[index], data_next[index], this->container->getInterpTimer());

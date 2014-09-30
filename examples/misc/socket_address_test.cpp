@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -41,7 +41,7 @@ int main(int argc, char** argv){
 	printf("%s\n", s.getBoundAddress()->name());
 
 	// should print 9999
-	printf("%u\n", addr.port()); 
+	printf("%u\n", addr.port());
 
 	// wait for user input, so that the bound socket can be observed before exit.
 	getchar();

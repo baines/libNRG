@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -34,12 +34,12 @@ bool nrg::isVersionCompatible(const Version& v) {
 }
 
 bool Version::operator>(const Version& v) const {
-	return (v_major == v.v_major) ? ((v_minor == v.v_minor) 
+	return (v_major == v.v_major) ? ((v_minor == v.v_minor)
 	? v_patch > v.v_patch : v_minor > v.v_minor) : v_major > v.v_major;
 }
 
 bool Version::operator<(const Version& v) const {
-	return (v_major == v.v_major) ? ((v_minor == v.v_minor) 
+	return (v_major == v.v_major) ? ((v_minor == v.v_minor)
 	? v_patch < v.v_patch : v_minor < v.v_minor) : v_major < v.v_major;
 }
 

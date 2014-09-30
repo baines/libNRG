@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -40,13 +40,13 @@ class ReplayRecorder {
 public:
 	/** Default constructor */
 	ReplayRecorder();
-	
+
 	/** Starts recording a replay !CURRENTLY BROKEN! */
 	bool startRecording(const char* filename, int sid, const std::vector<Entity*>& initial_entities);
-	
+
 	/** Returns true if a replay is being recorded */
 	bool isRecording() const;
-	
+
 	/** Stops recording a replay */
 	void stopRecording();
 

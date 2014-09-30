@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -23,7 +23,7 @@
 
 using namespace nrg;
 
-PlayerImpl::PlayerImpl(uint16_t id, Server& s, const NetAddress& addr) 
+PlayerImpl::PlayerImpl(uint16_t id, Server& s, const NetAddress& addr)
 : server(s)
 , addr(addr)
 , sock(s.getSocket())
@@ -46,7 +46,7 @@ bool PlayerImpl::addPacket(Packet& p){
 		if(con.in.hasNewPacket()){
 			PacketFlags f = con.in.getLatestPacket(buffer.reset());
 			if(f & PKTFLAG_FINISHED){
-				valid = true;				
+				valid = true;
 				connected = false;
 			} else {
 				valid = state_manager.onRecvPacket(buffer, f);

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -58,7 +58,7 @@ struct Codec {
 		p.write(data);
 		return sizeof(data);
 	}
-	
+
 	/** Decodes bytes from \p p into \p data, returns the number of bytes read or 0 on error */
 	size_t decode(Packet& p, T& data){
 		if(p.remaining() >= sizeof(data)){
@@ -77,7 +77,7 @@ struct Codec<T, typename enable_if<has_encode_decode<T>::value>::type> {
 	size_t encode(Packet& p, const T& data){
 		return data.encode(p);
 	}
-	
+
 	/** Calls the decode method of \p data to decode itself from the Packet \p p */
 	size_t decode(Packet& p, T& data){
 		return data.decode(p);
@@ -93,7 +93,7 @@ struct Codec<char[len]> {
 		p.writeArray(data, len);
 		return len;
 	}
-	
+
 	/** Decodes bytes from \p p into \p data, returns the number of bytes read or 0 on error */
 	size_t decode(Packet& p, char (&data)[len]){
 		if(p.remaining() >= len){
@@ -115,19 +115,19 @@ struct Codec<std::string> {
 		p.writeArray(str.c_str(), str.length());
 		return ret + str.length();
 	}
-	
+
 	/** Decodes bytes from \p p into \p data, returns the number of bytes read or 0 on error */
 	size_t decode(Packet& p, std::string& str){
 		if(!p.remaining()) return 0;
-				
+
 		UVarint v;
 		size_t read_bytes = 0;
-		
+
 		if((read_bytes = v.decode(p)) == 0) return 0;
 		if(p.remaining() < v.get()) return 0;
-		
+
 		str = std::string(reinterpret_cast<const char*>(p.getPointer()), v.get());
-		
+
 		p.seek(v.get(), SEEK_CUR);
 		return read_bytes + v.get();
 	}

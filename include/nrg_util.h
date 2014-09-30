@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -67,16 +67,16 @@ struct ClientStats {
 
 	/** Get the number of available snapshot statistics */
 	virtual size_t getNumSnapshotStats() const = 0;
-	
+
 	/** Get a snapshot statistic which shows the latency at which snapshots were received, -1 means it was dropped */
 	virtual int getSnapshotStat(size_t index) const = 0;
-	
+
 	/** Get the number of available interpolation statistics */
 	virtual size_t getNumInterpStats() const = 0;
-	
+
 	/** Get a statistic showing how far between snapshots the client is interpolating, >1 means it is having to extrapolate data due to not receiving the next snapshot in time */
 	virtual float getInterpStat(size_t index) const = 0;
-	
+
 	/** Create a <a href="https://en.wikipedia.org/wiki/Lagometer">Lagometer</a> texture from the stats */
 	virtual uint8_t* toRGBATexture(uint32_t (&tex)[64*64]) const = 0;
 
@@ -88,7 +88,7 @@ namespace detail {
 /** @internal Template meta-programming utility to find the minimum number of bytes needed to store a number */
 template<size_t N>
 struct min_sizeof {
-	static const size_t val 
+	static const size_t val
 		= (N < 256U)        ? 1 // pow(2,8)
 		: (N < 65536U)      ? 2 // pow(2,16)
 		: (N < 4294967296U) ? 4 // pow(2,32)

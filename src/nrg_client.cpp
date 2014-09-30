@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -25,7 +25,7 @@
 
 using namespace nrg;
 
-Client::Client(const std::string& game_name, uint32_t game_version, InputBase& input) 
+Client::Client(const std::string& game_name, uint32_t game_version, InputBase& input)
 : sock()
 , input(&input)
 , buffer()
@@ -47,7 +47,7 @@ Client::Client(const std::string& game_name, uint32_t game_version, InputBase& i
 	state_manager.addState(handshake);
 }
 
-Client::Client(const std::string& game_name, uint32_t game_version) 
+Client::Client(const std::string& game_name, uint32_t game_version)
 : sock()
 , input(nullptr)
 , buffer()
@@ -75,37 +75,37 @@ bool Client::connect(const NetAddress& addr){
 	sock.enableTimestamps(true);
 #ifdef NRG_USE_SO_TIMESTAMP
 	sock.setOption(SOL_SOCKET, SO_TIMESTAMP, 1);
-#endif	
+#endif
 	serv_addr = addr;
-	
+
 	return sock.connect(serv_addr);
 }
 
 bool Client::update(){
 	if(!isConnected()) return false;
-	
+
 	eventq.clear();
 
 	while(sock.dataPending()){
 		NetAddress addr;
 		Status recv_status = sock.recvPacket(buffer.reset(), addr);
-		
+
 		if(addr.isValid() && addr != serv_addr) continue;
-		
+
 		if(!recv_status){
 			const char* msg = recv_status.desc;
-			
+
 			if(recv_status.type == Status::SystemError){
 				msg = strerr_r(recv_status.sys_errno, dc_reason, sizeof(dc_reason));
 			}
-			
+
 			printf("Socket::recvPacket returned error %d: %s.\n", recv_status.sys_errno, msg);
-			
+
 			eventq.pushEvent(DisconnectEvent{ DISCONNECTED, msg });
 			sock.disconnect();
 			return false;
 		}
-		
+
 		if(con.in.addPacket(buffer) && con.in.hasNewPacket()){
 			PacketFlags f = con.in.getLatestPacket(buffer.reset());
 
@@ -123,20 +123,20 @@ bool Client::update(){
 			}
 		}
 	}
-	
+
 	uint32_t current_ms = os::milliseconds();
 	state_con.reset(current_ms - previous_ms > rate_limit_interval_ms);
 
 	bool result = state_manager.update(state_con);
-	
+
 	if(state_con.sentPackets()){
 		previous_ms = current_ms - ((current_ms - previous_ms) - rate_limit_interval_ms);
 	}
-		
+
 	if(!result){
 		puts("State Update failed!");
 	}
-	
+
 	return result;
 }
 

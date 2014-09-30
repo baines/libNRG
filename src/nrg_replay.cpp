@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -36,12 +36,12 @@ namespace {
 		STATUS_STOPPED = 0,
 		STATUS_RECORDING = 2
 	};
-	
+
 	static const char header[] = "NRG Replay File";
 	typedef std::vector<Entity*>::const_iterator E_cit;
 }
 
-ReplayRecorder::ReplayRecorder() 
+ReplayRecorder::ReplayRecorder()
 : file(NULL)
 , status(STATUS_STOPPED){
 
@@ -66,7 +66,7 @@ bool ReplayRecorder::startRecording(const char* filename, int sid, const std::ve
 		for(E_cit i = ents.begin(), j = ents.end(); i != j; ++i){
 			if(*i) ss.addEntity(*i);
 		}
-	
+
 		p.write16(sid).write32(os::milliseconds()).write16(0).write16(0);
 		ss.writeToPacket(p);
 		addPacket(p);
@@ -94,7 +94,7 @@ void ReplayRecorder::addPacket(Packet& p){
 	//gzwrite(file, p.getBasePointer(), sz);
 }
 
-ReplayServer::ReplayServer() 
+ReplayServer::ReplayServer()
 : bind_addr()
 , client_addr()
 , sock()
@@ -139,7 +139,7 @@ bool ReplayServer::update(){
 
 		if(con.in.addPacket(buffer) && con.in.hasNewPacket()){
 			PacketFlags f = con.in.getLatestPacket(buffer.reset());
-			
+
 			if(f & PKTFLAG_FINISHED){
 				return false;
 			} else if(!client_addr.isValid()){
@@ -171,10 +171,10 @@ bool ReplayServer::update(){
 			len = std::min<int>(len, NRG_MAX_PACKET_SIZE);
 
 			gzread(file, buff, len);
-		
+
 			buffer.reset().writeArray(buff, len);
 			con.out.sendPacket(buffer);
-		
+
 			if(!gzeof(file)){
 				gzseek(file, 6, SEEK_CUR);
 				gzread(file, &remote_timer, 4);

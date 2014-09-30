@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -39,16 +39,16 @@ public:
 
 	/** Default Constructor */
 	Entity();
-	
+
 	/** Returns an identical copy of the derived class of this Entity */
 	virtual Entity* clone() = 0;
-	
+
 	/** Returns this entity's user-defined type identifier */
 	virtual uint16_t getType() const = 0;
-	
+
 	/** Returns this Entity's ID assigned by the library */
 	uint16_t getID() const { return nrg_id; }
-	
+
 	/** @{ */
 	/** Virtual function called on the client-side when the Entity is created */
 	virtual void onCreate(Client& c){}
@@ -60,7 +60,7 @@ public:
 
 	/** Standard Destructor */
 	virtual ~Entity();
-	
+
 	/** @cond INTERNAL_USE_ONLY */
 	void markUpdated(bool updated);
 	double getInterpTimer() const;
@@ -71,7 +71,7 @@ public:
 	/** Sets this Entity's EntityManager */
 	void setManager(EntityManager* m){ manager = m; }
 	/** @endcond */
-	
+
 private:
 	int nrg_id;
 	bool nrg_updated;

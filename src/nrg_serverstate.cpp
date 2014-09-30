@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -30,7 +30,7 @@
 using namespace nrg;
 using namespace std;
 
-ServerHandshakeState::ServerHandshakeState() 
+ServerHandshakeState::ServerHandshakeState()
 : server(nullptr)
 , player(nullptr)
 , response(HS_NONE)
@@ -43,50 +43,50 @@ bool ServerHandshakeState::init(Client* c, Server* s, Player* p){
 	assert(p != nullptr);
 	server = s;
 	player = p;
-	
+
 	response = HS_NONE;
-	
+
 	return true;
 }
 
 bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
 	Version v;
-	
+
 	if(p.remaining() <= sizeof(Version)){
 		return false;
 	}
-	
+
 	p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
-	
+
 	if(!isVersionCompatible(v)){
 		response = HS_WRONG_LIB_VERSION;
 		return true;
 	}
-	
+
 	std::string client_game;
 	Codec<std::string>().decode(p, client_game);
-	
+
 	if(client_game != server->getGameName()){
 		response = HS_WRONG_GAME;
 		return true;
 	}
-	
+
 	uint32_t client_game_ver = 0;
 	if(p.remaining() < sizeof(client_game_ver)){
 		return false;
 	}
-	
+
 	p.read32(client_game_ver);
 	if(!server->isGameVersionCompatible(client_game_ver)){
 		response = HS_WRONG_GAME_VERSION;
 		return true;
 	}
-	
+
 	if(server->isFull()){
 		response = HS_SERVER_FULL;
 		return true;
 	}
-	
+
 	response = HS_ACCEPTED;
 	return true;
 }
@@ -94,13 +94,13 @@ bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
 StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 	packet.reset();
 	packet.write8(response);
-	
+
 	Version v = getLibVersion();
 	packet.write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
-	
+
 	uint32_t game_v = server->getGameVersion();
 	packet.write32(game_v);
-	
+
 	if(response == HS_ACCEPTED){
 		packet.write16(player->getID());
 		if(out.sendPacket(packet)){
@@ -134,10 +134,10 @@ ServerPlayerGameState::ServerPlayerGameState()
 bool ServerPlayerGameState::init(Client* c, Server* s, Player* p){
 	assert(s != nullptr);
 	assert(p != nullptr);
-	
+
 	server = s;
 	player = p;
-	
+
 	return true;
 }
 
@@ -145,6 +145,9 @@ static const size_t NRG_MIN_SPGS_PACKET_LEN = 3;
 
 bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 	if(p.remaining() < NRG_MIN_SPGS_PACKET_LEN) return false;
+
+	unackd_updates = 0;
+
 	if(f & PKTFLAG_OUT_OF_ORDER) return true;
 
 	send_diff = true;
@@ -159,23 +162,21 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 		if(!i->readFromPacket(p)) return false;
 		i->onUpdate(*player);
 	}
-	
-	unackd_updates = 0;
-	
+
 	return msg_manager.readFromPacket(p, os::milliseconds());
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
-	return snapshot.getID() != server->getSnapshot().getID() && unackd_updates < 3;
+	return snapshot.getID() != server->getSnapshot().getID() && unackd_updates < NRG_NUM_PAST_SNAPSHOTS;
 }
 
 StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f){
 	if(f & SFLAG_TIMED_OUT){
 		return STATE_FAILURE;
 	}
-	
+
 	unackd_updates++;
-	
+
 	int ping = std::max<int>(0, (os::milliseconds() & USHRT_MAX) - c_time);
 	int seq_inc = 1;
 
@@ -183,41 +184,41 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 	? reinterpret_cast<const SnapshotBase&>(snapshot)
 	: reinterpret_cast<const SnapshotBase&>(server->getSnapshot())
 	;
-			
+
 	if(send_diff){
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
-		
+
 		auto ss_r = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
 			return ack_time == s.getID();
-		});	
-				
+		});
+
 		if(ss_r != snaps.rend()){
 			snapshot.reset();
 
 			for(auto ss = ss_r.base(); ss != snaps.end(); ++ss){
 				snapshot.mergeWithNext(*ss);
 			}
-			
+
 			auto last_it = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
 				return last_sent_id == s.getID();
 			});
-			
+
 			seq_inc = distance(last_it.base(), snaps.end());
 		} else {
 			return STATE_FAILURE;
 		}
 	}
-	
+
 	last_sent_id = outgoing_snap.getID();
-	
+
 	buffer.reset().write16(outgoing_snap.getID()).write8(seq);
 	UVarint(ping).encode(buffer);
 	outgoing_snap.writeToPacket(buffer);
 	msg_manager.writeToPacket(buffer, os::milliseconds());
 	out.sendPacket(buffer);
-	
+
 	seq += seq_inc;
-	
+
 	return STATE_CONTINUE;
 }
 

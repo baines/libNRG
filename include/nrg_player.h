@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -34,31 +34,31 @@ class Server;
 struct Player {
 	/** Returns the library-assigned player's ID */
 	virtual uint16_t getID() const = 0;
-	
+
 	/** Kick the player from the server, sending them a reason why */
 	virtual void kick(const char* reason) = 0;
-	
+
 	/** Returns the server associated with this Player */
 	virtual const Server* getServer() const = 0;
-	
+
 	/** Returns the address the Client associated with this Player is connecting from */
 	virtual const NetAddress& getRemoteAddress() const = 0;
-	
+
 	/** Register a Message containing a callback with this Player (R-Value reference version) */
 	virtual void registerMessageHandler(MessageBase&&) = 0;
-	
+
 	/** Register a Message containing a callback with this Player (const reference version) */
 	virtual void registerMessageHandler(const MessageBase&) = 0;
-	
+
 	/** Send the player a Message with the contents specified in \p m */
 	virtual void sendMessage(const MessageBase& m) = 0;
-	
+
 	/** Returns true if this player is connected to a Server */
 	virtual bool isConnected() const = 0;
-	
+
 	/** Returns the round-trip latency of this player */
 	virtual int getPing() const = 0;
-	
+
 	/** Default destructor */
 	virtual ~Player(){}
 };

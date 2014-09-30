@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -35,16 +35,16 @@ struct PacketHeader {
 	, flags(0)
 	, version(0)
 	, frag_index(0){
-	
+
 	}
-	
+
 	/** Constructor specifying all attributes */
 	PacketHeader(uint16_t seq, uint8_t flags, uint8_t frag_index = 0)
 	: seq_num(seq)
 	, flags(flags)
 	, version(0)
 	, frag_index(frag_index){
-	
+
 	}
 
 	/** Read a header from a packet \p p, returning true if successful */
@@ -52,7 +52,7 @@ struct PacketHeader {
 		if(p.remaining() >= size){
 			uint8_t ver_idx = 0;
 			p.read8(ver_idx).read8(flags).read16(seq_num);
-			
+
 			version = ver_idx >> 7;
 			frag_index = ver_idx & 0x1F;
 			return true;
@@ -60,7 +60,7 @@ struct PacketHeader {
 			return false;
 		}
 	}
-	
+
 	/** Write this PacketHeader instance to the given packet \p p */
 	void write(Packet& p){
 		p.write8((version << 7) | (frag_index & 0x1F));
@@ -71,7 +71,7 @@ struct PacketHeader {
 	uint16_t seq_num;
 	uint8_t flags;
 	uint32_t version, frag_index;
-	
+
 	static const size_t size = 4;
 };
 

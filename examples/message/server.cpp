@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -37,7 +37,7 @@ int main(void){
 	signal(SIGINT, &sig);
 
 	Server server("NRG Message Example", 1);
-	
+
 	server.setTickRate(2);
 
 	server.addMessageHandler<TxtMsg>([&](const TxtMsg& m, uint32_t ts, Player* p){
@@ -48,7 +48,7 @@ int main(void){
 	});
 
 	server.bind(NetAddress("127.0.0.1", "9000"));
-	
+
 	while(running && server.update()){
 		Event e;
 		while(server.pollEvent(e)){

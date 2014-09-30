@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -38,19 +38,19 @@ class MessageManager {
 public:
 	/** Default Constructor */
 	MessageManager();
-	
+
 	/** Writes any queued Messages into the Packet \p p - The current Server time must be provided in \p server_ms */
 	void writeToPacket(Packet& p, uint16_t server_ms);
-	
+
 	/** Reads all Messages from Packet \p p, running associated callback functions with them - The current Server time must be provided in \p server_ms */
 	bool readFromPacket(Packet& p, uint16_t server_ms);
-	
+
 	/** Add a Message containing a callback function to be run, passed in \p m as an R-value reference */
 	void addHandler(MessageBase&& m);
-	
+
 	/** Add a Message containing a callback function to be run, passed in \p m by const reference */
 	void addHandler(const MessageBase& m);
-	
+
 	/** Add a Message \p m to be sent over the network - The current Server time must be provided in \p server_ms */
 	void addMessage(const MessageBase& m, uint16_t server_ms);
 private:

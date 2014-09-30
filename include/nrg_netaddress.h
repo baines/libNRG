@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -33,19 +33,19 @@ class NetAddress {
 public:
 	/** Default constructor */
 	NetAddress();
-	
+
 	/** Construct and resolve an address from IP/Hostname and Port/Service */
 	NetAddress(const char* name, const char* port);
-	
+
 	/** Implicitly construct from a IPv4 sockaddr_in */
 	NetAddress(const struct sockaddr_in& in);
-	
+
 	/** Implicitly construct from a IPv6 sockaddr_in6 */
 	NetAddress(const struct sockaddr_in6& in6);
-	
+
 	/** Implicitly construct from a sockaddr_storage */
 	NetAddress(const struct sockaddr_storage& s);
-	
+
 	/** Implicitly construct from a generic sockaddr */
 	NetAddress(const struct sockaddr& s);
 
@@ -53,20 +53,20 @@ public:
 	bool resolve(const char* name, const char* port);
 
 	/** Queries whether or not the contained address is valid */
-	bool isValid() const;	
-	
+	bool isValid() const;
+
 	/** Returns the contained IP address as a string, if no address is contained it returns "" - do not free */
 	const char* getIP() const;
-	
+
 	/** Returns the family of the contained address, (AF_INET, AF_INET6 or AF_UNSPEC) */
 	int getFamily() const;
-	
+
 	/** Returns the contained address' port as a short in host byte order */
 	uint16_t getPort() const;
-	
+
 	/** Returns a sockaddr* representation of the NetAddress to be used with POSIX socket functions - do not free */
 	const struct sockaddr* toSockAddr(socklen_t& out_size) const;
-	
+
 	/** Equality operator */
 	friend bool operator==(const NetAddress& a, const NetAddress& b);
 	/** Unequality operator */

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -34,7 +34,7 @@ struct ClientStatsImpl : public ClientStats {
 
 	size_t getNumInterpStats() const;
 	float getInterpStat(size_t index) const;
-	
+
 	void addSnapshotStat(int stat);
 	void addInterpStat(float stat);
 

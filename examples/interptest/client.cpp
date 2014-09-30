@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -85,32 +85,32 @@ int main(int argc, char** argv){
 	nrg::Client client("NRG Interpolation Test", 1);
 	client.registerEntity(new ExampleEntity());
 	client.connect(nrg::NetAddress("127.0.0.1", "4000"));
-	
+
 	sf::RenderWindow window(sf::VideoMode(640, 480), "NRG Example Game Client");
 	window.setVerticalSyncEnabled(true);
-	
+
 	sf::Font f;
 	f.loadFromFile("FreeSans.ttf");
 	interp_str.setFont(f);
-	
+
 	updateText();
 
 	while(running){
 		running = client.update();
-		
+
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
-		
+
 		window.clear();
 		window.draw(interp_str);
 		for(s_it i = sprites.begin(), j = sprites.end(); i!=j; ++i){
-			i->update(interp);	
+			i->update(interp);
 			i->draw(window);
 		}
 		window.display();
 	}
 
 	window.close();
-	
+
 	return 0;
 }

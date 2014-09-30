@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -100,7 +100,7 @@ private:
 		bool operator==(const EntityInfo& other) const { return id == other.id;	}
 		bool operator==(uint16_t v) const {	return id == v;	}
 	};
-	
+
 	uint16_t id;
 	std::vector<EntityInfo> entities;
 	std::vector<FieldInfo> fields, tmp_fields;

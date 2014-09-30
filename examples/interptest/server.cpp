@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -33,7 +33,7 @@ int main(int argc, char** argv){
 	signal(SIGINT, &sig);
 	nrg::Server server("NRG Interpolation Test", 1);
 	server.bind(nrg::NetAddress("127.0.0.1", "4000"));
-	
+
 	ExampleEntity e;
 
 	server.registerEntity(e);
@@ -42,5 +42,5 @@ int main(int argc, char** argv){
 		e.update();
 		server.update();
 	}
-	
+
 }

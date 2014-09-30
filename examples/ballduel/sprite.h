@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -48,7 +48,7 @@ public:
 			if(entity->getX() != (c::screen_w - c::ball_size) / 2) interp = true;
 			if(abs(entity->getX() - s.getPosition().x) > c::screen_w / 4) interp = false;
 		}
-	
+
 		if(interp){
 			s.setPosition(entity->getXI(), entity->getYI());
 		} else {

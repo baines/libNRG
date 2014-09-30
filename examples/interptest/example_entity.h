@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -29,7 +29,7 @@ enum MyEntities {
 };
 
 class ExampleEntity : public nrg::EntityHelper<ExampleEntity, EXAMPLE> {
-public:	
+public:
 	ExampleEntity() : angle(0.0f), xpos(this, 320), ypos(this, 240), array(this){}
 
 	void update(){
@@ -38,7 +38,7 @@ public:
 		xpos = 320 + (200 * sin(angle));
 		ypos = 240 + (200 * cos(angle));
 	}
-	
+
 	uint16_t getX(bool interp) const {
 		if(interp) return xpos.getInterp();
 		else return xpos.get();
@@ -48,7 +48,7 @@ public:
 		if(interp) return ypos.getInterp();
 		else return ypos.get();
 	}
-	
+
 	uint8_t getArray(int i){
 		return array.get(i);
 	}

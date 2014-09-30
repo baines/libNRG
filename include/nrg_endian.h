@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -41,7 +41,7 @@
 namespace nrg {
 
 /** Swap the byte order of \p data between big and little endianness */
-template<typename T> 
+template<typename T>
 static inline T swapbytes(const T& data){
 	T ret;
 	const char* src = reinterpret_cast<const char*>(&data) + sizeof(T) - 1;
@@ -50,7 +50,7 @@ static inline T swapbytes(const T& data){
 	for(int i = sizeof(T); i > 0; --i){
 		*dst++ = *src--;
 	}
-	
+
 	return ret;
 }
 

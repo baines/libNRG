@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -35,49 +35,49 @@ class Queue {
 public:
 	/** Construct a Queue with initial size \p sz */
 	Queue(size_t sz) : data(sz), tail(0), head(0){}
-	
+
 	/** Push \p t onto the back of the queue */
 	void push(const T& t){
 		data[tail] = t;
 		tail = (tail + 1) % data.size();
-		
-		if(tail == head) expand(); 
+
+		if(tail == head) expand();
 	}
-	
+
 	/** Remove the head of the queue and return it, don't call this if the queue is empty or all hell will break loose */
 	T pop(void){
 		//if(empty()) throw std::underflow_error(__PRETTY_FUNCTION__);
-		
+
 		T& t = data[head];
 		head = (head + 1) % data.size();
 		return std::move(t);
 	}
-	
+
 	/** Clears the queue */
 	void clear(){
 		head = tail = 0;
 	}
-	
+
 	/** Returns the size of the queue */
 	size_t size(){
 		return tail >= head ? tail - head : data.size() - (head - tail);
 	}
-	
+
 	/** Returns true if the queue is empty */
 	bool empty(){
 		return head == tail;
 	}
-	
+
 private:
 
 	void expand(){
 		size_t oldsz = data.size();
 		data.resize(oldsz * 2);
-		
+
 		for(size_t i = 0; i < oldsz; ++i){
 			data[oldsz + i] = std::move(data[(head + i) % oldsz]);
 		}
-		
+
 		tail = 0;
 		head = oldsz;
 	}

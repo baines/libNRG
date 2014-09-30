@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -49,7 +49,7 @@ enum {
 
 }
 
-DeltaSnapshot::DeltaSnapshot(int i) 
+DeltaSnapshot::DeltaSnapshot(int i)
 : id(i)
 , full_count(0)
 , del_count(0)
@@ -63,7 +63,7 @@ DeltaSnapshot::DeltaSnapshot(int i)
 void DeltaSnapshot::addEntity(Entity* e){
 	assert(e && find(entities.begin(), entities.end(), e->getID()) == entities.end());
 	entities.push_back({e->getNumFields(), e->getID(), e->getType()});
-		
+
 	uint16_t i = 0, upd = 0;
 	for(FieldBase* f = e->getFirstField(); f; f = f->getNextField(), ++i){
 		if(f->wasUpdated()){
@@ -95,13 +95,13 @@ void DeltaSnapshot::reset(){
 
 void DeltaSnapshot::writeToPacket(Packet& p) const {
 	uint8_t section_bits = 0;
-	
+
 	if(del_count)  section_bits |= SNAPFLAG_DEL_SECTION;
 	if(full_count) section_bits |= SNAPFLAG_FULL_SECTION;
 	if(upd_count)  section_bits |= SNAPFLAG_UPD_SECTION;
-	
+
 	p.write8(section_bits);
-		
+
 	if(del_count){
 		UVarint(del_count).encode(p);
 		for(auto& e : entities){
@@ -110,16 +110,16 @@ void DeltaSnapshot::writeToPacket(Packet& p) const {
 			}
 		}
 	}
-	
+
 	if(full_count){
 		UVarint(full_count).encode(p);
 		for(auto& e : entities){
 			if(!e.full) continue;
-		
+
 			UVarint(e.id).encode(p);
 			// TODO: optimisation: don't send entity type if client already knows it.
 			UVarint(e.type).encode(p);
-		
+
 			auto i = lower_bound(fields.begin(), fields.end(), e.id);
 			while(i != fields.end() && *i == e.id){
 				p.writeArray(i->get(field_data), i->size);
@@ -127,22 +127,22 @@ void DeltaSnapshot::writeToPacket(Packet& p) const {
 			}
 		}
 	}
-	
+
 	if(upd_count){
 		UVarint(upd_count).encode(p);
 		for(auto& e : entities){
 			if(e.full || e.num_fields == 0) continue;
-		
+
 			UVarint(e.id).encode(p);
-	
+
 			auto i = lower_bound(fields.begin(), fields.end(), e.id), j = i;
-		
+
 			BitWriter(p).writeFunc(e.num_fields, [&](int x){
 				bool b = i != fields.end() && *i == e.id && i->number == x;
 				if(b) ++i;
 				return b;
 			});
-		
+
 			while(j != fields.end() && *j == e.id){
 				p.writeArray(j->get(field_data), j->size);
 				++j;
@@ -158,54 +158,54 @@ void DeltaSnapshot::mergeWithNext(const DeltaSnapshot& other){
 		buffer.writeArray(i->get(p), i->size);
 		++i;
 	};
-	
+
 	id = other.id;
 	const DeltaSnapshot* const that = &other;
 	size_t mid = entities.size();
-	
+
 	tmp_fields.clear();
 	buffer.reset();
-	
+
 	// make sure iterators are not invalidated in the set difference.
-	entities.reserve(this->entities.size() + that->entities.size()); 
-	
+	entities.reserve(this->entities.size() + that->entities.size());
+
 	set_symmetric_difference(that->entities.begin(), that->entities.end(),
 		entities.begin(), entities.begin()+mid, back_inserter(entities)
 	);
-	
+
 	for(size_t i = mid; i < entities.size(); ++i){
 		uint16_t eid = entities[i].id;
 		vector<FieldInfo>::const_iterator it;
 		const DeltaSnapshot* s = this;
-		
+
 		if((it = find(fields.begin(), fields.end(), eid)) == fields.end()){
 			it = find(that->fields.begin(), that->fields.end(), eid);
 			s = that;
 		}
-		
+
 		while(it != s->fields.end() && *it == eid) write_fn(it, s->field_data);
 	}
-	
+
 	entities.resize(mid);
-	
+
 	set_intersection(that->entities.begin(), that->entities.end(),
 		entities.begin(), entities.begin()+mid, back_inserter(entities)
 	);
-	
+
 	for(size_t i = mid; i < entities.size(); ++i){
 		uint16_t eid = entities[i].id;
-		
+
 		// If this entity was deleted in the newer snapshot, don't add the old fields.
 		if(entities[i].num_fields == 0) continue;
-		
+
 		vector<FieldInfo>::const_iterator old_it, new_it;
 		old_it = lower_bound(this->fields.begin(), this->fields.end(), eid);
 		new_it = lower_bound(that->fields.begin(), that->fields.end(), eid);
-	
+
 		bool ob = false, nb = false;
-		while(ob = (old_it != this->fields.end() && *old_it == eid), 
+		while(ob = (old_it != this->fields.end() && *old_it == eid),
 		      nb = (new_it != that->fields.end() && *new_it == eid), ob || nb){
-	
+
 			if(!ob || (nb && new_it->number <= old_it->number)) {
 				if(new_it->number == old_it->number) ++old_it;
 				write_fn(new_it, that->field_data);
@@ -214,15 +214,15 @@ void DeltaSnapshot::mergeWithNext(const DeltaSnapshot& other){
 			}
 		}
 	}
-	
+
 	entities.resize(mid);
-	
+
 	inplace_union(this->entities, that->entities);
 	fields = tmp_fields;
 	field_data = buffer;
-	
+
 	full_count = del_count = upd_count = 0;
-	
+
 	for(auto& e : entities){
 		if(e.num_fields == 0){
 			++del_count;
@@ -231,5 +231,5 @@ void DeltaSnapshot::mergeWithNext(const DeltaSnapshot& other){
 		} else {
 			++upd_count;
 		}
-	}	
+	}
 }

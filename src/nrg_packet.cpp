@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -26,7 +26,7 @@
 using namespace nrg;
 using namespace std;
 
-Packet::Packet() 
+Packet::Packet()
 : data(new uint8_t[NRG_MAX_PACKET_SIZE])
 , pointer(data)
 , data_size(NRG_MAX_PACKET_SIZE)
@@ -34,7 +34,7 @@ Packet::Packet()
 
 }
 
-Packet::Packet(size_t initial_size) 
+Packet::Packet(size_t initial_size)
 : data(new uint8_t[initial_size])
 , pointer(data)
 , data_size(initial_size)
@@ -42,7 +42,7 @@ Packet::Packet(size_t initial_size)
 
 }
 
-Packet::Packet(const Packet& copy) 
+Packet::Packet(const Packet& copy)
 : data(new uint8_t[copy.data_size])
 , pointer(data + (copy.pointer - copy.data))
 , data_size(copy.data_size)
@@ -188,7 +188,7 @@ bool PacketCompressor::apply(Packet& in, Packet& out){
 }
 
 bool PacketCompressor::remove(Packet& in, Packet& out){
-	bool ret = false;	
+	bool ret = false;
 	uint8_t v = 2;
 	in.read8(v);
 	if(v == 0){

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -61,10 +61,10 @@ class Player;
 struct StateConnectionOut {
 	/** Returns true if more Packets can be sent right now with sendPacket */
 	virtual bool ready() = 0;
-	
+
 	/** Try to send a packet, returns a error Status if it couldn't because of the rate-limit */
 	virtual Status sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE) = 0;
-	
+
 	/** Try to resend the last packet send, returns an error status if it couldn't because of the rate-limit */
 	virtual Status resendLastPacket() = 0;
 };
@@ -73,19 +73,19 @@ struct StateConnectionOut {
 struct State {
 	/** Called to (re)initialise this State instance, for Client-side \p c won't be null, but \p s and \p p will, opposite is true for Server-side */
 	virtual bool init(Client* c, Server* s, Player* p) = 0;
-	
+
 	/** Called when a Packet is recieved and this is the active State, \p f shows if the packet was out-of-order or not */
 	virtual bool onRecvPacket(Packet& p, PacketFlags f) = 0;
-	
+
 	/** Called to see if the State would like to be updated */
 	virtual bool needsUpdate() const = 0;
-	
+
 	/** Returns a time that the state can go without needsUpdate() returning true, after which update() will be called with \p f set to STATE_TIMED_OUT */
 	virtual size_t getTimeoutSeconds() const { return 10; }
-	
+
 	/** Called to update the state (or on a timeout) allowing it to optionally send some Packets using \p out */
 	virtual StateResult update(StateConnectionOut& out, StateFlags f = SFLAG_NONE) = 0;
-	
+
 	/** Default destructor */
 	virtual ~State(){}
 };
@@ -94,13 +94,13 @@ struct State {
 struct StateConnectionOutImpl : StateConnectionOut {
 	/** Default constructor */
 	StateConnectionOutImpl(ConnectionOut& out);
-	
+
 	/** Marks the StateConnectionOutImpl so that \p ready_to_send decides if more packets can be sent or not */
 	void reset(bool ready_to_send);
-	
+
 	/** Returns true if one or more packets have been sent through this StateConnectionOutImpl since the last reset() */
 	bool sentPackets();
-	
+
 	bool ready();
 	Status sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
 	Status resendLastPacket();

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -60,7 +60,7 @@ public:
 private:
 	DeltaSnapshot snapshot;
 	bool send_diff;
-	int unackd_updates;
+	size_t unackd_updates;
 	uint8_t seq;
 	uint16_t last_sent_id;
 	uint16_t ack_time;

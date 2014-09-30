@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -50,17 +50,17 @@ uint32_t os::random(){
 	uint32_t i = 0;
 
 	int f = open("/dev/urandom", O_RDONLY);
-	
+
 	if(f < 0 || read(f, &i, sizeof(i)) < 0){
 		uint64_t t = os::microseconds();
 		uint32_t h = t >> 32, l = static_cast<uint32_t>(t);
-		
+
 		std::seed_seq({ l, h, static_cast<uint32_t>(rand_r(&l))})
 		.generate(&i, (&i)+1);
 	}
-	
+
 	if(f >= 0) close(f);
-	
+
 	return i;
 }
 

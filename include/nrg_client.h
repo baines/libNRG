@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -47,7 +47,7 @@ public:
 	 *  @param input User-defined subclass of InputBase, containing data to be sent to the server each frame
 	 */
 	Client(const std::string& game_name, uint32_t game_version, InputBase& input);
-	
+
 	/** No-Input Client constructor
 	 *  @param game_game User-chosen game name, it must match the Server's game name
 	 *  @param game_version User-chosen game version
@@ -56,10 +56,10 @@ public:
 
 	/** Sets the address of the Server to connect to, and calls Socket::connect on it */
 	bool connect(const NetAddress& server_addr);
-	
+
 	/** Returns whether or not this Client is connected or not */
 	bool isConnected() const;
-	
+
 	/** Returns the NetAddress this Client is connected to, or \ref nullptr if not connected */
 	const NetAddress* getConnectedAddress() const;
 
@@ -77,13 +77,13 @@ public:
 
 	/** Sends and Recieves any queued Packets and updates the contained State classes, returns false on error */
 	bool update();
-	
+
 	/** Places the next Event from the Client's EventQueue into \p e, returning true if this happened, or false if there were no more events */
 	bool pollEvent(Event& e);
-	
+
 	/** Returns a ClientStats reference, which contains statistics about this Client's connection */
 	const ClientStats& getStats() const;
-	
+
 	/** @{ */
 	/** Gets a limit on how many full Packets the Client will send per second */
 	uint32_t getPacketRateLimit(void);
@@ -112,9 +112,9 @@ public:
 	const uint32_t     getGameVersion() { return game_version; }
 	const int          getPlayerID()    { return player_id; }
 	/** @} */
-	
+
 	/** @cond INTERNAL_USE_ONLY */
-	void setServerParams(const Version& lib_v, uint32_t game_v, uint16_t pid); 
+	void setServerParams(const Version& lib_v, uint32_t game_v, uint16_t pid);
 	/** @endcond */
 
 	/** Standard destructor */

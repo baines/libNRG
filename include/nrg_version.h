@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -19,7 +19,7 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-/** @file 
+/** @file
  * Library versioning stuff
  */
 #ifndef NRG_VERSION_H_
@@ -30,21 +30,21 @@ namespace nrg {
 /** A class to store the version of the library. */
 struct Version {
 	uint16_t v_major, v_minor, v_patch;
-	
+
 	/** Default constructor */
 	Version()
 	: v_major(0)
 	, v_minor(0)
 	, v_patch(0){
-	
+
 	}
-	
+
 	/** Construct with major, minor and patch version \p a, \p b, and \p c respectively */
 	Version(uint16_t a, uint16_t b, uint16_t c)
 	: v_major(a)
 	, v_minor(b)
 	, v_patch(c){
-	
+
 	}
 
 	/** @name Comparison operators */

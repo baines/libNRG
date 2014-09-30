@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -95,10 +95,10 @@ int main(int argc, char** argv){
 	sf::RenderWindow window(sf::VideoMode(c::screen_w, c::screen_h), c::client_title);
 	window.setVerticalSyncEnabled(true);
 	window.setFramerateLimit(c::fps_limit);
-	
+
 	sf::Font score_font;
 	score_font.loadFromFile("FreeSans.ttf");
-	
+
 	score_str.setFont(score_font);
 	score_str.setPosition(c::screen_w / 2, 0);
 
@@ -107,7 +107,7 @@ int main(int argc, char** argv){
 	sf::Texture lagometer;
 	lagometer.create(64, 64);
 	lagometer.setSmooth(false);
-	
+
 	sf::Sprite lsprite(lagometer);
 	lsprite.setColor(c::lag_col);
 	lsprite.setScale(c::lag_scale, c::lag_scale);
@@ -115,15 +115,15 @@ int main(int argc, char** argv){
 	lsprite.setPosition(c::screen_w, c::screen_h);
 
 	if(!playing_replay && argc > 2) client.startRecordingReplay(argv[2]);
-	
+
 	while(running){
 		if(playing_replay) rserv.update();
 		running = client.update();
-		
+
 		lagometer.update(client.getStats().toRGBATexture(tex));
 		checkNRGEvents(client);
 		checkSFMLEvents(window);
-		
+
 		window.clear();
 		for(auto& s : sprites){
 			s.draw(window);
@@ -134,6 +134,6 @@ int main(int argc, char** argv){
 	}
 
 	window.close();
-	
+
 	return 0;
 }

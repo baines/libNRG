@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -29,7 +29,7 @@
 using namespace nrg;
 using std::unique_ptr;
 
-Socket::Socket(int type, int family) 
+Socket::Socket(int type, int family)
 : bound_addr()
 , connected_addr()
 , fd(0)
@@ -65,7 +65,7 @@ Status Socket::bind(const NetAddress& addr){
 	} else if(addr.getFamily() != family){
 		return Status("Socket is set to a different family than the address.");
 	}
-	
+
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::bind(fd, sa, len) == 0){
@@ -83,7 +83,7 @@ Status Socket::connect(const NetAddress& addr){
 	} else if(addr.getFamily() != family){
 		return Status("Socket is set to a different family than the address.");
 	}
-	
+
 	socklen_t len = 0;
 	const struct sockaddr* sa = addr.toSockAddr(len);
 	if(::connect(fd, sa, len) == 0){
@@ -120,7 +120,7 @@ Status Socket::sendPacket(const Packet& p) const {
 			sz = std::max(sz + res, p.size());
 		}
 	} while(sz < p.size());
-	
+
 	return StatusOK();
 }
 
@@ -144,15 +144,15 @@ Status Socket::sendPacket(const Packet& p, const NetAddress& addr) const {
 			sz = std::max(sz + res, p.size());
 		}
 	} while(sz < p.size());
-	
+
 	return StatusOK();
 }
 
 Status Socket::recvPacket(Packet& p) const {
 	char buf[NRG_MAX_PACKET_SIZE];
-	
+
 	ssize_t result = ::recv(fd, buf, NRG_MAX_PACKET_SIZE, 0);
-	
+
 	if(result > 0){
 		p.writeArray(buf, result);
 		return StatusOK();
@@ -165,7 +165,7 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 	struct sockaddr_storage sas = {};
 	char buf[NRG_MAX_PACKET_SIZE];
 	socklen_t len = sizeof(sas);
-	
+
 	bool data_ready = dataPending(0);
 
 #ifdef NRG_USE_SO_TIMESTAMP
@@ -192,7 +192,7 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 	if(result > 0){
 		p.writeArray(buf, result);
 		p.seek(0, SEEK_SET);
-		if(do_timestamp){ 
+		if(do_timestamp){
 			last_timestamp = os::microseconds();
 #ifdef NRG_USE_SO_TIMESTAMP
 			for(cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)){
@@ -239,17 +239,17 @@ Status Socket::checkErrorQueue(NetAddress& culprit){
 	msg.msg_iovlen = 1;
 	msg.msg_control = cmsg;
 	msg.msg_controllen = sizeof(cbuf);
-	
+
 	ssize_t result = ::recvmsg(fd, &msg, MSG_ERRQUEUE);
-	
+
 	if(result < 0) return StatusErr(errno);
-	
+
 	Status ret = StatusOK();
 	for(cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg)){
 		if(cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_RECVERR){
 			struct sock_extended_err* err = (struct sock_extended_err*) CMSG_DATA(cmsg);
 			// For some reason the port in this addr is always 0, but msg.msg_name has the correct one.
-			//struct sockaddr* sa = SO_EE_OFFENDER(err); 
+			//struct sockaddr* sa = SO_EE_OFFENDER(err);
 
 			if(sas.ss_family != AF_UNSPEC){
 				culprit = sas;
@@ -258,7 +258,7 @@ Status Socket::checkErrorQueue(NetAddress& culprit){
 			ret = StatusErr(err->ee_errno);
 		}
 	}
-	
+
 	return ret;
 #else
 	return StatusOK();

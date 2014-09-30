@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -52,19 +52,19 @@ class StateManager {
 public:
 	/** Constructor, either server or client-side */
 	StateManager(Client* c, Server* s, Player* p);
-	
+
 	/** Constructor, server-side */
 	StateManager(Server* s, Player* p);
-	
+
 	/** Constructor, client-side */
 	StateManager(Client* c);
-	
+
 	/** Adds a state to be managed */
 	void addState(State& s);
-	
+
 	/** Called by the server or client to pass along a packet to the current State */
 	bool onRecvPacket(Packet& packet, PacketFlags f);
-	
+
 	/** Called by the server or client to update the current State */
 	Status update(StateConnectionOut& out);
 private:

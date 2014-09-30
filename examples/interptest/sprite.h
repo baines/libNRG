@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -24,7 +24,7 @@
 
 class Sprite {
 public:
-	Sprite(ExampleEntity* e) : s(sf::Vector2f(16, 16)), entity(e){ 
+	Sprite(ExampleEntity* e) : s(sf::Vector2f(16, 16)), entity(e){
 		update(true);
 	}
 	void update(bool interp){

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -39,37 +39,37 @@ class RingBuffer {
 public:
 	/** Default Constructor */
 	RingBuffer() : data(), start_idx(0), end_idx(0){}
-	
+
 	/** Iterator class for the RingBuffer */
 	class iterator : public std::iterator<std::forward_iterator_tag, const T> {
 	public:
 		/** Default Iterator Constructor */
 		iterator(const RingBuffer* const rb, size_t i) : buff(rb), idx(i){}
-		
+
 		bool operator<(const iterator& other) const {
 			size_t dist_a = calcDist(*this), dist_b = calcDist(other);
 			return dist_a < dist_b;
 		}
-		
+
 		bool operator==(const iterator& other) const {
 			return idx == other.idx;
 		}
-		
+
 		bool operator!=(const iterator& other) const {
 			return idx != other.idx;
 		}
-		
+
 		const iterator& operator++(void){
 			if(idx != (ssize_t)buff->end_idx) idx = (idx + 1) % buff->data.size();
 			return *this;
 		}
-		
+
 		const iterator& operator--(void){
 			if(idx != (ssize_t)buff->start_idx) --idx;
 			if(idx < 0) idx = buff->data.size()-1;
 			return *this;
 		}
-		
+
 		const T* operator->() const {
 			if(idx == buff->end_idx){
 				return nullptr;
@@ -77,7 +77,7 @@ public:
 				return &buff->data[idx];
 			}
 		}
-		
+
 		const T& operator*() const {
 			return buff->data[idx];
 		}
@@ -92,7 +92,7 @@ public:
 		const RingBuffer* buff;
 		ssize_t idx;
 	};
-	
+
 	/** Moves the ringbuffer up one, and returns a reference to this element */
 	T& next(void){
 		T& ret = data[end_idx];
@@ -102,27 +102,27 @@ public:
 		}
 		return ret;
 	}
-	
+
 	/** Returns an Iterator to the beginning of the RingBuffer */
 	iterator begin() const {
 		return iterator(this, start_idx);
 	}
-	
+
 	/** Returns an Iterator to the end of the RingBuffer */
 	iterator end() const {
 		return iterator(this, end_idx);
 	}
-	
+
 	/** Returns a Reverse-Iterator to the reverse-beginning of the RingBuffer */
 	std::reverse_iterator<iterator> rbegin() const {
 		return std::reverse_iterator<iterator>(end());
 	}
-	
+
 	/** Returns a Reverse-Iterator to the reverse-end of the RingBuffer */
 	std::reverse_iterator<iterator> rend() const {
 		return std::reverse_iterator<iterator>(begin());
 	}
-	
+
 private:
 	std::array<T, N> data;
 	size_t start_idx, end_idx;

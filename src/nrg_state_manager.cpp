@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -36,9 +36,9 @@ bool TransitionState::init(Client* c, Server* s, Player* p){
 	starting = true;
 	client_mode = c != nullptr;
 	timeouts = 0;
-	
+
 	new_state->init(c, s, p);
-	
+
 	return true;
 }
 
@@ -66,7 +66,7 @@ bool TransitionState::needsUpdate() const {
 
 StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 	StateResult r = STATE_FAILURE;
-	
+
 	if(client_mode){
 		if(starting){
 			if(!out.sendPacket(buffer, PKTFLAG_STATE_CHANGE_ACK)) return STATE_CONTINUE;
@@ -80,7 +80,7 @@ StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 			} else {
 				out.resendLastPacket();
 				r = STATE_CONTINUE;
-			}	
+			}
 		}
 	} else {
 		if(resend){
@@ -93,7 +93,7 @@ StateResult TransitionState::update(StateConnectionOut& out, StateFlags f){
 			r = STATE_CHANGE;
 		}
 	}
-	
+
 	return r;
 }
 
@@ -142,14 +142,14 @@ Status StateManager::update(StateConnectionOut& out){
 		state_ptr->init(c, s, p);
 		last_update = os::seconds();
 	}
-	
+
 	std::underlying_type<StateFlags>::type f = SFLAG_NONE;
-	
+
 	size_t timeo = state_ptr->getTimeoutSeconds();
 	if(timeo && (os::seconds() - last_update) > timeo){
 		f |= SFLAG_TIMED_OUT;
 	}
-	
+
 	if(state_ptr->needsUpdate() || (f & SFLAG_TIMED_OUT)){
 		StateResult r = state_ptr->update(out, static_cast<StateFlags>(f));
 		last_update = os::seconds();
@@ -169,6 +169,6 @@ Status StateManager::update(StateConnectionOut& out){
 			return Status("Current state exited unsuccessfully.");
 		}
 	}
-	
+
 	return true;
 }

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -36,26 +36,26 @@ void sig(int){
 
 int main(void){
 	signal(SIGINT, &sig);
-	
+
 	Client client("NRG Message Example", 1);
-	
+
 	client.addMessageHandler<TxtMsg>([&](const TxtMsg& m, uint32_t ts){
 		cout << "\n" << m.get<0>() << "\n> " << flush;
 	});
-	
+
 	client.connect(NetAddress("127.0.0.1", "9000"));
-	
+
 	while(running && client.isConnected()){
 		client.update();
-		
+
 		struct timeval tv;
 		tv.tv_sec = 0;
 		tv.tv_usec = 500000;
-		
+
 		fd_set fds;
 		FD_ZERO(&fds);
 		FD_SET(STDIN_FILENO, &fds);
-		
+
 		if(select(STDIN_FILENO+1, &fds, nullptr, nullptr, &tv) == 1){
 			string input;
 			if(getline(cin, input)){

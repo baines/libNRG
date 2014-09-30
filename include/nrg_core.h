@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -70,25 +70,25 @@
 
 /** @mainpage
  *  \section intro Introduction
- *  \par 
+ *  \par
  *      This is the documentation for LibNRG (Networking for Real-time Games) - a library which was created by myself, Alex Baines, for my third year computer science project at Warwick University.
- *  \par 
+ *  \par
  *      The library provides a high-level of abstraction over UDP networking that can be used to implement client / server online multi-player in video games.
  *  \section src Source Code
  *  \par
  *      <a href="https://github.com/baines/LibNRG/">Available on Github here.</a>
  *  \section classes Main classes
- *  - nrg::Server  
+ *  - nrg::Server
  *      - Create one server-side to set up a game server
- *  - nrg::Client  
+ *  - nrg::Client
  *      - Create one client-side to set up a game client
- *  - nrg::Entity  
+ *  - nrg::Entity
  *      - Inherit from this class or EntityHelper and put some nrg::Field classes inside to define a struct that will be replicated from the server to all connected Clients
- *  - nrg::Input   
+ *  - nrg::Input
  *      - Inherit a single class from this CRTP class and puts nrg::Field classes inside it, this will be the data the client sends to the server each frame such as mouse position, camera angles
- *  - nrg::Field   
+ *  - nrg::Field
  *      - Wrap types like int in this template class to define a piece of data to be replicated inside an nrg::Entity or nrg::Input.
- *  - nrg::Message 
+ *  - nrg::Message
  *      - Create instances of this variadic template class to define RPC methods between server and clients
  *  \section nav Links
  *  \par

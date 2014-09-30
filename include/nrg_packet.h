@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -59,16 +59,16 @@ class Packet : public PacketReadable, public PacketWritable {
 public:
 	/** Default Constructor */
 	Packet();
-	
+
 	/** Constructor with explicit initial size */
 	Packet(size_t initial_size);
-	
+
 	/** Copy Constructor */
 	Packet(const Packet& copy);
-	
+
 	/** Assignment operator */
 	Packet& operator=(const Packet& other);
-	
+
 	/** Standard Destructor */
 	virtual ~Packet();
 
@@ -120,22 +120,22 @@ public:
 
 	/** Clears all data in the Packet */
 	virtual Packet& reset();
-	
+
 	/** Seeks the packet to some offset using SEEK_SET, SEEK_CUR or SEEK_END */
 	Packet& seek(off_t offset, int whence);
-	
+
 	/** Get the current offset of this Packet's internal pointer */
 	off_t tell() const;
-	
+
 	/** Get the total used-size of this packet */
 	size_t size() const { return used_size; }
-	
+
 	/** Get the amount of data that can be read from the internal pointer's current position */
 	size_t remaining() const { return used_size - (pointer - data); }
-	
+
 	/** Returns the internal pointer */
 	const uint8_t* getPointer() const { return pointer; }
-	
+
 	/** Returns the base address of the packet's data without affecting the internal pointer */
 	const uint8_t* getBasePointer() const { return data; }
 private:

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -36,7 +36,7 @@ typedef enum {
 	ENTITY_UPDATED,
 	ENTITY_CREATED,
 	ENTITY_DESTROYED,
-	
+
 	/* Server-side */
 	PLAYER_JOIN,
 	PLAYER_LEAVE,
@@ -74,16 +74,16 @@ union Event {
 	DisconnectEvent dc; /**< For DISCONNECTED */
 	EntityEvent entity; /**< For ENTITY_{UPDATED, CREATED, DESTROYED} */
 	PlayerEvent player; /**< For PLAYER_{JOIN, LEAVE} */
-	
+
 	/** Default Constructor */
 	Event() : type(0){}
-	
+
 	/** Implicit conversion constructor from DisconnectEvent */
 	Event(const DisconnectEvent& e) : dc(e){}
-	
+
 	/** Implicit conversion constructor from EntityEvent */
 	Event(const EntityEvent& e) : entity(e){}
-	
+
 	/** Implicit conversion constructor from PlayerEvent */
 	Event(const PlayerEvent& e) : player(e){}
 };
@@ -93,12 +93,12 @@ class EventQueue {
 public:
 	/** Default Constructor */
 	EventQueue() : queue(32){}
-	
+
 	/** Add an event to the end of the queue */
 	void pushEvent(const Event& e){
 		queue.push(e);
 	}
-	
+
 	/** Place the Event at the head of the queue into \p e - return true if this happened or false if the queue is empty */
 	bool pollEvent(Event& e){
 		if(queue.empty()){
@@ -108,7 +108,7 @@ public:
 			return true;
 		}
 	}
-	
+
 	/** Removes all Events from the queue */
 	void clear(){
 		queue.clear();

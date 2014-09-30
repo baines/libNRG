@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -41,16 +41,16 @@ class ReplayServer {
 public:
 	/** Default constructor */
 	ReplayServer();
-	
+
 	/** Opens the specified replay file by name, returns true if it opened successfully */
 	bool openReplay(const char* filename);
-	
+
 	/** Binds the server to the specified local port */
 	bool bind(const char* port);
-	
+
 	/** Updates the ReplayServer, potentially sending new packets */
 	bool update();
-	
+
 	/** Returns true if the ReplayServer is active */
 	bool isReplayRunning() const;
 private:

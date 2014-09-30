@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -38,7 +38,7 @@ namespace {
 	};
 }
 
-Snapshot::Snapshot() 
+Snapshot::Snapshot()
 : id(0)
 , edata(){
 
@@ -61,7 +61,7 @@ void Snapshot::addEntity(Entity* e){
 		buffer.reset().writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
 		ed.field_data.reset();
 	}
-	
+
 	size_t s = e->getNumFields();
 	if(ed.field_sizes.size() != s) ed.field_sizes.resize(s);
 
@@ -71,7 +71,7 @@ void Snapshot::addEntity(Entity* e){
 			ed.field_sizes[i] = f->writeToPacket(ed.field_data);
 		} else {
 			assert(merge && ed.field_sizes[i] != 0);
-			
+
 			ed.field_data.writeArray(
 				buffer.getBasePointer() + ed.getFieldOffset(i), ed.field_sizes[i]
 			);
@@ -100,7 +100,7 @@ void Snapshot::writeToPacket(Packet& p) const {
 			const EntityData& ed = i->second;
 			UVarint(ed.eid).encode(p);
 			UVarint(ed.etype).encode(p);
-			
+
 			p.writeArray(ed.field_data.getBasePointer(), ed.field_data.size());
 		}
 	} else {
@@ -120,7 +120,7 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 	UVarint ecount(0);
 	uint8_t section_bits = 0;
 	data.read8(section_bits);
-	
+
 	if(section_bits & SNAPFLAG_DEL_SECTION){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
@@ -128,7 +128,7 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 			entity_fn(Action::Destroy, eid, 0);
 		}
 	}
-	
+
 	if(section_bits & SNAPFLAG_FULL_SECTION){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
@@ -136,33 +136,33 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 			uint16_t etype = UVarint().quickDecode(data);
 
 			Entity* e = entity_fn(Action::Get, eid, 0);
-		
+
 			if(e && e->getType() != etype){
 				entity_fn(Action::Destroy, eid, 0);
 			}
-		
+
 			if(!e){
 				e = entity_fn(Action::Create, eid, etype);
 			}
-		
+
 			for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
 				f->readFromPacket(data);
 				f->setUpdated(true);
 			}
-			
+
 			e->markUpdated(true);
 			entity_fn(Action::Update, eid, etype);
 		}
 	}
-	
+
 	if(section_bits & SNAPFLAG_UPD_SECTION){
 		ecount.decode(data);
 		for(size_t i = 0; i < ecount; ++i){
 			uint16_t eid = UVarint().quickDecode(data);
 			Entity* e = entity_fn(Action::Get, eid, 0);
-			
+
 			if(!e) return false;
-			
+
 			FieldBase* f = e->getFirstField();
 			off_t read_pos = data.tell() + 1+(e->getNumFields()-1)/8;
 
@@ -176,14 +176,14 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 				}
 				f = f->getNextField();
 			});
-		
+
 		    data.seek(read_pos, SEEK_SET);
-		
+
 			e->markUpdated(true);
 			entity_fn(Action::Update, eid, e->getType());
 		}
 	}
-	
+
 	return true;
 }
 

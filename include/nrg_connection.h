@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -40,7 +40,7 @@ enum PacketFlags : uint8_t {
 
 	/* Not sent over the wire, but used in getLastestPacket() return value */
 	PKTFLAG_OUT_OF_ORDER     = 0x01,
-	
+
 	/* Only sent over the wire, not present in getLatestPacket() return value */
 	PKTFLAG_CONTINUED        = 0x02,
 
@@ -55,10 +55,10 @@ enum PacketFlags : uint8_t {
 struct ConnectionCommon {
 	/** Default Constructor */
 	ConnectionCommon();
-	
+
 	/** Add a PacketTransformation that will be applied to packets, or nullptr to disable */
 	void setTransform(PacketTransformation* transform);
-	
+
 	uint16_t seq_num;
 	PacketTransformation* transform;
 };
@@ -68,16 +68,16 @@ class ConnectionIn {
 public:
 	/** Default Constructor */
 	ConnectionIn();
-	
+
 	/** Add a received packet with connection header information to be processed */
 	bool addPacket(Packet& p);
-	
+
 	/** Returns true if there is a packet ready to be taken */
 	bool hasNewPacket() const;
-	
+
 	/** Placed the latest packet into \p p, and returns its associated PacketFlags */
 	PacketFlags getLatestPacket(Packet& p);
-	
+
 	/** Set a PacketTransformation to be removed from packets added to the connection */
 	void setTransform(PacketTransformation* transform);
 private:
@@ -100,19 +100,19 @@ class ConnectionOut {
 public:
 	/** Create a new ConnectionOut that will send packets to \p remote_addr using the Socket \p sock_out */
 	ConnectionOut(const NetAddress& remote_addr, const Socket& sock_out);
-	
+
 	/** Send Packet \p p, prepending header information including the given flags \p f, and applying any transformation */
 	Status sendPacket(Packet& p, PacketFlags f = PKTFLAG_NONE);
-	
+
 	/** Send a Packet informing the remote host that the connection is over, \p extra_data can be a message explaining why */
 	Status sendDisconnect(Packet& extra_data);
-	
+
 	/** Resends the last packet that was sent via this ConnectionOut instance */
 	Status resendLastPacket(void);
-	
+
 	/** Gets the Status that the last sending operation returned */
 	Status getLastStatus() const;
-	
+
 	/** Set a PacketTransformation to be removed from packets added to the connection */
 	void setTransform(PacketTransformation* transform);
 private:

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -50,7 +50,7 @@ protected:
 	Connection con;
 	StateConnectionOutImpl state_con;
 	Packet buffer;
-	
+
 	int ping;
 	StateManager state_manager;
 	ServerHandshakeState handshake;

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -51,7 +51,7 @@ protected:
 };
 
 class PlayerEntity : public nrg::EntityHelper<PlayerEntity, PLAYER>, public EntityBase {
-public:	
+public:
 	PlayerEntity(int x) : EntityBase(this), score(this, 0){
 		xpos = x;
 		ypos = (c::screen_h - c::paddle_h) / 2;

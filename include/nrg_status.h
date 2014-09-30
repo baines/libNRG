@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -40,7 +40,7 @@ struct Status {
 	: type(ok ? Ok : SystemError)
 	, sys_errno(ok ? 0 : err)
 	, desc(ok ? "No error." : "System call returned error."){
-	
+
 	}
 
 	/** Constructor for custom errors, with the specified error string */
@@ -48,22 +48,22 @@ struct Status {
 	: type(InternalError)
 	, sys_errno(0)
 	, desc(custom){
-	
+
 	}
-	
+
 	/** Enumeration for error type */
 	enum : int {
 		Ok,
 		InternalError,
 		SystemError
 	} type;
-	
+
 	/** The associated errno for the error, or 0 if not a system error */
 	int sys_errno;
-	
+
 	/** Statically-allocated description of the error */
 	const char* desc;
-	
+
 	/** bool conversion operator */
 	operator bool() const {
 		return type == Ok;
@@ -87,7 +87,7 @@ static inline const char* strerr_r(int eno, char* buf, size_t sz){
 	return buf;
 #else
 	auto r = strerror_r(eno, buf, sz);
-	
+
 	if(std::is_same<decltype(r), int>::value){
 		return buf;
 	} else {

@@ -1,6 +1,6 @@
 /*
   LibNRG - Networking for Real-time Games
-  
+
   Copyright (C) 2012-2014 Alex Baines <alex@abaines.me.uk>
 
   This software is provided 'as-is', without any express or implied
@@ -33,14 +33,14 @@ static T* OFF(const T* a, const S* b, const S* c){
 
 }
 
-FieldBase::FieldBase(FieldContainer* c) 
+FieldBase::FieldBase(FieldContainer* c)
 : container(c)
 , next(NULL)
 , updated(true) {
 	container->addField(this);
 }
 
-FieldBase::FieldBase(const FieldBase& copy) 
+FieldBase::FieldBase(const FieldBase& copy)
 : container(OFF(copy.container, this, &copy))
 , next(copy.next ? OFF(copy.next, this, &copy) : NULL)
 , updated(true){
@@ -72,7 +72,7 @@ FieldContainer::FieldContainer()
 
 }
 
-FieldContainer::FieldContainer(const FieldContainer& copy) 
+FieldContainer::FieldContainer(const FieldContainer& copy)
 : field_head(copy.field_head ? OFF(copy.field_head, this, &copy) : NULL)
 , num_fields(copy.num_fields) {
 
