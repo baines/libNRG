@@ -142,7 +142,7 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 			}
 
 			if(!e){
-				e = entity_fn(Action::Create, eid, etype);
+				e = entity_fn(Action::BeginCreate, eid, etype);
 			}
 
 			for(FieldBase* f = e->getFirstField(); f; f = f->getNextField()){
@@ -151,7 +151,7 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 			}
 
 			e->markUpdated(true);
-			entity_fn(Action::Update, eid, etype);
+			entity_fn(Action::EndCreate, eid, etype);
 		}
 	}
 

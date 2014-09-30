@@ -29,6 +29,7 @@ namespace c = constants;
 
 #ifdef CLIENTSIDE
 #include "client.h"
+#include "input.h"
 #endif
 
 enum MyEntities {
@@ -52,20 +53,27 @@ protected:
 
 class PlayerEntity : public nrg::EntityHelper<PlayerEntity, PLAYER>, public EntityBase {
 public:
-	PlayerEntity(int x) : EntityBase(this), score(this, 0){
-		xpos = x;
+	PlayerEntity(int id) : EntityBase(this), score(this, 0), player_id(this, id) {
+		xpos = id == 0 ? 0 : c::screen_w-c::paddle_w;
 		ypos = (c::screen_h - c::paddle_h) / 2;
 	}
 	void incScore(){
 		score = score.get() + 1;
 	}
 #ifdef CLIENTSIDE
-	void onCreate(nrg::Client& c){ clientAddEntity(this); }
-	void onUpdate(nrg::Client& c){ clientSetScore((getX() < c::screen_w / 2), score.get()); }
+	void onCreate(nrg::Client& c){
+		clientAddEntity(this);
+		if(player_id.get() == c.getPlayerID()){
+			ypos.enablePrediction<MyInput>([](const MyInput& i, short prev){
+				return i.getY() - (c::paddle_h / 2);
+			});
+		}
+	}
+	void onUpdate(nrg::Client& c){ clientSetScore(player_id.get() == 0, score.get()); }
 	void onDestroy(nrg::Client& c){ clientDelEntity(getID()); }
 #endif
 private:
-	nrg::Field<uint16_t> score;
+	nrg::Field<uint16_t> score, player_id;
 };
 
 class BallEntity : public nrg::EntityHelper<BallEntity, BALL>, public EntityBase {

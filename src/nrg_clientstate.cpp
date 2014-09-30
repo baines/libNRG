@@ -268,14 +268,19 @@ Entity* ClientGameState::SnapFuncImpl(ClientSnapshot::Action a, uint16_t eid, ui
 			}
 			break;
 		}
-		case ClientSnapshot::Action::Create: {
-			auto i = entity_types.find(etype);
-			if(i != entity_types.end()){
-				Entity* e = i->second->clone();
+		case ClientSnapshot::Action::BeginCreate: {
+			auto it = entity_types.find(etype);
+			if(it != entity_types.end()){
+				Entity* e = it->second->clone();
 				e->setID(eid);
-
 				ret = entities.emplace(eid, e).first->second;
-
+			}
+			break;
+		}
+		case ClientSnapshot::Action::EndCreate: {
+			auto it = entities.find(eid);
+			if(it != entities.end()){
+				Entity*& e = it->second;
 				e->onCreate(*client);
 				client_eventq->pushEvent(EntityEvent{ ENTITY_CREATED, eid, etype, e });
 			}

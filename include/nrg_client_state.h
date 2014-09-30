@@ -73,6 +73,8 @@ public:
 	void sendMessage(const MessageBase& m);
 
 	double getInterpTimer() const;
+	bool supportsPrediction() const { return true; }
+	InputBase* getInput(){ return input; }
 	const ClientStats& getClientStats() const;
 
 	void startRecordingReplay(const char* filename);

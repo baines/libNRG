@@ -42,24 +42,26 @@ struct InputBase : protected FieldContainer {
 	/** Virtual function called Server-side when the Player \p player has sent some new input */
 	virtual void onUpdate(Player& player) = 0;
 
-	/** NYI: Do prediction of inputs client-side */
+	/** Do prediction of inputs client-side */
 	virtual void doPrediction() = 0;
 };
 
 /** Abstract class using the Curiously Recurring Template Pattern that users should inherit from and insert Fields into that represent user-input */
 template<class CRTP>
 struct Input : public InputBase {
-	/** NYI: Adds a function that is called client-side each frame to predict a Field's value before it is confirmed by the Server */
-	void addPredictionFunc(std::function<void(CRTP&)>&& func){
+	/** @cond INTERNAL_USE_ONLY */
+	/** Adds a function that is called client-side each frame to predict a Field's value before it is confirmed by the Server */
+	void addPredictionFunc(std::function<void(const CRTP&)>&& func){
 		predict_funcs.push_back(std::move(func));
 	}
 	void doPrediction(){
 		for(auto& f : predict_funcs){
-			f(*static_cast<CRTP* const>(this));
+			f(*static_cast<const CRTP* const>(this));
 		}
 	}
+	/** @endcond */
 private:
-	std::vector<std::function<void(CRTP&)>> predict_funcs;
+	std::vector<std::function<void(const CRTP&)>> predict_funcs;
 };
 
 }

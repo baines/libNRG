@@ -77,6 +77,8 @@ protected:
 	bool updated;
 };
 
+class InputBase;
+
 /** Abstract class used by anything that contains Fields, like Entity or InputBase */
 struct FieldContainer {
 	/** Standard Constructor */
@@ -99,6 +101,8 @@ struct FieldContainer {
 	virtual void markUpdated(bool b) = 0;
 	/** Passes down the Client's current progress between it's two latest snapshots to contained Fields */
 	virtual double getInterpTimer() const { return 1.0; }
+	virtual bool supportsPrediction() const { return false; }
+	virtual InputBase* getInput() { return nullptr; }
 	/** Add a Field to this container, performed automatically during Field initialisation */
 	void addField(FieldBase* f);
 	/** @endcond */
@@ -157,6 +161,32 @@ public:
 	/** Returns data linearly interpolated between the two latest Snapshots using nrg::lerp */
 	T getInterp() const {
 		return lerp<T>()(data, data_next, this->container->getInterpTimer());
+	}
+	
+	template<class I, class F>
+	bool enablePrediction(F&& func){
+		using namespace std::placeholders;
+		
+		static_assert(std::is_base_of<InputBase, I>::value, 
+		              "The input class given must be derived from nrg::Input");
+		
+		if(!this->container->supportsPrediction()){
+			return false;
+		}
+		
+		if(InputBase* input_base = this->container->getInput()){
+			I* input = static_cast<I*>(input_base);
+			
+			input->addPredictionFunc(
+				std::bind([&](const I& i, F& f){
+					data_next = f(i, data);
+				},
+				_1,
+				std::forward<F>(func))
+			);
+		}
+		
+		return true;
 	}
 private:
 	T data, data_next;

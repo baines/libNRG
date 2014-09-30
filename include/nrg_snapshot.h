@@ -110,7 +110,7 @@ private:
 
 /** @internal Class to parse a snapshot received client-side */
 struct ClientSnapshot {
-	enum class Action {	Get, Create, Destroy, Update };
+	enum class Action {	Get, BeginCreate, EndCreate, Destroy, Update };
 	typedef std::function<Entity*(Action, uint16_t eid, uint16_t etype)> CSnapFunc;
 
 	bool readFromPacket(Packet& p, const CSnapFunc& f);

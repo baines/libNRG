@@ -47,4 +47,11 @@ double Entity::getInterpTimer() const {
 	return manager ? manager->getInterpTimer() : 1.0;
 }
 
+bool Entity::supportsPrediction() const {
+	return manager ? manager->supportsPrediction() : false;
+}
+
+InputBase* Entity::getInput() {
+	return manager ? manager->getInput() : nullptr;
+}
 

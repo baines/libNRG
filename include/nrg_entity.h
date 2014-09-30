@@ -32,6 +32,7 @@ namespace nrg {
 
 class EntityManager;
 class Client;
+class InputBase;
 
 /** Abstract class to be inherited by users of the library which acts as a container of one or more Fields */
 class Entity : public FieldContainer {
@@ -64,6 +65,8 @@ public:
 	/** @cond INTERNAL_USE_ONLY */
 	void markUpdated(bool updated);
 	double getInterpTimer() const;
+	bool supportsPrediction() const;
+	InputBase* getInput();
 	/** Sets this Entity's ID */
 	void setID(int id){ nrg_id = id; }
 	/** Returns this Entity's EntityManager */
@@ -78,15 +81,13 @@ private:
 	EntityManager* manager;
 };
 
-class InputBase;
-
 /** Abstract class that contains functionality required by Entity objects */
 struct EntityManager {
 	virtual void markEntityUpdated(Entity& e){}
 	virtual void unregisterEntity(Entity& e){}
 	virtual double getInterpTimer() const { return 1.0; }
 	virtual bool supportsPrediction() const { return false; }
-	virtual InputBase* getInput() const { return nullptr; }
+	virtual InputBase* getInput() { return nullptr; }
 };
 
 /** Helper template class that automatically implements the Entity::clone and Entity::getType methods */

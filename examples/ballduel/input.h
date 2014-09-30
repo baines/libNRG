@@ -22,23 +22,33 @@
 #ifndef INPUT_H
 #define INPUT_H
 #include "nrg.h"
+
+class ServerGameState;
+
+#ifndef CLIENTSIDE
 #include "server_game_state.h"
+#endif
 
 class MyInput : public nrg::Input<MyInput> {
 public:
 	MyInput() : ypos(this) {}
-	void setGameState(ServerGameState* gs){
-		this->gs = gs;
+	uint16_t getY(void) const {
+		return ypos.get();
 	}
 	void setY(uint16_t y){
 		ypos = y;
 	}
+	void setGameState(ServerGameState* gs){
+		this->gs = gs;
+	}
 	void onUpdate(nrg::Player& player){
+#ifndef CLIENTSIDE
 		if(player.getID() == 0){
 			gs->getPlayer1().setY(ypos.get()-(c::paddle_h/2));
 		} else if(player.getID() == 1){
 			gs->getPlayer2().setY(ypos.get()-(c::paddle_h/2));
 		}
+#endif
 	}
 private:
 	nrg::Field<short> ypos;

@@ -123,6 +123,8 @@ bool Client::update(){
 			}
 		}
 	}
+	
+	if(input) input->doPrediction();
 
 	uint32_t current_ms = os::milliseconds();
 	state_con.reset(current_ms - previous_ms > rate_limit_interval_ms);
