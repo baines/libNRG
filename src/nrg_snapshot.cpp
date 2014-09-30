@@ -140,8 +140,11 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 			if(e && e->getType() != etype){
 				entity_fn(Action::Destroy, eid, 0);
 			}
+			
+			bool created = false;
 
 			if(!e){
+				created = true;
 				e = entity_fn(Action::BeginCreate, eid, etype);
 			}
 
@@ -151,7 +154,10 @@ bool ClientSnapshot::readFromPacket(Packet& data, const CSnapFunc& entity_fn){
 			}
 
 			e->markUpdated(true);
-			entity_fn(Action::EndCreate, eid, etype);
+			if(created){
+				entity_fn(Action::EndCreate, eid, etype);
+			}
+			entity_fn(Action::Update, eid, etype);
 		}
 	}
 
