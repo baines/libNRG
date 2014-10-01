@@ -163,6 +163,7 @@ public:
 		return lerp<T>()(data, data_next, this->container->getInterpTimer());
 	}
 	
+	/** Enable client-side prediction of this field by passing in a function of the form "T func(I& input, T prev_val)" that returns a predicted value */
 	template<class I, class F>
 	bool enablePrediction(F&& func){
 		using namespace std::placeholders;
@@ -179,7 +180,7 @@ public:
 			
 			input->addPredictionFunc(
 				std::bind([&](const I& i, F& f){
-					data_next = f(i, data);
+					data = data_next = f(i, data);
 				},
 				_1,
 				std::forward<F>(func))
