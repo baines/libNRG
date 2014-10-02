@@ -154,7 +154,7 @@ Status StateManager::update(StateConnectionOut& out){
 		StateResult r = state_ptr->update(out, static_cast<StateFlags>(f));
 		last_update = os::seconds();
 
-		if(r == STATE_CHANGE && states.size() >= 2){
+		if(r.id == STATE_CHANGE && states.size() >= 2){
 			if(state_ptr == &transition){
 				states.pop_back();
 				state_ptr = states.back();
@@ -163,10 +163,10 @@ Status StateManager::update(StateConnectionOut& out){
 				transition.pre_init(states.back(), states[states.size()-2]);
 				transition.init(c, s, p);
 			}
-		} else if(r & STATE_EXIT_BIT){
+		} else if(r.id & STATE_EXIT_BIT){
 			states.clear();
 			state_ptr = nullptr;
-			return Status("Current state exited unsuccessfully.");
+			return Status(r.msg ? r.msg : "State update failed.");
 		}
 	}
 

@@ -29,12 +29,25 @@
  */
 namespace nrg {
 
-/** Enumeration returned by State::Update to explain how the update went */
-enum StateResult : uint32_t {
+
+enum StateResultEnum : uint32_t {
 	STATE_CONTINUE = 0x00,
 	STATE_EXIT_BIT = 0x10,
 	STATE_FAILURE  = STATE_EXIT_BIT,
 	STATE_CHANGE   = STATE_EXIT_BIT | 0x01
+};
+
+/** class returned by State::Update to explain how the update went */
+struct StateResult {
+	StateResult() : id(STATE_FAILURE), msg(nullptr){}
+	StateResult(StateResultEnum id, const char* msg = nullptr) : id(id), msg(msg){}
+	
+	StateResultEnum id;
+	const char* msg;
+	
+	static StateResult Failure(const char* msg){
+		return StateResult(STATE_FAILURE, msg);
+	}
 };
 
 /** Enumeration passed into State::Update to tell why the update is occuring */
@@ -44,7 +57,7 @@ enum StateFlags : uint32_t {
 };
 
 /** Enumeration for ClientHandshakeState and ServerHandshakeState */
-enum HS_Reponses : int8_t {
+enum HS_Response : int8_t {
 	HS_WRONG_LIB_VERSION         = -1,
 	HS_WRONG_GAME                = -2,
 	HS_WRONG_GAME_VERSION        = -3,

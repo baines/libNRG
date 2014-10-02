@@ -60,11 +60,7 @@ bool PlayerImpl::addPacket(Packet& p){
 
 Status PlayerImpl::update(){
 	state_con.reset(true);
-	if(!state_manager.update(state_con)){
-		return Status("Client update failed.");
-	} else {
-		return con.out.getLastStatus();
-	}
+	return state_manager.update(state_con);
 }
 
 const NetAddress& PlayerImpl::getRemoteAddress() const {

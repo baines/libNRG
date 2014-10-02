@@ -25,7 +25,7 @@
 using namespace nrg;
 
 nrg::Version nrg::getLibVersion(void){
-	return Version(0, 0, 2);
+	return Version(0, 0, 3);
 }
 
 bool nrg::isVersionCompatible(const Version& v) {

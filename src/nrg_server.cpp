@@ -217,16 +217,19 @@ bool Server::update(){
 		Status s;
 
 		if(!(s = IMPL(c.second)->update())){
-			c.second->kick("Client update failed.");
 			const NetAddress& na = c.second->getRemoteAddress();
-			const char* errmsg = s.desc;
+			const char* errmsg = s.desc, *kickmsg = s.desc;
 			char errbuf[512];
 
 			if(s.type == Status::SystemError){
 				errmsg = strerr_r(s.sys_errno, errbuf, sizeof(errbuf));
+				kickmsg = "Client update failed.";
 			}
-
-			printf("Client [%s:%d] was kicked. (%s)\n", na.getIP(), na.getPort(), errmsg);
+			
+			if(c.second->isConnected()){
+				c.second->kick(kickmsg);
+				printf("Client [%s:%d] was kicked. (%s)\n", na.getIP(), na.getPort(), errmsg);	
+			}
 		}
 	}
 	return true;

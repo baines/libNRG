@@ -30,6 +30,19 @@
 using namespace nrg;
 using namespace std;
 
+namespace {
+	static const char* hs_errmsg(int8_t r){
+		switch(r){
+			case HS_WRONG_LIB_VERSION:  return "Incompatible LibNRG version.";
+			case HS_WRONG_GAME:         return "Wrong game.";
+			case HS_WRONG_GAME_VERSION: return "Incompatible game version.";
+			case HS_SERVER_FULL:        return "The server is full.";
+			case HS_WRONG_CHALLENGE:    return "Incorrect challenge response.";
+			default:                    return "Unknown error";
+		}
+	}
+}
+
 ServerHandshakeState::ServerHandshakeState()
 : server(nullptr)
 , player(nullptr)
@@ -131,11 +144,10 @@ StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 	packet.reset();
 	packet.write8(response);
 	
-	got_packet = false;
-
 	if(response == HS_SERVER_CHALLENGE){
 		packet.write64(challenge);
 		out.sendPacket(packet);
+		got_packet = false;
 		
 		return STATE_CONTINUE;
 	} else {
@@ -149,15 +161,23 @@ StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 		if(response == HS_SERVER_ACCEPTED){
 			packet.write16(player->getID());
 			if(out.sendPacket(packet)){
+				got_packet = false;
 				server->pushEvent(PlayerEvent { PLAYER_JOIN, player->getID(), player });
 				const NetAddress& addr = player->getRemoteAddress();
 				printf("Client connected: [%s:%d]\n", addr.getIP(), addr.getPort());
+				
 				return STATE_CHANGE;
 			} else {
 				return STATE_CONTINUE;
 			}
 		} else {
-			return STATE_FAILURE;
+			/* FIXME: We could send the packet on error to give clients the server's
+			   version - but they already get sent an error message when kicked... */
+			//if(out.sendPacket(packet)){
+				return StateResult::Failure(hs_errmsg(response));
+			//} else {
+			//	return STATE_CONTINUE;
+			//}
 		}
 	}
 }
@@ -218,7 +238,7 @@ bool ServerPlayerGameState::needsUpdate() const {
 
 StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f){
 	if(f & SFLAG_TIMED_OUT){
-		return STATE_FAILURE;
+		return StateResult::Failure("Connection timed out.");
 	}
 
 	unackd_updates++;
@@ -251,7 +271,7 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 
 			seq_inc = distance(last_it.base(), snaps.end());
 		} else {
-			return STATE_FAILURE;
+			return StateResult::Failure("Connection timed out.");
 		}
 	}
 

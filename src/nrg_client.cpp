@@ -184,5 +184,5 @@ void Client::setServerParams(const Version& lib_v, uint32_t game_v, uint16_t pid
 }
 
 Client::~Client(){
-	con.out.sendDisconnect(buffer.reset());
+	if(sock.isConnected()) con.out.sendDisconnect(buffer.reset());
 }

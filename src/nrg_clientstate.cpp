@@ -96,9 +96,9 @@ bool ClientHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
 			phase = PHASE_ACCEPTED;
 			return true;
 		} else {
-			// TODO: notify client which response we got somehow.
+			/*XXX: This should never happen, because the server just sends a kick, hmm */
 			phase = PHASE_REJECTED;
-			return false;
+			return true;
 		}
 	}
 }
@@ -112,7 +112,7 @@ StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 
 	if(f & SFLAG_TIMED_OUT){
 		if(++timeouts > 5){
-			res = STATE_FAILURE;
+			res = StateResult::Failure("Connection timed out.");
 		} else {
 			out.resendLastPacket();
 			res = STATE_CONTINUE;
@@ -145,6 +145,7 @@ StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 		} else if(phase == PHASE_ACCEPTED){
 			res = STATE_CHANGE;
 		} else {
+			//FIXME: descriptive message? this currently should never happen though
 			res = STATE_FAILURE;
 		}
 	}

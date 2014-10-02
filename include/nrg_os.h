@@ -30,10 +30,10 @@ namespace nrg {
 namespace os {
 
 	/** Perform OS initialisation routines */
-	Status init(void);
+	Status init(void)  __attribute__((constructor));
 
 	/** Perform OS uninitiasation routines */
-	void uninit(void);
+	void uninit(void)  __attribute__((destructor));
 
 	/** Get a monotonic representation of time in microseconds */
 	uint64_t microseconds();
