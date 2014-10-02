@@ -45,11 +45,17 @@ namespace {
 	static bool default_con_check(Server& s, Packet& p){
 		const std::string& actual_name = s.getGameName();
 
-		if(p.remaining() < PacketHeader::size + sizeof(Version) + actual_name.size() + sizeof(uint32_t)){
+		if(p.remaining() < (
+			PacketHeader::size
+			+ sizeof(uint8_t)
+			+ sizeof(Version)
+			+ actual_name.size() 
+			+ sizeof(uint32_t)
+		)){
 			return false;
 		}
 
-		p.seek(PacketHeader::size + sizeof(Version), SEEK_SET);
+		p.seek(PacketHeader::size + sizeof(uint8_t) + sizeof(Version), SEEK_SET);
 		std::string given_name;
 		Codec<std::string>().decode(p, given_name);
 		p.seek(0, SEEK_SET);

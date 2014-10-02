@@ -49,7 +49,7 @@ namespace os {
 	}
 
 	/** Returns a reasonably random number, not guaranteed to be cryptographically secure */
-	uint32_t random();
+	uint64_t random();
 
 }
 }

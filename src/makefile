@@ -22,7 +22,7 @@ objects := $(patsubst %.cpp,$(builddir)/%.o,$(sources))
 includes := -I../include
 
 CXXFLAGS += -Wuninitialized -pedantic -Wsign-promo -std=c++11 -g -Wall -DBUILDING_NRG \
--ffast-math -fvisibility-inlines-hidden -fno-exceptions \
+-ffast-math -fvisibility-inlines-hidden -fno-exceptions -Werror \
 -U_FORTIFY_SOURCE -fno-stack-protector -fstrict-aliasing 
 
 all: ../$(libname_shared) ../$(libname_static)

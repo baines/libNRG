@@ -45,12 +45,19 @@ enum StateFlags : uint32_t {
 
 /** Enumeration for ClientHandshakeState and ServerHandshakeState */
 enum HS_Reponses : int8_t {
-	HS_WRONG_LIB_VERSION  = -1,
-	HS_WRONG_GAME         = -2,
-	HS_WRONG_GAME_VERSION = -3,
-	HS_SERVER_FULL        = -4,
-	HS_NONE               = 0,
-	HS_ACCEPTED           = 1
+	HS_WRONG_LIB_VERSION         = -1,
+	HS_WRONG_GAME                = -2,
+	HS_WRONG_GAME_VERSION        = -3,
+	HS_SERVER_FULL               = -4,
+	HS_WRONG_CHALLENGE           = -5,
+	
+	HS_NONE                      = 0,
+	
+	HS_SERVER_ACCEPTED           = 1,
+	HS_SERVER_CHALLENGE          = 2,
+	
+	HS_CLIENT_JOIN_REQUEST       = 1,
+	HS_CLIENT_CHALLENGE_RESPONSE = 2
 };
 
 class Client;

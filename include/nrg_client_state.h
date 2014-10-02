@@ -50,6 +50,7 @@ private:
 	Client* client;
 	Packet buffer;
 	int phase, timeouts;
+	uint64_t server_challenge;
 };
 
 class Entity;

@@ -38,15 +38,19 @@ namespace {
 		PHASE_NOT_STARTED = -1,
 		PHASE_WAITING     = 0,
 		PHASE_ACCEPTED    = 1,
-		PHASE_REJECTED    = 2
+		PHASE_REJECTED    = 2,
+		PHASE_CHALLENGE   = 3
 	};
 
 	static const size_t NRG_CGS_HEADER_SIZE = 4;
 }
 
 ClientHandshakeState::ClientHandshakeState()
-: phase(PHASE_NOT_STARTED)
-, timeouts(0){
+: client(nullptr)
+, buffer()
+, phase(PHASE_NOT_STARTED)
+, timeouts(0)
+, server_challenge(0) {
 
 }
 
@@ -61,30 +65,41 @@ bool ClientHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
 	uint8_t server_response = 0;
 	p.read8(server_response);
 
-	Version v;
-
-	if(p.remaining() <= sizeof(Version) + sizeof(uint32_t)){
-		return false;
-	}
-
-	p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
-
-	uint32_t server_game_ver = 0;
-
-	p.read32(server_game_ver);
-
-	if(server_response == HS_ACCEPTED && p.remaining() == sizeof(uint16_t)){
-		uint16_t our_player_id = 0;
-		p.read16(our_player_id);
-
-		client->setServerParams(v, server_game_ver, our_player_id);
-
-		phase = PHASE_ACCEPTED;
-		return true;
+	if(server_response == HS_SERVER_CHALLENGE){
+		if(p.remaining() != sizeof(uint64_t)){
+			return false;
+		} else {
+			p.read64(server_challenge);
+			phase = PHASE_CHALLENGE;
+			return true;
+		}
 	} else {
-		// TODO: notify client which response we got somehow.
-		phase = PHASE_REJECTED;
-		return false;
+
+		Version v;
+
+		if(p.remaining() <= sizeof(Version) + sizeof(uint32_t)){
+			return false;
+		}
+
+		p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
+
+		uint32_t server_game_ver = 0;
+
+		p.read32(server_game_ver);
+
+		if(server_response == HS_SERVER_ACCEPTED && p.remaining() == sizeof(uint16_t)){
+			uint16_t our_player_id = 0;
+			p.read16(our_player_id);
+
+			client->setServerParams(v, server_game_ver, our_player_id);
+
+			phase = PHASE_ACCEPTED;
+			return true;
+		} else {
+			// TODO: notify client which response we got somehow.
+			phase = PHASE_REJECTED;
+			return false;
+		}
 	}
 }
 
@@ -106,14 +121,27 @@ StateResult ClientHandshakeState::update(StateConnectionOut& out, StateFlags f){
 		timeouts = 0;
 		if(phase == PHASE_NOT_STARTED){
 			Version v = getLibVersion();
-			buffer.reset().write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
+			buffer.reset().write8(HS_CLIENT_JOIN_REQUEST);
+			buffer.write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
 
 			Codec<std::string>().encode(buffer, client->getGameName());
 			buffer.write32(client->getGameVersion());
 
 			if(!out.sendPacket(buffer)) return STATE_CONTINUE;
+			
 			phase = PHASE_WAITING;
 			res = STATE_CONTINUE;
+			
+		} else if(phase == PHASE_CHALLENGE){
+			buffer.reset();
+			buffer.write8(HS_CLIENT_CHALLENGE_RESPONSE);
+			buffer.write64(server_challenge);
+			
+			if(!out.sendPacket(buffer)) return STATE_CONTINUE;
+			
+			phase = PHASE_WAITING;
+			res = STATE_CONTINUE;
+			
 		} else if(phase == PHASE_ACCEPTED){
 			res = STATE_CHANGE;
 		} else {

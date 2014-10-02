@@ -34,6 +34,8 @@ ServerHandshakeState::ServerHandshakeState()
 : server(nullptr)
 , player(nullptr)
 , response(HS_NONE)
+, challenge(os::random())
+, got_packet(false)
 , packet() {
 
 }
@@ -50,69 +52,113 @@ bool ServerHandshakeState::init(Client* c, Server* s, Player* p){
 }
 
 bool ServerHandshakeState::onRecvPacket(Packet& p, PacketFlags f){
-	Version v;
+	if(!p.remaining()) return false;
+	
+	got_packet = true;
+	
+	uint8_t client_cmd = 0;
+	p.read8(client_cmd);
+	
+	if(client_cmd == HS_CLIENT_JOIN_REQUEST){	
+		Version v;
 
-	if(p.remaining() <= sizeof(Version)){
+		if(p.remaining() <= sizeof(Version)){
+			return false;
+		}
+
+		p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
+
+		if(!isVersionCompatible(v)){
+			response = HS_WRONG_LIB_VERSION;
+			return true;
+		}
+
+		std::string client_game;
+		Codec<std::string>().decode(p, client_game);
+
+		if(client_game != server->getGameName()){
+			response = HS_WRONG_GAME;
+			return true;
+		}
+
+		uint32_t client_game_ver = 0;
+		if(p.remaining() < sizeof(client_game_ver)){
+			return false;
+		}
+
+		p.read32(client_game_ver);
+		if(!server->isGameVersionCompatible(client_game_ver)){
+			response = HS_WRONG_GAME_VERSION;
+			return true;
+		}
+
+		if(server->isFull()){
+			response = HS_SERVER_FULL;
+			return true;
+		}
+
+		response = HS_SERVER_CHALLENGE;
+		
+	} else if(client_cmd == HS_CLIENT_CHALLENGE_RESPONSE){
+		if(response != HS_SERVER_CHALLENGE){
+			return false;
+		}
+		
+		if(p.remaining() == sizeof(uint64_t)){
+			uint64_t client_challenge = 0;
+			p.read64(client_challenge);
+			
+			if(client_challenge == challenge){
+				response = HS_SERVER_ACCEPTED;
+			} else {
+				response = HS_WRONG_CHALLENGE;
+			}
+		} else {
+			return false;
+		}
+	} else {
 		return false;
 	}
-
-	p.read16(v.v_major).read16(v.v_minor).read16(v.v_patch);
-
-	if(!isVersionCompatible(v)){
-		response = HS_WRONG_LIB_VERSION;
-		return true;
-	}
-
-	std::string client_game;
-	Codec<std::string>().decode(p, client_game);
-
-	if(client_game != server->getGameName()){
-		response = HS_WRONG_GAME;
-		return true;
-	}
-
-	uint32_t client_game_ver = 0;
-	if(p.remaining() < sizeof(client_game_ver)){
-		return false;
-	}
-
-	p.read32(client_game_ver);
-	if(!server->isGameVersionCompatible(client_game_ver)){
-		response = HS_WRONG_GAME_VERSION;
-		return true;
-	}
-
-	if(server->isFull()){
-		response = HS_SERVER_FULL;
-		return true;
-	}
-
-	response = HS_ACCEPTED;
+	
 	return true;
+}
+
+bool ServerHandshakeState::needsUpdate() const {
+	return got_packet;
 }
 
 StateResult ServerHandshakeState::update(StateConnectionOut& out, StateFlags f){
 	packet.reset();
 	packet.write8(response);
+	
+	got_packet = false;
 
-	Version v = getLibVersion();
-	packet.write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
-
-	uint32_t game_v = server->getGameVersion();
-	packet.write32(game_v);
-
-	if(response == HS_ACCEPTED){
-		packet.write16(player->getID());
-		if(out.sendPacket(packet)){
-			server->pushEvent(PlayerEvent { PLAYER_JOIN, player->getID(), player });
-			const NetAddress& addr = player->getRemoteAddress();
-			printf("Client connected: [%s:%d]\n", addr.getIP(), addr.getPort());
-			return STATE_CHANGE;
-		} else {
-			return STATE_CONTINUE;
-		}
+	if(response == HS_SERVER_CHALLENGE){
+		packet.write64(challenge);
+		out.sendPacket(packet);
+		
+		return STATE_CONTINUE;
 	} else {
-		return STATE_FAILURE;
+	
+		Version v = getLibVersion();
+		packet.write16(v.v_major).write16(v.v_minor).write16(v.v_patch);
+
+		uint32_t game_v = server->getGameVersion();
+		packet.write32(game_v);
+	
+		if(response == HS_SERVER_ACCEPTED){
+			packet.write16(player->getID());
+			if(out.sendPacket(packet)){
+				server->pushEvent(PlayerEvent { PLAYER_JOIN, player->getID(), player });
+				const NetAddress& addr = player->getRemoteAddress();
+				printf("Client connected: [%s:%d]\n", addr.getIP(), addr.getPort());
+				return STATE_CHANGE;
+			} else {
+				return STATE_CONTINUE;
+			}
+		} else {
+			return STATE_FAILURE;
+		}
 	}
 }
 

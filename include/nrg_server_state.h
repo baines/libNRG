@@ -37,12 +37,14 @@ struct ServerHandshakeState : public State {
 	ServerHandshakeState();
 	bool init(Client*, Server*, Player*);
 	bool onRecvPacket(Packet& p, PacketFlags f);
-	bool needsUpdate() const { return true; }
+	bool needsUpdate() const;
 	StateResult update(StateConnectionOut& out, StateFlags f);
 private:
 	Server* server;
 	Player* player;
 	int8_t response;
+	const uint64_t challenge;
+	bool got_packet;
 	Packet packet;
 };
 
