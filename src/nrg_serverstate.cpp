@@ -250,10 +250,7 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 	if(send_diff){
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
 
-		auto ss_r = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
-			return ack_time == s.getID();
-		});
-
+		auto ss_r = find(snaps.rbegin(), snaps.rend(), ack_time);
 		if(ss_r != snaps.rend()){
 			snapshot.reset();
 
@@ -261,10 +258,7 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 				snapshot.mergeWithNext(*ss);
 			}
 
-			auto last_it = find_if(snaps.rbegin(), snaps.rend(), [&](const DeltaSnapshot& s){
-				return last_sent_id == s.getID();
-			});
-
+			auto last_it = find(snaps.rbegin(), snaps.rend(), last_sent_id);
 			seq_inc = distance(last_it.base(), snaps.end());
 		} else {
 			// send a full update if the client acks fall too far behind.

@@ -79,6 +79,7 @@ struct DeltaSnapshot : public SnapshotBase {
 	void mergeWithNext(const DeltaSnapshot& next);
 	void writeToPacket(Packet& p) const;
 	void reset();
+	bool operator==(uint16_t i) const { return getID() == i; }
 private:
 	struct FieldInfo {
 		uint16_t entity;

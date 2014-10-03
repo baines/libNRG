@@ -73,7 +73,10 @@ void checkSFMLEvents(sf::RenderWindow& win){
 	while(win.pollEvent(e)){
 		if(e.type == sf::Event::Closed) running = false;
 		if(e.type == sf::Event::KeyPressed) handleSFMLKeyPress(e.key.code);
-		if(e.type == sf::Event::MouseMoved){ input.setY(e.mouseMove.y); }
+		if(e.type == sf::Event::MouseMoved){ 
+			sf::Vector2i m_pos(e.mouseMove.x, e.mouseMove.y);
+			input.setY(win.mapPixelToCoords(m_pos).y);
+		}
 	}
 }
 
