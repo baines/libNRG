@@ -25,11 +25,23 @@
 #ifndef NRG_CONFIG_H
 #define NRG_CONFIG_H
 
+/** The maximum size of a single UDP datagram sent / received */ 
 static const size_t NRG_MAX_PACKET_SIZE = 1400;
+
+/** The number of snapshots-diffs that are stored by the server */
 static const size_t NRG_NUM_PAST_SNAPSHOTS = 32;
+
+/** The size of the window in which out-of-order packets are accepted */
 static const size_t NRG_CONN_PACKET_HISTORY = NRG_NUM_PAST_SNAPSHOTS;
+
+/** The maximum length of an error message sent over the network */
 static const size_t NRG_MAX_ERRORMSG_LEN = 256;
+
+/** The default tick frequency of the server in microseconds */
 static const size_t NRG_DEFAULT_SERVER_INTERVAL_US = 50000;
+
+/** The max number of delta-snapshots the server will send without an acknowledgement before waiting */
+static const size_t NRG_MAX_SNAPS_WITHOUT_ACK = NRG_NUM_PAST_SNAPSHOTS / 2;
 
 #ifdef __linux
     #define NRG_ENABLE_ZLIB_COMPRESSION 1

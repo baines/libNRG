@@ -58,6 +58,9 @@ struct Player {
 
 	/** Returns the round-trip latency of this player */
 	virtual int getPing() const = 0;
+	
+	/** [internal use] Set the round-trip latency of this player */
+	virtual void setPing(int p) = 0;
 
 	/** Default destructor */
 	virtual ~Player(){}

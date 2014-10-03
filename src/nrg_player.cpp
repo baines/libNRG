@@ -92,3 +92,8 @@ bool PlayerImpl::isConnected() const {
 int PlayerImpl::getPing() const {
 	return ping;
 }
+
+void PlayerImpl::setPing(int p){
+	ping = p;
+}
+

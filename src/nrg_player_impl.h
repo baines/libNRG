@@ -42,6 +42,7 @@ public:
 	void sendMessage(const MessageBase& m);
 	bool isConnected() const;
 	int getPing() const;
+	void setPing(int p);
 	uint16_t getID() const { return id; }
 protected:
 	const Server& server;

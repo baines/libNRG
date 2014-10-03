@@ -233,7 +233,8 @@ bool ServerPlayerGameState::onRecvPacket(Packet& p, PacketFlags f){
 }
 
 bool ServerPlayerGameState::needsUpdate() const {
-	return snapshot.getID() != server->getSnapshot().getID() && unackd_updates < NRG_NUM_PAST_SNAPSHOTS;
+	return snapshot.getID() != server->getSnapshot().getID() 
+	    && unackd_updates < NRG_MAX_SNAPS_WITHOUT_ACK;
 }
 
 StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f){
@@ -241,15 +242,10 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 		return StateResult::Failure("Connection timed out.");
 	}
 
-	unackd_updates++;
-
 	int ping = std::max<int>(0, (os::milliseconds() & USHRT_MAX) - c_time);
+	player->setPing(ping);
+	
 	int seq_inc = 1;
-
-	const SnapshotBase& outgoing_snap = send_diff
-	? reinterpret_cast<const SnapshotBase&>(snapshot)
-	: reinterpret_cast<const SnapshotBase&>(server->getSnapshot())
-	;
 
 	if(send_diff){
 		const DeltaSnapshotBuffer& snaps = server->getDeltaSnapshots();
@@ -271,9 +267,18 @@ StateResult ServerPlayerGameState::update(StateConnectionOut& out, StateFlags f)
 
 			seq_inc = distance(last_it.base(), snaps.end());
 		} else {
-			return StateResult::Failure("Connection timed out.");
+			// send a full update if the client acks fall too far behind.
+			send_diff = false;
 		}
 	}
+
+	const SnapshotBase& outgoing_snap = send_diff
+	? reinterpret_cast<const SnapshotBase&>(snapshot)
+	: reinterpret_cast<const SnapshotBase&>(server->getSnapshot())
+	;
+	
+	// don't send multiple full updates in a row without an ack, since they might be big.
+	unackd_updates = send_diff ? unackd_updates + 1 : NRG_MAX_SNAPS_WITHOUT_ACK;
 
 	last_sent_id = outgoing_snap.getID();
 
