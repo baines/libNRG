@@ -25,6 +25,10 @@
 #ifdef NRG_ENABLE_MSG_ERRQUEUE
     #include <linux/errqueue.h>
 #endif
+#ifdef _WIN32
+	#undef errno
+	#define errno WSAGetLastError()
+#endif
 
 using namespace nrg;
 using std::unique_ptr;
@@ -166,8 +170,6 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 	char buf[NRG_MAX_PACKET_SIZE];
 	socklen_t len = sizeof(sas);
 
-	bool data_ready = dataPending(0);
-
 #ifdef NRG_USE_SO_TIMESTAMP
 	struct msghdr msg = {};
     struct iovec iov = {};
@@ -189,6 +191,8 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 #else
 	ssize_t result = ::recvfrom(fd, buf, sizeof(buf), 0, (sockaddr*)&sas, &len);
 #endif
+	addr = sas;
+	
 	if(result > 0){
 		p.writeArray(buf, result);
 		p.seek(0, SEEK_SET);
@@ -205,19 +209,20 @@ Status Socket::recvPacket(Packet& p, NetAddress& addr) {
 			}
 #endif
 		}
-		addr = sas;
 		return StatusOK();
 	} else {
-		if(use_errqueue && data_ready && (errno == EAGAIN || errno == EWOULDBLOCK)){
+		int err = errno;
+		if(use_errqueue){
+			addr = NetAddress();
 			return checkErrorQueue(addr);
 		} else {
-			return StatusErr(errno);
+			printf("SOCKET ERROR [%s:%d] [%d].\n", addr.getIP(), addr.getPort(), err);
+			return StatusErr(err);
 		}
 	}
 }
 
-//XXX: Linux/POSIX specific, not sure if there's similar functionality on Windows.
-
+// Linux/POSIX specific
 Status Socket::checkErrorQueue(NetAddress& culprit){
 #ifdef NRG_ENABLE_MSG_ERRQUEUE
 	struct sockaddr_storage sas = {};
@@ -322,12 +327,9 @@ void Socket::enableTimestamps(bool enable){
 
 void Socket::handleUnconnectedICMPErrors(bool enable){
 #if defined(_WIN32)
-/* This doesn't work because there's no way in Windows to get the address that
-   caused the ICMP unreachable, only that one happened... that's pretty dumb.
-	int i_enable = enable;
-	DWORD actual_len = 0;
-	WSAIoctl(fd, SIO_UDP_CONNRESET, &i_enable, sizeof(i_enable), nullptr, 0, &actual_len, nullptr, nullptr);
-*/
+	/* Seems to work even without this setting */ 
+	//int i_enable = enable;
+	//WSAIoctl(fd, SIO_UDP_CONNRESET, &i_enable, sizeof(i_enable), nullptr, 0, nullptr, nullptr, nullptr);
 #elif defined(__linux) && defined(NRG_ENABLE_MSG_ERRQUEUE)
 	use_errqueue = enable;
 	setOption<int>(IPPROTO_IP, IP_RECVERR, enable);

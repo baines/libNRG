@@ -132,7 +132,8 @@ bool Server::update(){
 
 		NetAddress addr;
 		Status recv_status = sock.recvPacket(buffer.reset(), addr);
-
+		if(!addr.isValid()) continue;
+		
 		ClientMap::iterator it = clients.find(addr);
 		if(it == clients.end()){
 			if(!recv_status) continue;

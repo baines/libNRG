@@ -27,7 +27,6 @@ void os::autoinit(void){
 }
 
 #if defined(__linux)
-
 #include <random>
 #include <time.h>
 #include <sys/types.h>
@@ -73,10 +72,7 @@ uint64_t os::random(){
 }
 
 #elif defined(_WIN32)
-#define _CRT_RAND_S
-#include "nrg_os.h"
 #include <random>
-#include <stdlib.h>
 
 using namespace nrg;
 

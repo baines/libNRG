@@ -26,6 +26,8 @@
 #define NRG_CORE_H
 #ifdef _WIN32
 	#define WIN32_LEAN_AND_MEAN
+	#define _CRT_RAND_S
+	#include <stdlib.h>
 	#include "windows.h"
 	#include "winsock2.h"
 	#include "ws2tcpip.h"
