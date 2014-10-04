@@ -30,7 +30,9 @@ namespace nrg {
 namespace os {
 
 	/** Perform OS initialisation routines */
-	Status init(void)  __attribute__((constructor));
+	Status init(void);
+	
+	void autoinit(void) __attribute__((constructor));
 
 	/** Perform OS uninitiasation routines */
 	void uninit(void)  __attribute__((destructor));

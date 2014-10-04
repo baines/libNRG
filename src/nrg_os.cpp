@@ -19,9 +19,15 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
+#include "nrg_os.h"
+using namespace nrg;
+
+void os::autoinit(void){
+	os::init();
+}
 
 #if defined(__linux)
-#include "nrg_os.h"
+
 #include <random>
 #include <time.h>
 #include <sys/types.h>
@@ -29,7 +35,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-using namespace nrg;
+
 
 Status os::init(void){
 	return StatusOK();

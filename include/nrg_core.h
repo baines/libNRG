@@ -29,6 +29,7 @@
 	#include "windows.h"
 	#include "winsock2.h"
 	#include "ws2tcpip.h"
+	#include "mswsock.h"
 	typedef int socklen_t;
 #else
 	#include <unistd.h>

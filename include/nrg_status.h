@@ -83,8 +83,12 @@ struct StatusErr : Status {
 /** Portability wrapper for GNU and XSI strerror_r versions. */
 static inline const char* strerr_r(int eno, char* buf, size_t sz){
 #ifdef _WIN32
+	/*XXX: using strerror_s crashes on win xp with mingw-w64 < r6559.
+	       use non-thread safe version for now.
 	strerror_s(buf, sz, eno);
 	return buf;
+	*/
+	return strerror(eno);
 #else
 	auto r = strerror_r(eno, buf, sz);
 

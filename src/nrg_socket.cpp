@@ -321,7 +321,14 @@ void Socket::enableTimestamps(bool enable){
 }
 
 void Socket::handleUnconnectedICMPErrors(bool enable){
-#ifdef NRG_ENABLE_MSG_ERRQUEUE
+#if defined(_WIN32)
+/* This doesn't work because there's no way in Windows to get the address that
+   caused the ICMP unreachable, only that one happened... that's pretty dumb.
+	int i_enable = enable;
+	DWORD actual_len = 0;
+	WSAIoctl(fd, SIO_UDP_CONNRESET, &i_enable, sizeof(i_enable), nullptr, 0, &actual_len, nullptr, nullptr);
+*/
+#elif defined(__linux) && defined(NRG_ENABLE_MSG_ERRQUEUE)
 	use_errqueue = enable;
 	setOption<int>(IPPROTO_IP, IP_RECVERR, enable);
 #endif
