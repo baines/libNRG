@@ -272,17 +272,19 @@ StateResult ClientGameState::update(StateConnectionOut& out, StateFlags f){
 	ss_timer = min(8.0, n / double(client_ms - client_ms_prev));
 
 	static_cast<ClientStatsImpl*>(stats.get())->addInterpStat(ss_timer);
+	
+	if(out.ready()){
+		buffer.reset().write16(server_ms_prev);
 
-	buffer.reset().write16(server_ms_prev);
+		uint16_t diff_ms = now_ms - client_ms;
 
-	uint16_t diff_ms = now_ms - client_ms;
+		TVarint<uint16_t>(diff_ms).encode(buffer);
+		if(input) input->writeToPacket(buffer);
+		msg_manager.writeToPacket(buffer, server_ms_prev + diff_ms);
 
-	TVarint<uint16_t>(diff_ms).encode(buffer);
-	if(input) input->writeToPacket(buffer);
-	msg_manager.writeToPacket(buffer, server_ms_prev + diff_ms);
-
-	out.sendPacket(buffer);
-
+		out.sendPacket(buffer);
+	}
+	
 	return STATE_CONTINUE;
 }
 
